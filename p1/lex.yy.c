@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 8
-#define YY_END_OF_BUFFER 9
+#define YY_NUM_RULES 9
+#define YY_END_OF_BUFFER 10
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,7 +362,7 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[34] =
     {   0,
-        0,    0,    9,    7,    5,    5,    6,    7,    2,    4,
+        0,    0,   10,    8,    5,    7,    6,    8,    2,    4,
         4,    4,    4,    4,    3,    0,    2,    4,    4,    4,
         1,    4,    4,    4,    4,    4,    4,    4,    4,    4,
         4,    4,    0
@@ -462,7 +462,10 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "lexer.l"
-#line 466 "lex.yy.c"
+#line 8 "lexer.l"
+    int colum_number = 1, line_number = 1;
+#line 468 "lex.yy.c"
+#line 469 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -679,9 +682,9 @@ YY_DECL
 		}
 
 	{
-#line 7 "lexer.l"
+#line 10 "lexer.l"
 
-#line 685 "lex.yy.c"
+#line 688 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -740,46 +743,51 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 8 "lexer.l"
-{ printf("Token 4- %s\n", yytext); }
+#line 11 "lexer.l"
+{ printf("%s\n", yytext), colum_number += yyleng; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 9 "lexer.l"
-{ printf("NATURAL(%s)\n", yytext); }
+#line 12 "lexer.l"
+{ printf("NATURAL(%s)\n", yytext), colum_number += yyleng; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 10 "lexer.l"
-{ printf("DECIMAL(%s)\n", yytext); }
+#line 13 "lexer.l"
+{ printf("DECIMAL(%s)\n", yytext), colum_number += yyleng; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 11 "lexer.l"
-{ printf("IDENTIFIER(%s)\n", yytext); }
+#line 14 "lexer.l"
+{ printf("IDENTIFIER(%s)\n", yytext), colum_number += yyleng; }
 	YY_BREAK
 case 5:
-/* rule 5 can match eol */
 YY_RULE_SETUP
-#line 12 "lexer.l"
-{;}
+#line 15 "lexer.l"
+{ colum_number += yyleng; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 13 "lexer.l"
-{ printf("%s", yytext); }
+#line 16 "lexer.l"
+{ printf("%s\n", yytext); }
 	YY_BREAK
 case 7:
+/* rule 7 can match eol */
 YY_RULE_SETUP
-#line 14 "lexer.l"
-{ printf("error... %d", yyleng); } 
+#line 17 "lexer.l"
+{ line_number++, colum_number = 1; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 15 "lexer.l"
+#line 18 "lexer.l"
+{ printf("Unrecognized character '%s' (line %d, column %d)", yytext, line_number, colum_number); } 
+	YY_BREAK
+case 9:
+YY_RULE_SETUP
+#line 19 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 783 "lex.yy.c"
+#line 791 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1784,7 +1792,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 15 "lexer.l"
+#line 19 "lexer.l"
 
 extern int yylex();
 int main() {
