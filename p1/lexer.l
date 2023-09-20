@@ -15,7 +15,7 @@ punctuationMarks [()=,\*\+-]
 {toIgnore}                  { colum_number += yyleng; }
 {punctuationMarks}          { printf("%s\n", yytext); }
 "\n"                        { line_number++, colum_number = 1; }
-.                           { printf("Unrecognized character '%s' (line %d, column %d)", yytext, line_number, colum_number); } 
+.                           { printf("Unrecognized character '%s' (line %d, column %d)\n", yytext, line_number, colum_number), colum_number += yyleng; } 
 %%
 extern int yylex();
 int main() {

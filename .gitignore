@@ -2,3 +2,4 @@
 *.out
 lexer
 testes.txt
+lex.yy.c
