@@ -1,3 +1,4 @@
 factorial(integer n) = tom@as
 	if n then n * factorial(n-1) else 1 /* recursive factorial
-#*// # "He@llo@",,
+#*// # "Hellok",, "aoabsbsaud" "£"a
+ss

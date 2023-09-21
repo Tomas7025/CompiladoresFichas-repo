@@ -17,25 +17,26 @@ strings_body        [a-zA-Z0-9_ \n\f\r]
             colum_number++; \
     } 
     
-    #define UNRECOGNIZED_CHAR printf("Unrecognized character '%s' (line %d, column %d)\n", yytext, line_number, colum_number);
+    #define UNRECOGNIZED_CHAR printf("Unrecognized character '%c' (line %d, column %d)\n", yytext[0], line_number, colum_number);
     
     int colum_number = 0, line_number = 1;
 %}
 %%
-{keywords}                  { printf("%s\n", yytext); }
-[a-zA-Z]{indentifier_body}*    { printf("IDENTIFIER(%s)\n", yytext); }
-{digit}+                    { printf("NATURAL(%s)\n", yytext); }
-{digit}*"."{digit}+         { printf("DECIMAL(%s)\n", yytext); }
-"/*"                        { BEGIN COMMENT; }
-<COMMENT>.|\n               { ; }
-<COMMENT>"*/"               { BEGIN INITIAL; }
-\"                          { BEGIN STRLIT; }
-<STRLIT>{strings_body}*\"   { printf("Acabou de aparecer uma string.\n"), BEGIN INITIAL; }
-<STRLIT>{strings_body}      { ; }
-<STRLIT>.                   { UNRECOGNIZED_CHAR; }
-{punctuationMarks}          { printf("%s\n", yytext); }
-{toIgnore}                  { ; }
-.                           { UNRECOGNIZED_CHAR; } 
+{keywords}                                { printf("%s\n", yytext); }
+[a-zA-Z]{indentifier_body}*               { printf("IDENTIFIER(%s)\n", yytext); }
+{digit}+                                  { printf("NATURAL(%s)\n", yytext); }
+{digit}*"."{digit}+                       { printf("DECIMAL(%s)\n", yytext); }
+"/*"                                      { BEGIN COMMENT; }
+<COMMENT>.|\n                             { ; }
+<COMMENT>"*/"                             { BEGIN INITIAL; }
+\"                                        { BEGIN STRLIT, printf("%d %d ok\n", line_number, colum_number); }
+<STRLIT>{strings_body}*\"                 { printf("Acabou de aparecer uma string.\n"), BEGIN INITIAL; }
+<STRLIT>[^a-zA-Z0-9_ \n\f\r\"]{strings_body}*\"  { BEGIN INITIAL, printf("%s, deu mal\n", yytext); }
+<STRLIT>{strings_body}                    { ; }
+<STRLIT>.                                 { UNRECOGNIZED_CHAR; }
+{punctuationMarks}                        { printf("%s\n", yytext); }
+{toIgnore}                                { ; }
+.                                         { UNRECOGNIZED_CHAR; } 
 %%
 extern int yylex();
 int main() {
