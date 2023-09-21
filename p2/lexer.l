@@ -1,10 +1,10 @@
-digit   [0-9]
-fchar [a-z]
-body [a-z0-9A-Z]
-keywords integer|double|if|then|else
-toIgnore " "|\t|\n
-punctuationMarks [()=,\*\+-]
-%X COMMENT
+digit               [0-9]
+indentifier_body    [a-z0-9A-Z_]
+keywords            integer|double|if|then|else
+toIgnore            " "|\t|\n
+punctuationMarks    [()=,\*\+-]
+strings_body        [a-zA-Z0-9_ \n\f\r]
+%X COMMENT STRLIT
 %{
     #define YY_USER_ACTION \
     { \
@@ -23,13 +23,17 @@ punctuationMarks [()=,\*\+-]
 %}
 %%
 {keywords}                  { printf("%s\n", yytext); }
-{fchar}{body}*              { printf("IDENTIFIER(%s)\n", yytext); }
+[a-z]{indentifier_body}*    { printf("IDENTIFIER(%s)\n", yytext); }
 {digit}+                    { printf("NATURAL(%s)\n", yytext); }
 {digit}*"."{digit}+         { printf("DECIMAL(%s)\n", yytext); }
 "/*"                        { BEGIN COMMENT; }
 <COMMENT>.                  { ; }
 <COMMENT>"*/"               { BEGIN INITIAL; }
 {punctuationMarks}          { printf("%s\n", yytext); }
+"\""                        { BEGIN STRLIT; }
+<STRLIT>{ strings_body }*"\""    { printf("STRLIT(\"%s\")", yytext); BEGIN 0; }
+<STRLIT>[^\"]               { printf("Unrecognized character '%s' (line %d, column %d)\n", yytext, line_number, colum_number); }
+<STRLIT>"\""                { BEGIN 0; }
 {toIgnore}                  { ; }
 .                           { printf("Unrecognized character '%s' (line %d, column %d)\n", yytext, line_number, colum_number); } 
 %%
