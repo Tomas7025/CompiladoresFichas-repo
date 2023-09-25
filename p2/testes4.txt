@@ -1,0 +1,25 @@
+
+int main() {
+    int x = 42;
+    double y = 3.14;
+    char operator = '+';
+    char* message = "Hello, World!";
+    
+    if (x > 0) {
+        y = y + 1.0;
+    } else {
+        y = y - 1.0;
+    }
+    
+    for (int i = 0; i < 5; i++) {
+        x += i;
+    }
+    
+    while (x > 0) {
+        x--;
+    }
+    
+    printf("Result: %d\n", x);
+    
+    return 0;
+}
