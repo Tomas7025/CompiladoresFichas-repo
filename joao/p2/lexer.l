@@ -14,6 +14,7 @@ punct           [()=,\*/+-]
 "/*"                        { BEGIN COMMENT; }
 <COMMENT>"*/"               { BEGIN 0; }
 <COMMENT>.|\n               { ; }
+\"\"
 \n                          { l++; c = 1; }
 {keywords}                  { printf("%s\n", yytext); c++; }
 {ignore}                    { c++; }
