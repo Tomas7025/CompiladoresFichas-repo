@@ -1,3 +1,4 @@
 factorial(integer n) =
-	if n then n * factorial(n-1) else 1 /* recursive factorial
+if n then n * factorial(n-1) else 1 /* recursive factorial
 #*// #
+"\n#"
