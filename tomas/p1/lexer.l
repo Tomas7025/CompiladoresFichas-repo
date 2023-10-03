@@ -1,9 +1,8 @@
 digit   [0-9]
-fchar [a-z]
-body [a-z0-9A-Z]
+indentifier_body [a-z0-9A-Z_]
 keywords integer|double|if|then|else
 toIgnore " "|\t|\n
-punctuationMarks [()=,\*\+-]
+punctuationMarks [()=,\*\+-;{}]
 %{
     #define YY_USER_ACTION \
     { \
@@ -15,14 +14,26 @@ punctuationMarks [()=,\*\+-]
         } else \
             colum_number++; \
     } 
+
+    #define UNRECOGNIZED_CHAR printf("Unrecognized character '%c' (line %d, column %d)\n", yytext[0], line_number, colum_number);
+    
+    #define UPPER_CASE(str) \
+    { \
+        for(int i = 0; str[i] != 0; i++) { \
+            if (str[i] >= 'a' && str[i] <= 'z') { \
+                str[i] = str[i] - 'a' + 'A'; \
+            } \
+        } \
+    }
     
     int colum_number = 0, line_number = 1;
+    
 %}
 %%
-{keywords}                  { printf("%s\n", yytext); }
+{keywords}                  { UPPER_CASE(yytext); printf("%s\n", yytext); }
+[a-z]{indentifier_body}*                { printf("IDENTIFIER(%s)\n", yytext); }
 {digit}+                    { printf("NATURAL(%s)\n", yytext); }
 {digit}*"."{digit}+         { printf("DECIMAL(%s)\n", yytext); }
-{fchar}{body}*              { printf("IDENTIFIER(%s)\n", yytext); }
 {toIgnore}                  { ; }
 {punctuationMarks}          { printf("%s\n", yytext); }
 .                           { printf("Unrecognized character '%s' (line %d, column %d)\n", yytext, line_number, colum_number); } 
