@@ -20,7 +20,7 @@ punct           [()=,\*/+-]
 \n                                                  { l++; c = 1; }
 {keywords}                                          { printf("%s\n", yytext); c++; }
 {ignore}                                            { c++; }
-{punct}                                             { printf("%s\n", yytext); c++;}
+{punct}                                             { printf("%s\n", yytext); c++; }
 {digit}+                                            { printf("NATURAL(%s)\n", yytext); c++; }
 {digit}*"."{digit}+                                 { printf("DECIMAL(%s)\n", yytext); c++; }
 [a-zA-Z][0-9a-zA-Z]*	                            { printf("IDENTIFIER(%s)\n", yytext); c++; }
