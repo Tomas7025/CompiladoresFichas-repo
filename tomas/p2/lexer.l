@@ -4,6 +4,7 @@ keywords            integer|double|if|then|else
 toIgnore            " "|\t|\n|\r
 punctuationMarks    [()=,\*\+-;{}]
 strings_body        [a-zA-Z0-9_ ]
+exp                 [eE][+-]?[0-9]+
 %X COMMENT STRLIT
 %{
     #define YY_USER_ACTION \
@@ -34,7 +35,7 @@ strings_body        [a-zA-Z0-9_ ]
 {keywords}                                                      { UPPER_CASE(yytext); printf("%s\n", yytext); }
 [a-zA-Z]{indentifier_body}*                                     { printf("IDENTIFIER(%s)\n", yytext); }
 {digit}+                                                        { printf("NATURAL(%s)\n", yytext); }
-{digit}*"."{digit}+                                             { printf("DECIMAL(%s)\n", yytext); }
+[0-9]+\.[0-9]*{exp}?|\.[0-9]+{exp}?|[0-9]+{exp}                 { printf("DECIMAL(%s)\n", yytext); }
 {toIgnore}                                                      { ; }
 \"                                                              { BEGIN STRLIT; }
 <STRLIT>(strings_body|\\\\|\\n|\\r|\\\")*\"                     { printf("STRLIT(%s)\n", yytext), BEGIN INITIAL; }
