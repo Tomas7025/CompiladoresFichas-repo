@@ -1,5 +1,4 @@
 *.o
-*.out
 lexer
 testes.txt
-*.c
+tomas/p2/*.txt

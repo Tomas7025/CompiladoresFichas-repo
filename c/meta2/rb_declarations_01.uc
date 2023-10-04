@@ -1,0 +1,15 @@
+char r = 'r';
+char b = 'b';
+int int2 = 2;
+int int3 = 3;
+int sum = int2 + int3;
+int negative = -5;
+int negative = -int3;
+int intA = 1;
+int intB = intA = 2;
+int intC = intB;
+int intD = intA + intB + intC;
+double doubleA = 1.0;
+double doubleB = doubleA - 2;
+short shortA = 2;
+short shortB = -shortA + 5;
