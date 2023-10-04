@@ -9,13 +9,14 @@ exp                 [eE][+-]?[0-9]+
 %{
     #define YY_USER_ACTION \
     { \
-        if (yyleng != 1) \
-            colum_number += yyleng; \
-        else if (yytext[0] == '\n') { \
-            colum_number = 0; \
-            line_number++; \
-        } else \
-            colum_number++; \
+        for(int i = 0; yytext[i] != 0; i++) { \
+            if (yytext[i] == '\n') { \
+                line_number++; \
+                colum_number = 1; \
+            } else { \
+                colum_number++; \
+            } \
+        } \
     } 
 
     #define UPPER_CASE(str) \
@@ -27,9 +28,9 @@ exp                 [eE][+-]?[0-9]+
             } \
         }
 
-    #define UNRECOGNIZED_CHAR() printf("Unrecognized character %c (line %d, column %d)\n", yytext[0], line_number, colum_number);
+    #define UNRECOGNIZED_CHAR printf("Unrecognized character %c (line %d, column %d)\n", yytext[0], line_number, colum_number);
 
-    int colum_number = 0, line_number = 1;
+    int colum_number = 1, line_number = 1;
 %}
 %%
 {keywords}                                                      { UPPER_CASE(yytext); printf("%s\n", yytext); }
@@ -40,7 +41,7 @@ exp                 [eE][+-]?[0-9]+
 "/*"                                                            { BEGIN COMMENT; }
 <COMMENT>.|\n                                                   { ; }
 <COMMENT>"*/"                                                   { BEGIN INITIAL; }
-.                                                               { UNRECOGNIZED_CHAR; printf("->%d<-\n", yytext[0]); } 
+.                                                               { UNRECOGNIZED_CHAR; } 
 %%
 extern int yylex();
 int main() {
