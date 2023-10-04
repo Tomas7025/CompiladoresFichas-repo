@@ -1,0 +1,50 @@
+INT
+IDENTIFIER(main)
+LPAR
+VOID
+RPAR
+LBRACE
+CHAR
+IDENTIFIER(identificador)
+ASSIGN
+CHRLIT('i')
+SEMI
+CHAR
+IDENTIFIER(_identificador)
+ASSIGN
+Line 3, column 24: invalid char constant ('ii')
+SEMI
+CHAR
+IDENTIFIER(_____)
+ASSIGN
+Line 4, column 16: unterminated char constant
+INT
+IDENTIFIER(inteiro)
+ASSIGN
+NATURAL(102)
+SEMI
+DECIMAL(109.12)
+SEMI
+DECIMAL(1.e20)
+SEMI
+IDENTIFIER(inteiro)
+ASSIGN
+NATURAL(1)
+MINUS
+NATURAL(2)
+PLUS
+NATURAL(3)
+DIV
+NATURAL(3)
+MUL
+NATURAL(4)
+SEMI
+Line 16, column 2: invalid char constant ('')
+CHRLIT(' ')
+Line 16, column 10: invalid char constant (' \'  ')
+Line 16, column 17: invalid char constant ('')
+CHRLIT('_')
+CHRLIT('	')
+DECIMAL(.1e-12)
+RBRACE
+Line 21, column 1: unterminated comment

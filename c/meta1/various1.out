@@ -1,0 +1,291 @@
+SHORT
+IDENTIFIER(main)
+LPAR
+VOID
+RPAR
+LBRACE
+CHAR
+IDENTIFIER(letra_abc_1)
+ASSIGN
+CHRLIT('a')
+SEMI
+WHILE
+LPAR
+NATURAL(1)
+RPAR
+LBRACE
+WHILE
+LPAR
+IDENTIFIER(letra_abc_1)
+LT
+CHRLIT('z')
+RPAR
+LBRACE
+IF
+LPAR
+IDENTIFIER(letra_abc_1)
+EQ
+CHRLIT('j')
+RPAR
+RESERVED(break)
+SEMI
+IDENTIFIER(letra_abc_1)
+RESERVED(++)
+SEMI
+RBRACE
+RETURN
+NATURAL(0)
+SEMI
+RBRACE
+VOID
+IDENTIFIER(check_err0s)
+LPAR
+VOID
+RPAR
+LBRACE
+CHAR
+IDENTIFIER(a)
+ASSIGN
+Line 22, column 13: invalid char constant ('')
+Line 22, column 15: unterminated char constant
+INT
+IDENTIFIER(i)
+SEMI
+DOUBLE
+IDENTIFIER(j)
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 24, column 7: unterminated char constant
+IDENTIFIER(a)
+ASSIGN
+Line 25, column 7: unterminated char constant
+IDENTIFIER(a)
+ASSIGN
+IDENTIFIER(a)
+Line 26, column 8: unterminated char constant
+IDENTIFIER(a)
+ASSIGN
+Line 27, column 7: unterminated char constant
+IDENTIFIER(a)
+ASSIGN
+Line 28, column 7: invalid char constant ('')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 29, column 7: invalid char constant ('ola')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+CHRLIT('\t')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 31, column 7: invalid char constant ('')
+Line 31, column 9: invalid char constant ('')
+Line 31, column 11: invalid char constant ('')
+Line 31, column 13: invalid char constant ('')
+Line 31, column 15: invalid char constant ('')
+Line 31, column 17: invalid char constant ('')
+Line 31, column 19: invalid char constant ('')
+Line 31, column 21: invalid char constant ('')
+Line 31, column 23: invalid char constant ('')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 32, column 7: unrecognized character (\)
+CHRLIT('c')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 33, column 7: invalid char constant ('ch')
+IDENTIFIER(a)
+ASSIGN
+Line 34, column 7: invalid char constant ('20')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 35, column 7: unterminated char constant
+IDENTIFIER(a)
+ASSIGN
+Line 36, column 7: invalid char constant ('\999')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 37, column 7: invalid char constant ('==')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 38, column 7: invalid char constant ('\\20')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+CHRLIT('\0')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 40, column 7: invalid char constant ('\\n')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+CHRLIT('\n')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+CHRLIT('?')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 43, column 7: invalid char constant ('\'\'')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 44, column 7: invalid char constant ('\\\t\\\\')
+SEMI
+IDENTIFIER(a)
+ASSIGN
+Line 45, column 7: unterminated char constant
+IDENTIFIER(a)
+ASSIGN
+Line 46, column 7: unrecognized character (\)
+Line 46, column 8: invalid char constant ('\'\'\'\'')
+Line 46, column 18: unrecognized character (\)
+Line 46, column 19: invalid char constant ('')
+Line 46, column 21: invalid char constant ('\'\'\'\'\\\\')
+SEMI
+Line 46, column 37: unrecognized character (\)
+Line 46, column 38: unrecognized character (\)
+IDENTIFIER(check)
+IDENTIFIER(i)
+ASSIGN
+NATURAL(000)
+SEMI
+IDENTIFIER(i)
+ASSIGN
+NATURAL(60)
+SEMI
+IDENTIFIER(i)
+ASSIGN
+NATURAL(060)
+SEMI
+IDENTIFIER(i)
+ASSIGN
+NATURAL(0123456789)
+IF
+LPAR
+IDENTIFIER(i)
+NE
+IDENTIFIER(i)
+RPAR
+LBRACE
+IDENTIFIER(putchar)
+LPAR
+CHRLIT('\\')
+Line 53, column 21: unterminated char constant
+RBRACE
+IDENTIFIER(j)
+ASSIGN
+DECIMAL(.0)
+SEMI
+IDENTIFIER(j)
+ASSIGN
+Line 56, column 7: unrecognized character (.)
+PLUS
+DECIMAL(1e0123456789)
+SEMI
+IDENTIFIER(j)
+ASSIGN
+DECIMAL(.123)
+MINUS
+IDENTIFIER(E)
+SEMI
+IDENTIFIER(j)
+ASSIGN
+MINUS
+DECIMAL(1.)
+MINUS
+NATURAL(1)
+SEMI
+IDENTIFIER(j)
+ASSIGN
+DECIMAL(123.456)
+SEMI
+IDENTIFIER(j)
+ASSIGN
+DECIMAL(02.02e+02)
+SEMI
+RETURN
+VOID
+SEMI
+MUL
+MUL
+MUL
+MUL
+MUL
+MUL
+MUL
+MUL
+MUL
+MUL
+NE
+EQ
+AND
+BITWISEAND
+RESERVED(++)
+RESERVED(--)
+RESERVED([)
+RESERVED(])
+RESERVED(auto)
+RESERVED(break)
+RESERVED(case)
+RESERVED(const)
+RESERVED(continue)
+MUL
+MUL
+RESERVED(default)
+RESERVED(do)
+RESERVED(enum)
+MUL
+MUL
+RESERVED(extern)
+RESERVED(for)
+RESERVED(inline)
+RESERVED(volatile)
+MUL
+MUL
+RESERVED(_Bool)
+RESERVED(_Complex)
+Line 62, column 131: unrecognized character (")
+MUL
+MUL
+CHRLIT('\t')
+Line 63, column 1: invalid char constant ('\\t')
+CHRLIT('\\')
+Line 63, column 12: invalid char constant ('ll')
+CHRLIT('o')
+Line 63, column 19: invalid char constant (' o')
+Line 63, column 23: invalid char constant ('\\\\')
+BITWISEAND
+BITWISEOR
+BITWISEXOR
+AND
+ASSIGN
+MUL
+COMMA
+DIV
+EQ
+GE
+GT
+LBRACE
+LE
+LPAR
+RPAR
+LT
+MINUS
+MOD
+NE
+NOT
+OR
+PLUS
+RBRACE
+Line 65, column 2: unterminated comment

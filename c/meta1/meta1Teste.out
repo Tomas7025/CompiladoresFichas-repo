@@ -1,0 +1,55 @@
+DIV
+IDENTIFIER(exemplo)
+Line 6, column 1: invalid char constant ('/0123')
+Line 7, column 1: invalid char constant ('\\\n')
+Line 8, column 1: invalid char constant ('\1239')
+Line 9, column 1: invalid char constant ('')
+CHRLIT('\113')
+Line 9, column 9: invalid char constant ('')
+Line 10, column 1: unterminated char constant
+RESERVED(float)
+IDENTIFIER(exemplo_1)
+LPAR
+VOID
+RPAR
+LBRACE
+INT
+IDENTIFIER(numero)
+ASSIGN
+NATURAL(1)
+SEMI
+IF
+LPAR
+IDENTIFIER(numbero)
+NE
+NATURAL(1)
+RPAR
+LBRACE
+IDENTIFIER(numero)
+ASSIGN
+NATURAL(1)
+SEMI
+RBRACE
+CHAR
+IDENTIFIER(nome)
+ASSIGN
+Line 21, column 14: unrecognized character (")
+IDENTIFIER(O_O)
+Line 21, column 18: unrecognized character (")
+SEMI
+DOUBLE
+IDENTIFIER(x)
+ASSIGN
+DECIMAL(12.2)
+SEMI
+RETURN
+IDENTIFIER(numero)
+RBRACE
+VOID
+IDENTIFIER(exemplo_2)
+LPAR
+VOID
+RPAR
+LBRACE
+RBRACE
+Line 30, column 1: unterminated comment

@@ -1,0 +1,50 @@
+INT
+IDENTIFIER(main)
+LPAR
+VOID
+RPAR
+LBRACE
+INT
+IDENTIFIER(i)
+ASSIGN
+NATURAL(0)
+SEMI
+CHAR
+IDENTIFIER(a)
+ASSIGN
+Line 3, column 11: invalid char constant ('\'<=')
+CHAR
+IDENTIFIER(b)
+ASSIGN
+Line 4, column 11: unterminated char constant
+IF
+LPAR
+IDENTIFIER(i)
+EQ
+NATURAL(0)
+RPAR
+LBRACE
+IDENTIFIER(printf)
+LPAR
+Line 7, column 10: unrecognized character (")
+IDENTIFIER(ola)
+IDENTIFIER(o)
+IDENTIFIER(meu)
+IDENTIFIER(nome)
+Line 7, column 26: unrecognized character (Ã)
+Line 7, column 27: unrecognized character (©)
+IDENTIFIER(miguel)
+RPAR
+SEMI
+RBRACE
+DOUBLE
+ASSIGN
+DECIMAL(2.0)
+SEMI
+CHRLIT('A')
+Line 12, column 2: unterminated char constant
+IDENTIFIER(adeus)
+Line 13, column 7: invalid char constant ('')
+IDENTIFIER(nao)
+Line 15, column 2: invalid char constant ('{d')
+RBRACE

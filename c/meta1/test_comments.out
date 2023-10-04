@@ -1,0 +1,15 @@
+MUL
+DIV
+IDENTIFIER(isto_esta_sem_par)
+IDENTIFIER(no_meio_de_2)
+IDENTIFIER(begin)
+IDENTIFIER(end)
+Line 36, column 1: unrecognized character (")
+IDENTIFIER(a)
+IDENTIFIER(f)
+DIV
+IDENTIFIER(h)
+DIV
+Line 39, column 2: unrecognized character (\)
+IDENTIFIER(n)
+Line 42, column 1: unterminated comment

@@ -1,0 +1,26 @@
+Line 2, column 1: invalid char constant ('')
+Line 3, column 1: unterminated char constant
+Line 4, column 1: unterminated char constant
+Line 5, column 1: unterminated char constant
+Line 6, column 1: unterminated char constant
+Line 7, column 1: invalid char constant ('\'\'\\')
+CHRLIT('	')
+CHRLIT('\n')
+CHRLIT('\120')
+Line 11, column 1: invalid char constant ('\129')
+DECIMAL(1.1E12)
+DECIMAL(1.1e12)
+DECIMAL(1.E12)
+DECIMAL(1.)
+IDENTIFIER(E)
+DECIMAL(.1e12)
+Line 19, column 1: unrecognized character (.)
+IDENTIFIER(e12)
+Line 20, column 1: unrecognized character (.)
+IDENTIFIER(e)
+DECIMAL(.023)
+IDENTIFIER(eE)
+CHRLIT('a')
+CHRLIT('v')
+CHRLIT('/')
+DIV

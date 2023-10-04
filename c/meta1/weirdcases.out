@@ -1,0 +1,25 @@
+IDENTIFIER(i)
+Line 1, column 2: unrecognized character (\)
+IDENTIFIER(a)
+IDENTIFIER(i)
+Line 2, column 2: unrecognized character (\)
+Line 2, column 3: unterminated char constant
+DIV
+IDENTIFIER(a)
+Line 4, column 1: invalid char constant ('/* this is a test */ ')
+Line 5, column 1: unterminated char constant
+IDENTIFIER(chari)
+CHAR
+IDENTIFIER(i)
+Line 7, column 1: unterminated char constant
+Line 8, column 1: invalid char constant ('\999')
+Line 9, column 1: invalid char constant ('999')
+CHRLIT('\777')
+Line 11, column 1: invalid char constant ('\9\'')
+Line 12, column 1: invalid char constant ('\9')
+Line 12, column 5: unrecognized character (\)
+Line 12, column 6: unterminated char constant
+Line 13, column 1: invalid char constant ('int i = 1')
+Line 13, column 13: invalid char constant ('bcs')
+Line 13, column 19: unterminated char constant
+Line 14, column 1: unterminated char constant

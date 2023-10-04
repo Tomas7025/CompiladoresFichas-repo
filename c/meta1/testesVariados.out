@@ -1,0 +1,66 @@
+CHRLIT('a')
+CHRLIT('_')
+CHRLIT('"')
+Line 5, column 1: invalid char constant ('´')
+CHRLIT('\\')
+Line 6, column 5: unterminated char constant
+CHRLIT('\"')
+Line 7, column 5: unterminated char constant
+CHRLIT('\1')
+CHRLIT('\12')
+Line 10, column 1: invalid char constant ('\1234')
+Line 11, column 1: invalid char constant ('\16asdasd')
+Line 12, column 1: invalid char constant ('\t\t')
+Line 13, column 1: invalid char constant ('\\1')
+Line 14, column 1: unterminated char constant
+CHRLIT('\n')
+CHRLIT('?')
+Line 17, column 1: invalid char constant ('')
+Line 17, column 3: unterminated char constant
+CHRLIT('#')
+CHRLIT('\123')
+CHRLIT('z')
+CHRLIT('Z')
+CHRLIT('	')
+CHRLIT(' ')
+DECIMAL(2.)
+DECIMAL(2.2)
+NATURAL(2)
+PLUS
+IDENTIFIER(E2)
+DECIMAL(2.2)
+PLUS
+IDENTIFIER(e5)
+DECIMAL(0.0e0)
+DECIMAL(.2)
+MINUS
+IDENTIFIER(e1)
+DECIMAL(.2)
+INT
+IDENTIFIER(main)
+LPAR
+RPAR
+LBRACE
+Line 36, column 2: unrecognized character (#)
+LT
+LT
+GT
+LT
+RESERVED(for)
+INT
+IDENTIFIER(a)
+ASSIGN
+NATURAL(5)
+SEMI
+IDENTIFIER(a)
+ASSIGN
+IDENTIFIER(a)
+PLUS
+NATURAL(1)
+SEMI
+RETURN
+IDENTIFIER(a)
+RESERVED(++)
+SEMI
+RBRACE
+Line 44, column 1: unterminated comment

@@ -1,0 +1,18 @@
+INT
+IDENTIFIER(main)
+IDENTIFIER(forwhile)
+RESERVED(for)
+WHILE
+Line 3, column 1: invalid char constant ('for')
+Line 3, column 7: invalid char constant ('while')
+Line 4, column 1: invalid char constant ('')
+CHRLIT('f')
+CHRLIT('o')
+CHRLIT('r')
+Line 5, column 1: invalid char constant ('\while')
+ASSIGN
+PLUS
+IDENTIFIER(a2)
+NATURAL(2)
+DECIMAL(2.1e-1)
+Line 9, column 1: unterminated comment

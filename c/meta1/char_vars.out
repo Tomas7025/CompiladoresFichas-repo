@@ -1,0 +1,31 @@
+Line 1, column 1: unterminated char constant
+CHRLIT('\\')
+Line 3, column 1: unterminated char constant
+Line 4, column 1: invalid char constant ('\\\\')
+Line 5, column 1: unterminated char constant
+CHRLIT('\\')
+Line 7, column 1: unterminated char constant
+Line 8, column 1: unterminated char constant
+Line 9, column 1: unterminated char constant
+Line 11, column 1: unterminated char constant
+Line 12, column 1: invalid char constant ('')
+Line 12, column 3: unterminated char constant
+Line 13, column 1: invalid char constant ('')
+Line 13, column 3: invalid char constant ('')
+Line 14, column 1: invalid char constant ('\'\'\\\'')
+Line 14, column 11: unrecognized character (\)
+Line 14, column 12: invalid char constant ('')
+Line 14, column 14: unrecognized character (\)
+CHRLIT('\n')
+CHRLIT('\'')
+Line 19, column 1: invalid char constant ('\t\t\t\t')
+CHRLIT('\n')
+Line 19, column 17: invalid char constant ('\\\\\' ')
+Line 19, column 26: unrecognized character (\)
+Line 19, column 27: unrecognized character (\)
+CHRLIT(' ')
+Line 19, column 31: unrecognized character (\)
+Line 19, column 32: unterminated char constant
+Line 21, column 1: unterminated char constant
+CHRLIT('"')
+CHRLIT('\"')

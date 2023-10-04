@@ -1,0 +1,8 @@
+MUL
+DIV
+CHRLIT('\t')
+Line 14, column 1: invalid char constant ('o\n')
+SEMI
+DIV
+IDENTIFIER(t)
+CHRLIT('\n')

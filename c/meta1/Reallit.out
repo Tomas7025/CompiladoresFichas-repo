@@ -1,0 +1,31 @@
+PLUS
+DECIMAL(1234.564)
+DECIMAL(234e34)
+DECIMAL(987.E+234)
+DECIMAL(0987.E-08)
+DECIMAL(0987.)
+IDENTIFIER(E)
+DECIMAL(567.e987)
+Line 7, column 1: unrecognized character (.)
+IDENTIFIER(e)
+MINUS
+NATURAL(847)
+MINUS
+IDENTIFIER(eifnv)
+DECIMAL(.123E+234)
+DECIMAL(.7987654345678e-98765)
+Line 11, column 1: unrecognized character (.)
+IDENTIFIER(E345)
+Line 12, column 1: unrecognized character (.)
+IDENTIFIER(E)
+PLUS
+NATURAL(2345)
+DECIMAL(234.0987)
+NATURAL(969867)
+MINUS
+NATURAL(5678)
+Line 16, column 1: unrecognized character (.)
+IDENTIFIER(e)
+Line 17, column 1: unrecognized character (.)
+IDENTIFIER(e2345)
+DECIMAL(123.e+34)
