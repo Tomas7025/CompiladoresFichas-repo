@@ -41,7 +41,7 @@ exp                 [eE][+-]?[0-9]+
 <STRLIT>(strings_body|\\\\|\\n|\\r|\\\")*\"                     { printf("STRLIT(%s)\n", yytext), BEGIN INITIAL; }
 <STRLIT>[^a-zA-Z0-9_ \f\"](strings_body|\\\\|\\n|\\r|\\\")*\"   { UNRECOGNIZED_CHAR; BEGIN INITIAL; }
 <STRLIT>(strings_body|\\\\|\\n|\\r|\\\")                        { ; }
-<STRLIT>[^((a-zA-Z0-9_ \f\")|\\\\|\\n|\\r|\\\")]                                      { UNRECOGNIZED_CHAR; }
+<STRLIT>[^((a-zA-Z0-9_ \f\")|\\\\|\\n|\\r|\\\")]                { UNRECOGNIZED_CHAR; }
 {punctuationMarks}                                              { printf("%s\n", yytext); }
 "/*"                                                            { BEGIN COMMENT; }
 <COMMENT>.|\n                                                   { ; }
