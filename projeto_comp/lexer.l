@@ -1,10 +1,10 @@
-digit               [0-9]
-indentifier_body    [a-z0-9A-Z_]
-keywords            integer|double|if|then|else
-toIgnore            " "|\t|\n|\r
-punctuationMarks    [()=,\*\+-;{}]
-strings_body        [a-zA-Z0-9_ ]
-exp                 [eE][+-]?[0-9]+
+digit                [0-9]
+indentifier_body     [a-z0-9A-Z_]
+keywords             char|int|short|double|if|then|else|void|return|while
+to_ignore            " "|\t|\n|\r
+punctuation_marks    [()=,\*\+-;{}]
+char_body            [a-zA-Z0-9_]
+exp                  [eE][+-]?{digit}+
 %X COMMENT STRLIT
 %{
     #define YY_USER_ACTION \
@@ -17,7 +17,7 @@ exp                 [eE][+-]?[0-9]+
         } else \
             colum_number++; \
     } 
-
+ 
     #define UPPER_CASE(str) \
         { \
             for(int i = 0; str[i] != 0; i++) { \
@@ -36,7 +36,7 @@ exp                 [eE][+-]?[0-9]+
 [a-zA-Z]{indentifier_body}*                                     { printf("IDENTIFIER(%s)\n", yytext); }
 {digit}+                                                        { printf("NATURAL(%s)\n", yytext); }
 [0-9]+\.[0-9]*{exp}?|\.[0-9]+{exp}?|[0-9]+{exp}                 { printf("DECIMAL(%s)\n", yytext); }
-{toIgnore}                                                      { ; }
+{to_ignore}                                                     { ; }
 "/*"                                                            { BEGIN COMMENT; }
 <COMMENT>.|\n                                                   { ; }
 <COMMENT>"*/"                                                   { BEGIN INITIAL; }
