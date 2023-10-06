@@ -1,10 +1,9 @@
 digit               [0-9]
 indentifier_body    [a-z0-9A-Z_]
-keywords            integer|double|if|then|else
-toIgnore            " "|\t|\n|\r
-punctuationMarks    [()=,\*\+-;{}]
-strings_body        [a-zA-Z0-9_ ]
+keywords            double|if|else|char|void|return|while|short|int
+to_ignore            " "|\t|\n|\r
 exp                 [eE][+-]?[0-9]+
+char_body           [a-zA-Z0-9_]|\\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
 %X COMMENT STRLIT
 %{
     #define YY_USER_ACTION \
@@ -28,7 +27,9 @@ exp                 [eE][+-]?[0-9]+
             } \
         }
 
-    #define UNRECOGNIZED_CHAR printf("Unrecognized character %c (line %d, column %d)\n", yytext[0], line_number, colum_number);
+    #define UNRECOGNIZED_CHAR(n_l, n_C) { \
+        printf("Unrecognized character %c (line %d, column %d)\n", yytext[0], n_l, n_C); \
+    }
 
     int colum_number = 1, line_number = 1;
 %}
@@ -37,11 +38,16 @@ exp                 [eE][+-]?[0-9]+
 [a-zA-Z]{indentifier_body}*                                     { printf("IDENTIFIER(%s)\n", yytext); }
 {digit}+                                                        { printf("NATURAL(%s)\n", yytext); }
 [0-9]+\.[0-9]*{exp}?|\.[0-9]+{exp}?|[0-9]+{exp}                 { printf("DECIMAL(%s)\n", yytext); }
-{toIgnore}                                                      { ; }
+'{char_body}'                                                   { printf("CHARACTER(%s)\n", yytext); }
+'([^'])*\n                                                      { printf("Line %d, column %d: unterminated character\n", line_number, colum_number); }
+'[^char_body|\n|\']'|\'\'                                       { printf("Line %d, column %d: invalid character constant\n", line_number, colum_number); }
+'[^\n|\']*'                                                     { printf("Line %d, column %d: invalid character format\n", line_number, colum_number); }
 "/*"                                                            { BEGIN COMMENT; }
 <COMMENT>.|\n                                                   { ; }
 <COMMENT>"*/"                                                   { BEGIN INITIAL; }
-.                                                               { UNRECOGNIZED_CHAR; } 
+<COMMENT><<EOF>>                                                { printf("Line %d, column %d: unterminated comment\n", line_number, colum_number); BEGIN INITIAL; }
+{to_ignore}                                                     { ; }
+.                                                               { UNRECOGNIZED_CHAR(line_number-1, colum_number-1); }
 %%
 extern int yylex();
 int main() {
