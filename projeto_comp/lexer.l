@@ -1,13 +1,15 @@
 digit               [0-9]
 indentifier_body    [a-z0-9A-Z_]
 keywords            double|if|else|char|void|return|while|short|int
-to_ignore            " "|\t|\n|\r
+to_ignore           " "|\t|\n|\r
 exp                 [eE][+-]?[0-9]+
 char_body           [a-zA-Z0-9_]|\\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
 putuation           \,|\;|\(|\)|\{|\}
 operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\||\&\&
 %X COMMENT
 %{
+    #include <string.h>
+    
     #define YY_USER_ACTION \
     { \
         previus_l_number = line_number; \
@@ -68,6 +70,14 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
         "SEMI", ";"
     };
 
+    int map_tk() {
+        for(int i = 0; i < sizeof(map_tokens) / sizeof(char*); i += 2) {
+            if (strcmp(yytext, map_tokens[i + 1]) == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
 %}
 %%
 {keywords}                                                      { UPPER_CASE(yytext); printf("%s\n", yytext); }
@@ -81,7 +91,9 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
 "/*"                                                            { BEGIN COMMENT; aux = previus_l_number; aux2 = previus_c_number; }
 <COMMENT>.|\n                                                   { ; }
 <COMMENT>"*/"                                                   { BEGIN INITIAL; }
-<COMMENT><<EOF>>                                                { printf("Line %d, column %d: unterminated comment\n", line_number, colum_number); BEGIN INITIAL; }
+<COMMENT><<EOF>>                                                { printf("Line %d, column %d: unterminated comment\n", aux, aux2); BEGIN INITIAL; }
+{putuation}                                                     { printf("%s\n", map_tokens[map_tk()]); }
+{operators}                                                     { printf("%s\n", map_tokens[map_tk()]); }
 \/\/[^\n]*                                                      { ; }
 {to_ignore}                                                     { ; }
 .                                                               { UNRECOGNIZED_CHAR(previus_l_number, previus_c_number); }
