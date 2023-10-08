@@ -4,10 +4,14 @@ keywords            double|if|else|char|void|return|while|short|int
 to_ignore            " "|\t|\n|\r
 exp                 [eE][+-]?[0-9]+
 char_body           [a-zA-Z0-9_]|\\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
-%X COMMENT STRLIT
+putuation           \,|\;|\(|\)|\{|\}
+operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\||\&\&
+%X COMMENT
 %{
     #define YY_USER_ACTION \
     { \
+        previus_l_number = line_number; \
+        previus_c_number = colum_number; \
         for(int i = 0; yytext[i] != 0; i++) { \
             if (yytext[i] == '\n') { \
                 line_number++; \
@@ -31,23 +35,56 @@ char_body           [a-zA-Z0-9_]|\\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
         printf("Unrecognized character %c (line %d, column %d)\n", yytext[0], n_l, n_C); \
     }
 
-    int colum_number = 1, line_number = 1;
+    int previus_l_number = 1;
+    int previus_c_number = 1;
+    int line_number = 1;
+    int colum_number = 1;
+    int aux, aux2;
+    
+    char *map_tokens[] = {
+        "BITWISEAND", "&",
+        "BITWISEOR", "|",
+        "BITWISEXOR", "^",
+        "AND", "&&",
+        "ASSIGN", "=",
+        "MUL", "*",
+        "COMMA", ",",
+        "DIV", "/",
+        "EQ", "==",
+        "GE", ">=",
+        "GT", ">",
+        "LBRACE", "{",
+        "LE", "<=",
+        "LPAR", "(",
+        "LT", "<",
+        "MINUS", "-",
+        "MOD", "%",
+        "NE", "!=",
+        "NOT", "!",
+        "OR", "||",
+        "PLUS", "+",
+        "RBRACE", "}",
+        "RPAR", ")",
+        "SEMI", ";"
+    };
+
 %}
 %%
 {keywords}                                                      { UPPER_CASE(yytext); printf("%s\n", yytext); }
-[a-zA-Z]{indentifier_body}*                                     { printf("IDENTIFIER(%s)\n", yytext); }
+[a-zA-Z_]{indentifier_body}*                                    { printf("IDENTIFIER(%s)\n", yytext); }
 {digit}+                                                        { printf("NATURAL(%s)\n", yytext); }
 [0-9]+\.[0-9]*{exp}?|\.[0-9]+{exp}?|[0-9]+{exp}                 { printf("DECIMAL(%s)\n", yytext); }
-'{char_body}'                                                   { printf("CHARACTER(%s)\n", yytext); }
-'([^'])*\n                                                      { printf("Line %d, column %d: unterminated character\n", line_number, colum_number); }
-'[^char_body|\n|\']'|\'\'                                       { printf("Line %d, column %d: invalid character constant\n", line_number, colum_number); }
-'[^\n|\']*'                                                     { printf("Line %d, column %d: invalid character format\n", line_number, colum_number); }
-"/*"                                                            { BEGIN COMMENT; }
+'{char_body}'                                                   { printf("CHRLIT(%s)\n", yytext); }
+'[^'|\n]*\n                                                     { printf("Line %d, column %d: unterminated char constant\n", previus_l_number, previus_c_number); }
+'[^char_body|\n|\']'                                            { printf("Line %d, column %d: unrecognized character ('%c')\n", previus_l_number, previus_c_number, yytext[1]); }
+'[^\n|\']*'|\'\'                                                { printf("Line %d, column %d: invalid char constant (%s)\n", previus_l_number, previus_c_number, yytext); }
+"/*"                                                            { BEGIN COMMENT; aux = previus_l_number; aux2 = previus_c_number; }
 <COMMENT>.|\n                                                   { ; }
 <COMMENT>"*/"                                                   { BEGIN INITIAL; }
 <COMMENT><<EOF>>                                                { printf("Line %d, column %d: unterminated comment\n", line_number, colum_number); BEGIN INITIAL; }
+\/\/[^\n]*                                                      { ; }
 {to_ignore}                                                     { ; }
-.                                                               { UNRECOGNIZED_CHAR(line_number-1, colum_number-1); }
+.                                                               { UNRECOGNIZED_CHAR(previus_l_number, previus_c_number); }
 %%
 extern int yylex();
 int main() {
