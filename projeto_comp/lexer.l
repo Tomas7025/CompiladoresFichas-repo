@@ -4,7 +4,7 @@ keywords            double|if|else|char|void|return|while|short|int
 to_ignore           " "|\t|\n|\r
 exp                 [eE][+-]?[0-9]+
 esc                 \\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
-punctuation           \,|\;|\(|\)|\{|\}
+punctuation         \,|\;|\(|\)|\{|\}
 operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\||\&\&
 
 %X COMMENT
@@ -34,10 +34,6 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
                 } \
             } \
         }
-
-    #define UNRECOGNIZED_CHAR(n_l, n_C) { \
-        printf("Line %d, column %d: unrecognized character ('%c')\n", previus_l_number, previus_c_number, yytext[1]); \
-    }
 
     int previus_l_number = 1;
     int previus_c_number = 1;
@@ -89,7 +85,7 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
 [0-9]+\.[0-9]*{exp}?|\.[0-9]+{exp}?|[0-9]+{exp}                 { printf("DECIMAL(%s)\n", yytext); }
 '({esc}|[^\\\n'])'                                              { printf("CHRLIT(%s)\n", yytext); }
 
-'([^'\n]|"\\'")*\n                                              { printf("Line %d, column %d: unterminated char constant\n", previus_l_number, previus_c_number); }
+'([^'\n]|"\\'")*                                                { printf("Line %d, column %d: unterminated char constant\n", previus_l_number, previus_c_number); }
 '[^'\n]*'                                                       { printf("Line %d, column %d: invalid char constant (%s)\n", previus_l_number, previus_c_number, yytext); }
 
 "/*"                                                            { BEGIN COMMENT; aux = previus_l_number; aux2 = previus_c_number; }
@@ -101,7 +97,7 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
 {operators}                                                     { printf("%s\n", map_tokens[map_tk()]); }
 \/\/.*                                                          { ; }
 {to_ignore}                                                     { ; }
-.                                                               { UNRECOGNIZED_CHAR(previus_l_number, previus_c_number); }
+.                                                               { printf("Line %d, column %d: unrecognized character (%c)\n", previus_l_number, previus_c_number, yytext[0]); }
 
 %%
 extern int yylex();
