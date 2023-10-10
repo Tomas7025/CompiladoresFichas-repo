@@ -3,7 +3,7 @@ indentifier_body    [a-z0-9A-Z_]
 keywords            double|if|else|char|void|return|while|short|int
 to_ignore           " "|\t|\n|\r
 exp                 [eE][+-]?[0-9]+
-char_body           [a-zA-Z0-9_]|\\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
+char_body           [a-zA-Z0-9_#?<>]|\\\\|\\n|\\t|\\\'|\\\"|\\[0-7]{1,3}
 putuation           \,|\;|\(|\)|\{|\}
 operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\||\&\&
 %X COMMENT
@@ -34,7 +34,7 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
         }
 
     #define UNRECOGNIZED_CHAR(n_l, n_C) { \
-        printf("Unrecognized character %c (line %d, column %d)\n", yytext[0], n_l, n_C); \
+        printf("Line %d, column %d: unrecognized character ('%c')\n", previus_l_number, previus_c_number, yytext[1]); \
     }
 
     int previus_l_number = 1;
@@ -85,9 +85,8 @@ operators           \+|\-|\*|\/|\%|\&|\||\^|\!|\=|\<|\>|\=\=|\>\=|\<\=|\!\=|\|\|
 {digit}+                                                        { printf("NATURAL(%s)\n", yytext); }
 [0-9]+\.[0-9]*{exp}?|\.[0-9]+{exp}?|[0-9]+{exp}                 { printf("DECIMAL(%s)\n", yytext); }
 '{char_body}'                                                   { printf("CHRLIT(%s)\n", yytext); }
-'[^'|\n]*\n                                                     { printf("Line %d, column %d: unterminated char constant\n", previus_l_number, previus_c_number); }
-'[^char_body|\n|\']'                                            { printf("Line %d, column %d: unrecognized character ('%c')\n", previus_l_number, previus_c_number, yytext[1]); }
-'[^\n|\']*'|\'\'                                                { printf("Line %d, column %d: invalid char constant (%s)\n", previus_l_number, previus_c_number, yytext); }
+'[^'\n]*\n                                                      { printf("Line %d, column %d: unterminated char constant\n", previus_l_number, previus_c_number); }
+'[^'\n]*'                                                       { printf("Line %d, column %d: invalid char constant (%s)\n", previus_l_number, previus_c_number, yytext); }
 "/*"                                                            { BEGIN COMMENT; aux = previus_l_number; aux2 = previus_c_number; }
 <COMMENT>.|\n                                                   { ; }
 <COMMENT>"*/"                                                   { BEGIN INITIAL; }
