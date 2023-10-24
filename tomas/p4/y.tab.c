@@ -74,11 +74,13 @@
 
 int yylex(void);
 void yyerror(char *);
-
+void show(struct node *node, int depth);
 struct node *program;
 
+char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arguments", "Integer", "Double", "Identifier", "Natural", "Decimal", "Call", "If", "Add", "Sub", "Mul", "Div" };
 
-#line 82 "y.tab.c"
+
+#line 84 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -153,12 +155,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 22 "petit.y"
+#line 24 "petit.y"
 
     char *token;
     struct node *node;
 
-#line 162 "y.tab.c"
+#line 164 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -590,8 +592,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    31,    31,    40,    41,    44,    45,    48,    49,    52,
-      53,    54,    55,    56,    58,    59,    60,    61,    62
+       0,    33,    33,    42,    45,    49,    53,    59,    62,    66,
+      67,    68,    69,    73,    82,    86,    90,    94,    98
 };
 #endif
 
@@ -1172,114 +1174,151 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: IDENTIFIER '(' parameters ')' '=' expression  */
-#line 32 "petit.y"
+#line 34 "petit.y"
                                     { (yyval.node) = program = newnode(Program, NULL);
                                       struct node *function = newnode(Function, NULL);
                                       addchild(function, newnode(Identifier, (yyvsp[-5].token)));
                                       addchild(function, (yyvsp[-3].node));
                                       addchild(function, (yyvsp[0].node));
-                                      addchild((yyval.node), function); }
-#line 1183 "y.tab.c"
+                                      addchild((yyval.node), function); show((yyval.node), 0);}
+#line 1185 "y.tab.c"
     break;
 
   case 3: /* parameters: parameter  */
-#line 40 "petit.y"
-                                    { /* ... */ }
-#line 1189 "y.tab.c"
+#line 42 "petit.y"
+                                    { (yyval.node) = newnode(Parameters, NULL);
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1193 "y.tab.c"
     break;
 
   case 4: /* parameters: parameters ',' parameter  */
-#line 41 "petit.y"
-                                    { /* ... */ }
-#line 1195 "y.tab.c"
+#line 45 "petit.y"
+                                    { addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1200 "y.tab.c"
     break;
 
   case 5: /* parameter: INTEGER IDENTIFIER  */
-#line 44 "petit.y"
-                                    { /* ... */ }
-#line 1201 "y.tab.c"
+#line 49 "petit.y"
+                                    { (yyval.node) = newnode(Parameter, NULL);
+                                      addchild((yyval.node), newnode(Integer, NULL));
+                                      addchild((yyval.node), newnode(Identifier, (yyvsp[0].token)));
+                                    }
+#line 1209 "y.tab.c"
     break;
 
   case 6: /* parameter: DOUBLE IDENTIFIER  */
-#line 45 "petit.y"
-                                    { /* ... */ }
-#line 1207 "y.tab.c"
+#line 53 "petit.y"
+                                    { (yyval.node) = newnode(Parameter, NULL);
+                                      addchild((yyval.node), newnode(Double, NULL));
+                                      addchild((yyval.node), newnode(Identifier, (yyvsp[0].token)));
+                                    }
+#line 1218 "y.tab.c"
     break;
 
   case 7: /* arguments: expression  */
-#line 48 "petit.y"
-                                    { /* ... */ }
-#line 1213 "y.tab.c"
+#line 59 "petit.y"
+                                    { (yyval.node) = newnode(Arguments, NULL);
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1226 "y.tab.c"
     break;
 
   case 8: /* arguments: arguments ',' expression  */
-#line 49 "petit.y"
-                                    { /* ... */ }
-#line 1219 "y.tab.c"
+#line 62 "petit.y"
+                                    { addchild((yyval.node), (yyvsp[0].node)); 
+                                    }
+#line 1233 "y.tab.c"
     break;
 
   case 9: /* expression: IDENTIFIER  */
-#line 52 "petit.y"
-                                    { /* ... */ }
-#line 1225 "y.tab.c"
+#line 66 "petit.y"
+                                    { (yyval.node) = newnode(Identifier, (yyvsp[0].token)); }
+#line 1239 "y.tab.c"
     break;
 
   case 10: /* expression: NATURAL  */
-#line 53 "petit.y"
-                                    { /* ... */ }
-#line 1231 "y.tab.c"
+#line 67 "petit.y"
+                                    { (yyval.node) = newnode(Natural, (yyvsp[0].token)); }
+#line 1245 "y.tab.c"
     break;
 
   case 11: /* expression: DECIMAL  */
-#line 54 "petit.y"
-                                    { /* ... */ }
-#line 1237 "y.tab.c"
+#line 68 "petit.y"
+                                    { (yyval.node) = newnode(Decimal, (yyvsp[0].token)); }
+#line 1251 "y.tab.c"
     break;
 
   case 12: /* expression: IDENTIFIER '(' arguments ')'  */
-#line 55 "petit.y"
-                                    { /* ... */ }
-#line 1243 "y.tab.c"
+#line 69 "petit.y"
+                                    { (yyval.node) = newnode(Call, NULL);
+                                      addchild((yyval.node), newnode(Identifier, (yyvsp[-3].token)));
+                                      addchild((yyval.node), (yyvsp[-1].node));
+                                    }
+#line 1260 "y.tab.c"
     break;
 
   case 13: /* expression: IF expression THEN expression ELSE expression  */
-#line 57 "petit.y"
-                                    { /* ... */ }
-#line 1249 "y.tab.c"
-    break;
-
-  case 14: /* expression: expression '+' expression  */
-#line 58 "petit.y"
-                                    { /* ... */ }
-#line 1255 "y.tab.c"
-    break;
-
-  case 15: /* expression: expression '-' expression  */
-#line 59 "petit.y"
-                                    { /* ... */ }
-#line 1261 "y.tab.c"
-    break;
-
-  case 16: /* expression: expression '*' expression  */
-#line 60 "petit.y"
-                                    { /* ... */ }
-#line 1267 "y.tab.c"
-    break;
-
-  case 17: /* expression: expression '/' expression  */
-#line 61 "petit.y"
-                                    { /* ... */ }
+#line 74 "petit.y"
+                                    { (yyval.node) = newnode(If, NULL);
+                                      //addchild($$, newnode(If, $1)); // TODO: VER SE FAZ SENTIDO GUARDAR OS LITERAIS IF THEN ELSE (PROVALEMENTE NÃO)
+                                      addchild((yyval.node), (yyvsp[-4].node));
+                                      //addchild($$, newnode(If, $3));
+                                      addchild((yyval.node), (yyvsp[-2].node));
+                                      //addchild($$, newnode(If, $5));
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
 #line 1273 "y.tab.c"
     break;
 
+  case 14: /* expression: expression '+' expression  */
+#line 82 "petit.y"
+                                    { (yyval.node) = newnode(Add, NULL);
+                                      addchild((yyval.node), (yyvsp[-2].node));
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1282 "y.tab.c"
+    break;
+
+  case 15: /* expression: expression '-' expression  */
+#line 86 "petit.y"
+                                    { (yyval.node) = newnode(Sub, NULL);
+                                      addchild((yyval.node), (yyvsp[-2].node));
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1291 "y.tab.c"
+    break;
+
+  case 16: /* expression: expression '*' expression  */
+#line 90 "petit.y"
+                                    { (yyval.node) = newnode(Mul, NULL);
+                                      addchild((yyval.node), (yyvsp[-2].node));
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1300 "y.tab.c"
+    break;
+
+  case 17: /* expression: expression '/' expression  */
+#line 94 "petit.y"
+                                    { (yyval.node) = newnode(Div, NULL);
+                                      addchild((yyval.node), (yyvsp[-2].node));
+                                      addchild((yyval.node), (yyvsp[0].node));
+                                    }
+#line 1309 "y.tab.c"
+    break;
+
   case 18: /* expression: '(' expression ')'  */
-#line 62 "petit.y"
-                                    { /* ... */ }
-#line 1279 "y.tab.c"
+#line 98 "petit.y"
+                                    { //$$ = newnode(Parameter, NULL);
+                                      //addchild($$, $2);
+                                      (yyval.node) = (yyvsp[-1].node);
+                                    }
+#line 1318 "y.tab.c"
     break;
 
 
-#line 1283 "y.tab.c"
+#line 1322 "y.tab.c"
 
       default: break;
     }
@@ -1472,9 +1511,24 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 65 "petit.y"
+#line 104 "petit.y"
 
 
 /* START subroutines section */
-
+void show(struct node *node, int depth){
+  if (node == NULL) return;
+  for(int i = 0; i < depth; i++){
+    printf("__");
+  }
+  if(node->category == Program || node->category ==  Function || node->category ==  Parameters || node->category == Parameter || node->category == Arguments || node->category == Integer || node->category == Double || node->category == Call || node->category == If || node->category == Add || node->category == Sub || node->category == Mul || node->category == Div){
+    printf("%s\n", l_category[node->category]);
+  } else {    
+    printf("%s(%s)\n", l_category[node->category], node->token);
+  }
+  struct node_list *l_child = node->children;
+  while(l_child != NULL){
+    show(l_child->node, depth + 1);
+    l_child = l_child->next;
+  }
+}
 // all needed functions are collected in the .l and ast.* files
