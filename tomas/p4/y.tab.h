@@ -39,7 +39,7 @@
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -54,12 +54,15 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NATURAL = 258,                 /* NATURAL  */
-    IF = 259,                      /* IF  */
-    THEN = 260,                    /* THEN  */
-    ELSE = 261,                    /* ELSE  */
-    LOGIC = 262,                   /* LOGIC  */
-    UMINUS = 263                   /* UMINUS  */
+    INTEGER = 258,                 /* INTEGER  */
+    DOUBLE = 259,                  /* DOUBLE  */
+    IF = 260,                      /* IF  */
+    THEN = 261,                    /* THEN  */
+    ELSE = 262,                    /* ELSE  */
+    IDENTIFIER = 263,              /* IDENTIFIER  */
+    NATURAL = 264,                 /* NATURAL  */
+    DECIMAL = 265,                 /* DECIMAL  */
+    LOW = 266                      /* LOW  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -68,16 +71,29 @@ extern int yydebug;
 #define YYEOF 0
 #define YYerror 256
 #define YYUNDEF 257
-#define NATURAL 258
-#define IF 259
-#define THEN 260
-#define ELSE 261
-#define LOGIC 262
-#define UMINUS 263
+#define INTEGER 258
+#define DOUBLE 259
+#define IF 260
+#define THEN 261
+#define ELSE 262
+#define IDENTIFIER 263
+#define NATURAL 264
+#define DECIMAL 265
+#define LOW 266
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 22 "petit.y"
+
+    char *token;
+    struct node *node;
+
+#line 94 "y.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
