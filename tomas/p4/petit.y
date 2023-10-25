@@ -31,12 +31,25 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 %%
 
 program: IDENTIFIER '(' parameters ')' '=' expression
-                                    { $$ = program = newnode(Program, NULL);
-                                      struct node *function = newnode(Function, NULL);
-                                      addchild(function, newnode(Identifier, $1));
-                                      addchild(function, $3);
-                                      addchild(function, $6);
-                                      addchild($$, function); show($$, 0);}
+    | program IDENTIFIER '(' parameters ')' '=' expression
+                                    { if (program == NULL){
+                                        $$ = program = newnode(Program, NULL);
+                                        struct node *function = newnode(Function, NULL);
+                                        addchild(function, newnode(Identifier, $1));
+                                        addchild(function, $3);
+                                        addchild(function, $6);
+                                        addchild($$, function);
+                                        show($$, 0);
+                                      } else {
+                                        $$ = program; 
+                                        struct node *function = newnode(Function, NULL);
+                                        addchild(function, newnode(Identifier, $2));
+                                        addchild(function, $4);
+                                        addchild(function, $7);
+                                        addchild($$, function);
+                                        show(function, 1);
+                                      }
+                                    }
     ;
 
 parameters: parameter               { $$ = newnode(Parameters, NULL);
