@@ -35,6 +35,14 @@ program: IDENTIFIER '(' parameters ')' '=' expression
                                       addchild(function, $3);
                                       addchild(function, $6);
                                       addchild($$, function); }
+    | program IDENTIFIER '(' parameters ')' '=' expression
+                                    {
+                                        struct node *function = newnode(Function, NULL);
+                                        addchild(function, newnode(Identifier, $2));
+                                        addchild(function, $4);
+                                        addchild(function, $7);
+                                        addchild($$, function);
+                                    }
     ;
 
 parameters: parameter               { $$ = newnode(Parameters, NULL);
