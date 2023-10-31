@@ -590,8 +590,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    31,    31,    40,    42,    47,    50,    55,    57,    62,
-      63,    64,    65,    68,    73,    76,    79,    82,    85
+       0,    31,    31,    40,    42,    47,    57,    62,    64,    69,
+      70,    71,    72,    75,    80,    83,    86,    89,    92
 };
 #endif
 
@@ -1201,108 +1201,115 @@ yyreduce:
 #line 47 "petit.y"
                                     { (yyval.node) = newnode(Parameter, NULL);
                                       addchild((yyval.node), newnode(Integer, NULL));
-                                      addchild((yyval.node), newnode(Identifier, (yyvsp[0].lexeme))); }
-#line 1206 "y.tab.c"
+                                      addchild((yyval.node), newnode(Identifier, (yyvsp[0].lexeme))); 
+                                      
+                                      // ??? //
+                                    //   printf("--%s--\n", $$->token);
+                                    //   printf("--%s--\n", $$->children->next->node->token);
+                                    //   printf("--%s--\n", $$->children->next->next->node->token);
+                                      
+                                      }
+#line 1213 "y.tab.c"
     break;
 
   case 6: /* parameter: DOUBLE IDENTIFIER  */
-#line 50 "petit.y"
+#line 57 "petit.y"
                                     { (yyval.node) = newnode(Parameter, NULL);
                                       addchild((yyval.node), newnode(Double, NULL));
                                       addchild((yyval.node), newnode(Identifier, (yyvsp[0].lexeme))); }
-#line 1214 "y.tab.c"
-    break;
-
-  case 7: /* arguments: expression  */
-#line 55 "petit.y"
-                                    { (yyval.node) = newnode(Arguments, NULL);
-                                      addchild((yyval.node), (yyvsp[0].node)); }
 #line 1221 "y.tab.c"
     break;
 
+  case 7: /* arguments: expression  */
+#line 62 "petit.y"
+                                    { (yyval.node) = newnode(Arguments, NULL);
+                                      addchild((yyval.node), (yyvsp[0].node)); }
+#line 1228 "y.tab.c"
+    break;
+
   case 8: /* arguments: arguments ',' expression  */
-#line 57 "petit.y"
+#line 64 "petit.y"
                                     { (yyval.node) = newnode(Arguments, NULL);
                                       addchild((yyval.node), (yyvsp[-2].node));
                                       addchild((yyval.node), (yyvsp[0].node)); }
-#line 1229 "y.tab.c"
+#line 1236 "y.tab.c"
     break;
 
   case 9: /* expression: IDENTIFIER  */
-#line 62 "petit.y"
-                                    { (yyval.node) = newnode(IDENTIFIER, (yyvsp[0].lexeme)); }
-#line 1235 "y.tab.c"
+#line 69 "petit.y"
+                                    { (yyval.node) = newnode(Identifier, (yyvsp[0].lexeme)); }
+#line 1242 "y.tab.c"
     break;
 
   case 10: /* expression: NATURAL  */
-#line 63 "petit.y"
+#line 70 "petit.y"
                                     { (yyval.node) = newnode(Natural, (yyvsp[0].lexeme)); }
-#line 1241 "y.tab.c"
+#line 1248 "y.tab.c"
     break;
 
   case 11: /* expression: DECIMAL  */
-#line 64 "petit.y"
-                                    { (yyval.node) = newnode(DECIMAL, (yyvsp[0].lexeme)); }
-#line 1247 "y.tab.c"
+#line 71 "petit.y"
+                                    { (yyval.node) = newnode(Decimal, (yyvsp[0].lexeme)); }
+#line 1254 "y.tab.c"
     break;
 
   case 12: /* expression: IDENTIFIER '(' arguments ')'  */
-#line 65 "petit.y"
+#line 72 "petit.y"
                                     { (yyval.node) = newnode(Call, NULL);
                                       addchild((yyval.node), newnode(Identifier, (yyvsp[-3].lexeme)));
                                       addchild((yyval.node), (yyvsp[-1].node)); }
-#line 1255 "y.tab.c"
+#line 1262 "y.tab.c"
     break;
 
   case 13: /* expression: IF expression THEN expression ELSE expression  */
-#line 69 "petit.y"
+#line 76 "petit.y"
                                     { (yyval.node) = newnode(If, NULL);
                                       addchild((yyval.node), (yyvsp[-4].node));
                                       addchild((yyval.node), (yyvsp[-2].node));
                                       addchild((yyval.node), (yyvsp[0].node)); }
-#line 1264 "y.tab.c"
+#line 1271 "y.tab.c"
     break;
 
   case 14: /* expression: expression '+' expression  */
-#line 73 "petit.y"
+#line 80 "petit.y"
                                     { (yyval.node) = newnode(Add, NULL);
                                       addchild((yyval.node), (yyvsp[-2].node));
                                       addchild((yyval.node), (yyvsp[0].node)); }
-#line 1272 "y.tab.c"
+#line 1279 "y.tab.c"
     break;
 
   case 15: /* expression: expression '-' expression  */
-#line 76 "petit.y"
+#line 83 "petit.y"
                                     { (yyval.node) = newnode(Sub, NULL);
                                       addchild((yyval.node), (yyvsp[-2].node));
                                       addchild((yyval.node), (yyvsp[0].node)); }
-#line 1280 "y.tab.c"
+#line 1287 "y.tab.c"
     break;
 
   case 16: /* expression: expression '*' expression  */
-#line 79 "petit.y"
+#line 86 "petit.y"
                                     { (yyval.node) = newnode(Mul, NULL);
                                       addchild((yyval.node), (yyvsp[-2].node));
                                       addchild((yyval.node), (yyvsp[0].node)); }
-#line 1288 "y.tab.c"
+#line 1295 "y.tab.c"
     break;
 
   case 17: /* expression: expression '/' expression  */
-#line 82 "petit.y"
+#line 89 "petit.y"
                                     { (yyval.node) = newnode(Div, NULL);
                                       addchild((yyval.node), (yyvsp[-2].node));
                                       addchild((yyval.node), (yyvsp[0].node)); }
-#line 1296 "y.tab.c"
+#line 1303 "y.tab.c"
     break;
 
   case 18: /* expression: '(' expression ')'  */
-#line 85 "petit.y"
+#line 92 "petit.y"
                                     { (yyval.node) = (yyvsp[-1].node); }
-#line 1302 "y.tab.c"
+#line 1309 "y.tab.c"
     break;
 
 
-#line 1306 "y.tab.c"
+#line 1313 "y.tab.c"
 
       default: break;
     }
@@ -1495,7 +1502,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 88 "petit.y"
+#line 95 "petit.y"
 
 
 /* START subroutines section */

@@ -23,3 +23,94 @@ void addchild(struct node *parent, struct node *child) {
         children = children->next;
     children->next = new;
 }
+
+
+void show(struct node *node, int depth) {
+    // if (node == NULL) return;
+    for (int i = 0; i < depth; i++) printf("__");
+    if (node->token) {
+        categoryMap(node->category);
+        printf("(%s)\n", node->token);
+    }
+    else {
+        categoryMap(node->category);
+        printf("\n");
+    }
+    struct node_list *aux = node->children->next;
+    
+    while (aux != NULL) {
+        show(aux->node, depth + 1);
+        aux = aux->next;
+    }
+}
+
+// enum category { , , , , , , , , , , , , , , , Div };
+
+void categoryMap(int en) {
+    switch (en)
+    {
+    case 0:
+        printf("Program");
+        break;
+    
+    case 1:
+        printf("Function");
+        break;
+    
+    case 2:
+        printf("Parameters");
+        break;
+    
+    case 3:
+        printf("Parameter");
+        break;
+    
+    case 4:
+        printf("Arguments");
+        break;
+    
+    case 5:
+        printf("Integer");
+        break;
+    
+    case 6:
+        printf("Double");
+        break;
+    
+    case 7:
+        printf("Identifier");
+        break;
+    
+    case 8:
+        printf("Natural");
+        break;
+    
+    case 9:
+        printf("Decimal");
+        break;
+    
+    case 10:
+        printf("Call");
+        break;
+    
+    case 11:
+        printf("If");
+        break;
+    
+    case 12:
+        printf("Add");
+        break;
+    
+    case 13:
+        printf("Sub");
+        break;
+    
+    case 14:
+        printf("Mul");
+        break;
+    
+    case 15:
+        printf("Div");
+        break;
+    }
+}

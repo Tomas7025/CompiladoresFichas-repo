@@ -59,9 +59,9 @@ arguments: expression               { $$ = newnode(Arguments, NULL);
                                       addchild($$, $3); }
     ;
 
-expression: IDENTIFIER              { $$ = newnode(IDENTIFIER, $1); }
+expression: IDENTIFIER              { $$ = newnode(Identifier, $1); }
     | NATURAL                       { $$ = newnode(Natural, $1); }
-    | DECIMAL                       { $$ = newnode(DECIMAL, $1); }
+    | DECIMAL                       { $$ = newnode(Decimal, $1); }
     | IDENTIFIER '(' arguments ')'  { $$ = newnode(Call, NULL);
                                       addchild($$, newnode(Identifier, $1));
                                       addchild($$, $3); }
