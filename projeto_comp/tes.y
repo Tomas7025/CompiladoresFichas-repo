@@ -13,33 +13,109 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 
 %}
 
-%token INTEGER DOUBLE IF THEN ELSE
-%token<token> IDENTIFIER NATURAL DECIMAL CHARLIT
-%type<node> program parameters parameter arguments expression
-
-%left LOW
-%left '+' '-'
-%left '*' '/'
 
 %union{
     char *token;
     struct node *node;
 }
 
+// CHAR, ELSE, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, BITWISEAND, BITWISEOR, BITWISEXOR, AND, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE,   
+// tratar dos reservads
+%token  CHAR, ELSE, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE, LPAR, LT, MINUS, MOD, NE, NOT, OR, PLUS, RBRACE, RPAR, SEMI 
+%token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
+%type<node> functions_and_declarations function_defenition function_body, declarations_and_statements, function_declaration, function_declarator, parameter_list, parameter_declaration, declaration, declarator_repetition, typespec, declarator, statement, statement_repetition, expression, arguments
+
+%left LOW
+%left '+' '-'
+%left '*' '/'
+
 /* START grammar rules section -- BNF grammar */
 
 %%
 
+functions_and_declarations: function_defenition {;}
+    | function_declaration {;}
+    | declaration {;}
+    | function_defenition functions_and_declarations {;}
+    | function_declaration functions_and_declarations {;}
+    | declaration functions_and_declarations {;}
+    ;
 
-expression:
-    | IDENTIFIER  {;}
+
+function_defenition: typespec function_declarator function_body {;}
+    ;
+
+
+function_body: LBRACE declarations_and_statements RBRACE {;}
+    | LBRACE RBRACE {;}
+    ;
+
+
+declarations_and_statements: declaration {;}
+    | statement {;}
+    | declaration declarations_and_statements {;}
+    | statement declarations_and_statements {;}
+    ;
+
+
+function_declaration: typespec function_declarator SEMI {;}
+    ;
+
+
+function_declarator: IDENTIFIER LPAR parameter_list RPAR {;}
+    ;
+
+
+parameter_list: parameter_declaration {;}
+    | parameter_declaration COMMA parameter_list {;}
+    ;
+
+parameter_declaration: typespec declarator {;}
+    | typespec {;}
+    ;
+
+declaration: typespec declarator_repetition SEMI {;}
+    ;
+
+declarator_repetition: declarator {;}
+    | declarator COMMA declarator_repetition {;}
+    ;
+
+typespec: CHAR {;}
+    | INT {;}
+    | VOID {;}
+    | SHORT {;}
+    | DOUBLE {;}
+    ;
+
+
+declarator: IDENTIFIER {;}
+    | IDENTIFIER ASSIGN expression {;}
+    ;
+
+statement: RETURN SEMI {;}
+    | RETURN expression SEMI {;}
+    | WHILE LPAR expression RPAR statement {;}
+    | IF LPAR expression RPAR statement {;}
+    | IF LPAR expression RPAR statement ELSE statement {;}
+    | LBRACE statement_repetition RBRACE {;}
+    | LBRACE RBRACE {;}
+    | expression SEMI {;}
+    | SEMI {;} 
+    ;
+
+statement_repetition: statement {;}
+    | statement statement_repetition {;}
+    ;
+
+expression: IDENTIFIER  {;}
     | NATURAL     {;}
+    | CHRLIT     {;}
     | DECIMAL     {;}
-    | CHARLIT     {;}
-    | '(' expression ')' {;}
+    | LPAR expression RPAR {;}
 
-    | IDENTIFIER '(' arguments ')' {;}
-    | IDENTIFIER '(' ')' {;}
+    | IDENTIFIER LPAR arguments RPAR {;}
+    | IDENTIFIER LPAR RPAR {;}
     
     | PLUS expression %prec LOW {;}
     | MINUS expression %prec LOW {;}
@@ -52,23 +128,25 @@ expression:
     | expression LT expression {;}
     | expression GT expression {;}
     
-    | expression PLUS expression {;}
-    | expression MINUS expression {;}
-    | expression MULL expression {;}
-    | expression DIV expression {;}
-    | expression MOD expression {;}
-    
-    | expression AND expression {;}
     | expression OR expression {;}
-    | expression BITWISEOR expression {;}
+    | expression AND expression {;}
     | expression BITWISEAND expression {;}
+    | expression BITWISEOR expression {;}
     | expression BITWISEXOR expression {;}
 
+    | expression PLUS expression {;}
+    | expression MINUS expression {;}
+    | expression MUL expression {;}
+    | expression DIV expression {;}
+    | expression MOD expression {;}
 
-arguments:
-    | expression {;}
-    | arguments ',' expression {;}
+    | expression ASSIGN expression {;}
+    | expression COMMA expression {;}
+    ;
 
+arguments: expression {;}
+    | expression COMMA arguments {;}
+    ;
 %%
 
 /* START subroutines section */
