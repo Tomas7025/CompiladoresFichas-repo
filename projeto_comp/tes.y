@@ -21,13 +21,26 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 
 // CHAR, ELSE, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, BITWISEAND, BITWISEOR, BITWISEXOR, AND, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE,   
 // tratar dos reservads
-%token  CHAR, ELSE, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE, LPAR, LT, MINUS, MOD, NE, NOT, OR, PLUS, RBRACE, RPAR, SEMI 
+%token  CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI 
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
-%type<node> functions_and_declarations function_defenition function_body, declarations_and_statements, function_declaration, function_declarator, parameter_list, parameter_declaration, declaration, declarator_repetition, typespec, declarator, statement, statement_repetition, expression, arguments
+%type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression arguments
 
-%left LOW
-%left '+' '-'
-%left '*' '/'
+%nonassoc LOGIC
+%nonassoc ELSE
+
+%left COMMA
+%right ASSIGN
+%left OR
+%left AND
+%left BITWISEOR
+%left BITWISEXOR
+%left BITWISEAND
+%left EQ NE
+%left GT GE LT LE
+%left PLUS MINUS
+%left MUL DIV MOD
+%right NOT
+
 
 /* START grammar rules section -- BNF grammar */
 
@@ -96,7 +109,7 @@ declarator: IDENTIFIER {;}
 statement: RETURN SEMI {;}
     | RETURN expression SEMI {;}
     | WHILE LPAR expression RPAR statement {;}
-    | IF LPAR expression RPAR statement {;}
+    | IF LPAR expression RPAR statement %prec LOGIC {;}
     | IF LPAR expression RPAR statement ELSE statement {;}
     | LBRACE statement_repetition RBRACE {;}
     | LBRACE RBRACE {;}
@@ -117,8 +130,8 @@ expression: IDENTIFIER  {;}
     | IDENTIFIER LPAR arguments RPAR {;}
     | IDENTIFIER LPAR RPAR {;}
     
-    | PLUS expression %prec LOW {;}
-    | MINUS expression %prec LOW {;}
+    | PLUS expression {;}
+    | MINUS expression {;}
     | NOT expression {;}
     
     | expression EQ expression {;}
@@ -149,21 +162,22 @@ arguments: expression {;}
     ;
 %%
 
-/* START subroutines section */
-void show(struct node *node, int depth){
-  if (node == NULL) return;
-  for(int i = 0; i < depth; i++){
-    printf("__");
-  }
-  if(node->category == Program || node->category ==  Function || node->category ==  Parameters || node->category == Parameter || node->category == Arguments || node->category == Integer || node->category == Double || node->category == Call || node->category == If || node->category == Add || node->category == Sub || node->category == Mul || node->category == Div){
-    printf("%s\n", l_category[node->category]);
-  } else {    
-    printf("%s(%s)\n", l_category[node->category], node->token);
-  }
-  struct node_list *l_child = node->children;
-  while(l_child != NULL){
-    show(l_child->node, depth + 1);
-    l_child = l_child->next;
-  }
-}
-// all needed functions are collected in the .l and ast.* files
+///* START subroutines section */
+//void show(struct node *node, int depth){
+//  if (node == NULL) return;
+//  for(int i = 0; i < depth; i++){
+//    printf("__");
+//  }
+//  if(node->category == Program || node->category ==  Function || node->category ==  Parameters || node->category == Parameter || node->category == Arguments || node->category == Integer || node->category == Double || node->category == Call || node->category == If || node->category == Add || node->category == Sub || node->category == Mul || node->category == Div){
+//    printf("%s\n", l_category[node->category]);
+//  } else {    
+//    printf("%s(%s)\n", l_category[node->category], node->token);
+//  }
+//  struct node_list *l_child = node->children;
+//  while(l_child != NULL){
+//    show(l_child->node, depth + 1);
+//    l_child = l_child->next;
+//  }
+//}
+//// all needed functions are collected in the .l and ast.* files
+//
