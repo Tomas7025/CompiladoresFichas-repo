@@ -158,8 +158,8 @@ expression: IDENTIFIER  {;}
     ;
 
 arguments: expression {;}
-    | expression COMMA arguments {;}
     ;
+
 %%
 
 ///* START subroutines section */
