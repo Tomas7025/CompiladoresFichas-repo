@@ -1,0 +1,5 @@
+Line 2, column 2: syntax error: *
+Line 3, column 7: syntax error: [
+Line 4, column 8: syntax error: ++
+Line 5, column 8: syntax error: int
+Line 6, column 8: syntax error: ,

@@ -1,0 +1,4 @@
+Line 3, column 8: unrecognized character ($)
+Line 3, column 9: syntax error: )
+Line 5, column 9: syntax error: int
+Line 7, column 8: syntax error: ;
