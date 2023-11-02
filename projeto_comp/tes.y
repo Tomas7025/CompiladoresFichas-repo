@@ -23,7 +23,7 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 // tratar dos reservads
 %token  CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI 
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
-%type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression arguments
+%type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression
 
 %nonassoc LOGIC
 %nonassoc ELSE
@@ -49,9 +49,12 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 functions_and_declarations: function_defenition {;}
     | function_declaration {;}
     | declaration {;}
-    | function_defenition functions_and_declarations {;}
-    | function_declaration functions_and_declarations {;}
-    | declaration functions_and_declarations {;}
+    //| function_defenition functions_and_declarations {;}
+    //| function_declaration functions_and_declarations {;}
+    //| declaration functions_and_declarations {;}
+    | functions_and_declarations function_defenition {;}
+    | functions_and_declarations function_declaration {;}
+    | functions_and_declarations declaration {;}
     ;
 
 
@@ -80,10 +83,11 @@ function_declarator: IDENTIFIER LPAR parameter_list RPAR {;}
 
 
 parameter_list: parameter_declaration {;}
-    | parameter_declaration COMMA parameter_list {;}
+    //| parameter_declaration COMMA parameter_list {;}
+    | parameter_list COMMA parameter_declaration {;}
     ;
 
-parameter_declaration: typespec declarator {;}
+parameter_declaration: typespec IDENTIFIER {;}
     | typespec {;}
     ;
 
@@ -91,7 +95,8 @@ declaration: typespec declarator_repetition SEMI {;}
     ;
 
 declarator_repetition: declarator {;}
-    | declarator COMMA declarator_repetition {;}
+    //| declarator COMMA declarator_repetition {;}
+    | declarator_repetition COMMA declarator  {;}
     ;
 
 typespec: CHAR {;}
@@ -118,7 +123,8 @@ statement: RETURN SEMI {;}
     ;
 
 statement_repetition: statement {;}
-    | statement statement_repetition {;}
+    //| statement statement_repetition {;}
+    | statement_repetition statement {;}
     ;
 
 expression: IDENTIFIER  {;}
@@ -127,7 +133,7 @@ expression: IDENTIFIER  {;}
     | DECIMAL     {;}
     | LPAR expression RPAR {;}
 
-    | IDENTIFIER LPAR arguments RPAR {;}
+    | IDENTIFIER LPAR expression RPAR {;}
     | IDENTIFIER LPAR RPAR {;}
     
     | PLUS expression {;}
@@ -157,8 +163,6 @@ expression: IDENTIFIER  {;}
     | expression COMMA expression {;}
     ;
 
-arguments: expression {;}
-    ;
 
 %%
 

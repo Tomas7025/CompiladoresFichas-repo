@@ -5,9 +5,9 @@ Grammar
     1 functions_and_declarations: function_defenition
     2                           | function_declaration
     3                           | declaration
-    4                           | function_defenition functions_and_declarations
-    5                           | function_declaration functions_and_declarations
-    6                           | declaration functions_and_declarations
+    4                           | functions_and_declarations function_defenition
+    5                           | functions_and_declarations function_declaration
+    6                           | functions_and_declarations declaration
 
     7 function_defenition: typespec function_declarator function_body
 
@@ -24,15 +24,15 @@ Grammar
    15 function_declarator: IDENTIFIER LPAR parameter_list RPAR
 
    16 parameter_list: parameter_declaration
-   17               | parameter_declaration COMMA parameter_list
+   17               | parameter_list COMMA parameter_declaration
 
-   18 parameter_declaration: typespec declarator
+   18 parameter_declaration: typespec IDENTIFIER
    19                      | typespec
 
    20 declaration: typespec declarator_repetition SEMI
 
    21 declarator_repetition: declarator
-   22                      | declarator COMMA declarator_repetition
+   22                      | declarator_repetition COMMA declarator
 
    23 typespec: CHAR
    24         | INT
@@ -54,14 +54,14 @@ Grammar
    38          | SEMI
 
    39 statement_repetition: statement
-   40                     | statement statement_repetition
+   40                     | statement_repetition statement
 
    41 expression: IDENTIFIER
    42           | NATURAL
    43           | CHRLIT
    44           | DECIMAL
    45           | LPAR expression RPAR
-   46           | IDENTIFIER LPAR arguments RPAR
+   46           | IDENTIFIER LPAR expression RPAR
    47           | IDENTIFIER LPAR RPAR
    48           | PLUS expression
    49           | MINUS expression
@@ -84,8 +84,6 @@ Grammar
    66           | expression MOD expression
    67           | expression ASSIGN expression
    68           | expression COMMA expression
-
-   69 arguments: expression
 
 
 Terminals, with rules where they appear
@@ -125,7 +123,7 @@ Terminals, with rules where they appear
     RBRACE (288) 8 9 35 36
     RPAR (289) 15 32 33 34 45 46 47
     SEMI (290) 14 20 30 31 37 38
-    IDENTIFIER <token> (291) 15 28 29 41 46 47
+    IDENTIFIER <token> (291) 15 18 28 29 41 46 47
     NATURAL <token> (292) 42
     DECIMAL <token> (293) 44
     CHRLIT <token> (294) 43
@@ -171,7 +169,7 @@ Nonterminals, with rules where they appear
         on right: 7 14 18 19 20
     declarator <node> (53)
         on left: 28 29
-        on right: 18 21 22
+        on right: 21 22
     statement <node> (54)
         on left: 30 31 32 33 34 35 36 37 38
         on right: 11 13 32 33 34 39 40
@@ -180,10 +178,7 @@ Nonterminals, with rules where they appear
         on right: 35 40
     expression <node> (56)
         on left: 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68
-        on right: 29 31 32 33 34 37 45 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69
-    arguments <node> (57)
-        on left: 69
-        on right: 46
+        on right: 29 31 32 33 34 37 45 46 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68
 
 
 State 0
@@ -241,68 +236,42 @@ State 5
 State 6
 
     0 $accept: functions_and_declarations • $end
+    4 functions_and_declarations: functions_and_declarations • function_defenition
+    5                           | functions_and_declarations • function_declaration
+    6                           | functions_and_declarations • declaration
 
-    $end  shift, and go to state 11
+    $end    shift, and go to state 11
+    CHAR    shift, and go to state 1
+    INT     shift, and go to state 2
+    SHORT   shift, and go to state 3
+    DOUBLE  shift, and go to state 4
+    VOID    shift, and go to state 5
+
+    function_defenition   go to state 12
+    function_declaration  go to state 13
+    declaration           go to state 14
+    typespec              go to state 10
 
 
 State 7
 
     1 functions_and_declarations: function_defenition •
-    4                           | function_defenition • functions_and_declarations
-
-    CHAR    shift, and go to state 1
-    INT     shift, and go to state 2
-    SHORT   shift, and go to state 3
-    DOUBLE  shift, and go to state 4
-    VOID    shift, and go to state 5
 
     $default  reduce using rule 1 (functions_and_declarations)
-
-    functions_and_declarations  go to state 12
-    function_defenition         go to state 7
-    function_declaration        go to state 8
-    declaration                 go to state 9
-    typespec                    go to state 10
 
 
 State 8
 
     2 functions_and_declarations: function_declaration •
-    5                           | function_declaration • functions_and_declarations
-
-    CHAR    shift, and go to state 1
-    INT     shift, and go to state 2
-    SHORT   shift, and go to state 3
-    DOUBLE  shift, and go to state 4
-    VOID    shift, and go to state 5
 
     $default  reduce using rule 2 (functions_and_declarations)
-
-    functions_and_declarations  go to state 13
-    function_defenition         go to state 7
-    function_declaration        go to state 8
-    declaration                 go to state 9
-    typespec                    go to state 10
 
 
 State 9
 
     3 functions_and_declarations: declaration •
-    6                           | declaration • functions_and_declarations
-
-    CHAR    shift, and go to state 1
-    INT     shift, and go to state 2
-    SHORT   shift, and go to state 3
-    DOUBLE  shift, and go to state 4
-    VOID    shift, and go to state 5
 
     $default  reduce using rule 3 (functions_and_declarations)
-
-    functions_and_declarations  go to state 14
-    function_defenition         go to state 7
-    function_declaration        go to state 8
-    declaration                 go to state 9
-    typespec                    go to state 10
 
 
 State 10
@@ -327,21 +296,21 @@ State 11
 
 State 12
 
-    4 functions_and_declarations: function_defenition functions_and_declarations •
+    4 functions_and_declarations: functions_and_declarations function_defenition •
 
     $default  reduce using rule 4 (functions_and_declarations)
 
 
 State 13
 
-    5 functions_and_declarations: function_declaration functions_and_declarations •
+    5 functions_and_declarations: functions_and_declarations function_declaration •
 
     $default  reduce using rule 5 (functions_and_declarations)
 
 
 State 14
 
-    6 functions_and_declarations: declaration functions_and_declarations •
+    6 functions_and_declarations: functions_and_declarations declaration •
 
     $default  reduce using rule 6 (functions_and_declarations)
 
@@ -372,16 +341,15 @@ State 16
 State 17
 
    20 declaration: typespec declarator_repetition • SEMI
+   22 declarator_repetition: declarator_repetition • COMMA declarator
 
-    SEMI  shift, and go to state 24
+    COMMA  shift, and go to state 24
+    SEMI   shift, and go to state 25
 
 
 State 18
 
    21 declarator_repetition: declarator •
-   22                      | declarator • COMMA declarator_repetition
-
-    COMMA  shift, and go to state 25
 
     $default  reduce using rule 21 (declarator_repetition)
 
@@ -465,19 +433,18 @@ State 23
 
 State 24
 
-   20 declaration: typespec declarator_repetition SEMI •
+   22 declarator_repetition: declarator_repetition COMMA • declarator
 
-    $default  reduce using rule 20 (declaration)
+    IDENTIFIER  shift, and go to state 49
+
+    declarator  go to state 50
 
 
 State 25
 
-   22 declarator_repetition: declarator COMMA • declarator_repetition
+   20 declaration: typespec declarator_repetition SEMI •
 
-    IDENTIFIER  shift, and go to state 49
-
-    declarator_repetition  go to state 50
-    declarator             go to state 18
+    $default  reduce using rule 20 (declaration)
 
 
 State 26
@@ -547,7 +514,7 @@ State 29
 State 30
 
    41 expression: IDENTIFIER •
-   46           | IDENTIFIER • LPAR arguments RPAR
+   46           | IDENTIFIER • LPAR expression RPAR
    47           | IDENTIFIER • LPAR RPAR
 
     LPAR  shift, and go to state 55
@@ -622,30 +589,27 @@ State 34
 State 35
 
    15 function_declarator: IDENTIFIER LPAR parameter_list • RPAR
+   17 parameter_list: parameter_list • COMMA parameter_declaration
 
-    RPAR  shift, and go to state 74
+    COMMA  shift, and go to state 74
+    RPAR   shift, and go to state 75
 
 
 State 36
 
    16 parameter_list: parameter_declaration •
-   17               | parameter_declaration • COMMA parameter_list
-
-    COMMA  shift, and go to state 75
 
     $default  reduce using rule 16 (parameter_list)
 
 
 State 37
 
-   18 parameter_declaration: typespec • declarator
+   18 parameter_declaration: typespec • IDENTIFIER
    19                      | typespec •
 
-    IDENTIFIER  shift, and go to state 49
+    IDENTIFIER  shift, and go to state 76
 
     $default  reduce using rule 19 (parameter_declaration)
-
-    declarator  go to state 76
 
 
 State 38
@@ -858,7 +822,7 @@ State 49
 
 State 50
 
-   22 declarator_repetition: declarator COMMA declarator_repetition •
+   22 declarator_repetition: declarator_repetition COMMA declarator •
 
     $default  reduce using rule 22 (declarator_repetition)
 
@@ -991,7 +955,7 @@ State 54
 
 State 55
 
-   46 expression: IDENTIFIER LPAR • arguments RPAR
+   46 expression: IDENTIFIER LPAR • expression RPAR
    47           | IDENTIFIER LPAR • RPAR
 
     LPAR        shift, and go to state 26
@@ -1005,7 +969,6 @@ State 55
     CHRLIT      shift, and go to state 33
 
     expression  go to state 90
-    arguments   go to state 91
 
 
 State 56
@@ -1021,7 +984,7 @@ State 56
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 92
+    expression  go to state 91
 
 
 State 57
@@ -1037,7 +1000,7 @@ State 57
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 93
+    expression  go to state 92
 
 
 State 58
@@ -1053,7 +1016,7 @@ State 58
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 94
+    expression  go to state 93
 
 
 State 59
@@ -1069,7 +1032,7 @@ State 59
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 95
+    expression  go to state 94
 
 
 State 60
@@ -1085,7 +1048,7 @@ State 60
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 96
+    expression  go to state 95
 
 
 State 61
@@ -1101,7 +1064,7 @@ State 61
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 97
+    expression  go to state 96
 
 
 State 62
@@ -1117,7 +1080,7 @@ State 62
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 98
+    expression  go to state 97
 
 
 State 63
@@ -1133,7 +1096,7 @@ State 63
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 99
+    expression  go to state 98
 
 
 State 64
@@ -1149,7 +1112,7 @@ State 64
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 100
+    expression  go to state 99
 
 
 State 65
@@ -1165,7 +1128,7 @@ State 65
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 101
+    expression  go to state 100
 
 
 State 66
@@ -1181,7 +1144,7 @@ State 66
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 102
+    expression  go to state 101
 
 
 State 67
@@ -1197,7 +1160,7 @@ State 67
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 103
+    expression  go to state 102
 
 
 State 68
@@ -1213,7 +1176,7 @@ State 68
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 104
+    expression  go to state 103
 
 
 State 69
@@ -1229,7 +1192,7 @@ State 69
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 105
+    expression  go to state 104
 
 
 State 70
@@ -1245,7 +1208,7 @@ State 70
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 106
+    expression  go to state 105
 
 
 State 71
@@ -1261,7 +1224,7 @@ State 71
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 107
+    expression  go to state 106
 
 
 State 72
@@ -1277,7 +1240,7 @@ State 72
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 108
+    expression  go to state 107
 
 
 State 73
@@ -1293,19 +1256,12 @@ State 73
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 109
+    expression  go to state 108
 
 
 State 74
 
-   15 function_declarator: IDENTIFIER LPAR parameter_list RPAR •
-
-    $default  reduce using rule 15 (function_declarator)
-
-
-State 75
-
-   17 parameter_list: parameter_declaration COMMA • parameter_list
+   17 parameter_list: parameter_list COMMA • parameter_declaration
 
     CHAR    shift, and go to state 1
     INT     shift, and go to state 2
@@ -1313,14 +1269,20 @@ State 75
     DOUBLE  shift, and go to state 4
     VOID    shift, and go to state 5
 
-    parameter_list         go to state 110
-    parameter_declaration  go to state 36
+    parameter_declaration  go to state 109
     typespec               go to state 37
+
+
+State 75
+
+   15 function_declarator: IDENTIFIER LPAR parameter_list RPAR •
+
+    $default  reduce using rule 15 (function_declarator)
 
 
 State 76
 
-   18 parameter_declaration: typespec declarator •
+   18 parameter_declaration: typespec IDENTIFIER •
 
     $default  reduce using rule 18 (parameter_declaration)
 
@@ -1338,7 +1300,7 @@ State 77
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 111
+    expression  go to state 110
 
 
 State 78
@@ -1355,7 +1317,7 @@ State 78
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    expression  go to state 112
+    expression  go to state 111
 
 
 State 79
@@ -1405,7 +1367,7 @@ State 80
     NE          shift, and go to state 71
     OR          shift, and go to state 72
     PLUS        shift, and go to state 73
-    SEMI        shift, and go to state 113
+    SEMI        shift, and go to state 112
 
 
 State 81
@@ -1418,7 +1380,14 @@ State 81
 State 82
 
    39 statement_repetition: statement •
-   40                     | statement • statement_repetition
+
+    $default  reduce using rule 39 (statement_repetition)
+
+
+State 83
+
+   35 statement: LBRACE statement_repetition • RBRACE
+   40 statement_repetition: statement_repetition • statement
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
@@ -1428,24 +1397,15 @@ State 82
     MINUS       shift, and go to state 27
     NOT         shift, and go to state 28
     PLUS        shift, and go to state 29
+    RBRACE      shift, and go to state 113
     SEMI        shift, and go to state 43
     IDENTIFIER  shift, and go to state 30
     NATURAL     shift, and go to state 31
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    $default  reduce using rule 39 (statement_repetition)
-
-    statement             go to state 82
-    statement_repetition  go to state 114
-    expression            go to state 48
-
-
-State 83
-
-   35 statement: LBRACE statement_repetition • RBRACE
-
-    RBRACE  shift, and go to state 115
+    statement   go to state 114
+    expression  go to state 48
 
 
 State 84
@@ -1492,7 +1452,8 @@ State 89
 
 State 90
 
-   51 expression: expression • EQ expression
+   46 expression: IDENTIFIER LPAR expression • RPAR
+   51           | expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
    54           | expression • GE expression
@@ -1510,7 +1471,6 @@ State 90
    66           | expression • MOD expression
    67           | expression • ASSIGN expression
    68           | expression • COMMA expression
-   69 arguments: expression •
 
     BITWISEAND  shift, and go to state 56
     BITWISEOR   shift, and go to state 57
@@ -1530,18 +1490,10 @@ State 90
     NE          shift, and go to state 71
     OR          shift, and go to state 72
     PLUS        shift, and go to state 73
-
-    $default  reduce using rule 69 (arguments)
+    RPAR        shift, and go to state 115
 
 
 State 91
-
-   46 expression: IDENTIFIER LPAR arguments • RPAR
-
-    RPAR  shift, and go to state 116
-
-
-State 92
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1578,7 +1530,7 @@ State 92
     $default  reduce using rule 59 (expression)
 
 
-State 93
+State 92
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1617,7 +1569,7 @@ State 93
     $default  reduce using rule 60 (expression)
 
 
-State 94
+State 93
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1655,7 +1607,7 @@ State 94
     $default  reduce using rule 61 (expression)
 
 
-State 95
+State 94
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1695,7 +1647,7 @@ State 95
     $default  reduce using rule 58 (expression)
 
 
-State 96
+State 95
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1738,7 +1690,7 @@ State 96
     $default  reduce using rule 67 (expression)
 
 
-State 97
+State 96
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1763,7 +1715,7 @@ State 97
     $default  reduce using rule 64 (expression)
 
 
-State 98
+State 97
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1806,7 +1758,7 @@ State 98
     $default  reduce using rule 68 (expression)
 
 
-State 99
+State 98
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1831,7 +1783,7 @@ State 99
     $default  reduce using rule 65 (expression)
 
 
-State 100
+State 99
 
    51 expression: expression • EQ expression
    51           | expression EQ expression •
@@ -1866,7 +1818,7 @@ State 100
     $default  reduce using rule 51 (expression)
 
 
-State 101
+State 100
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1897,7 +1849,7 @@ State 101
     $default  reduce using rule 54 (expression)
 
 
-State 102
+State 101
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1928,7 +1880,7 @@ State 102
     $default  reduce using rule 56 (expression)
 
 
-State 103
+State 102
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1959,7 +1911,7 @@ State 103
     $default  reduce using rule 53 (expression)
 
 
-State 104
+State 103
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -1990,7 +1942,7 @@ State 104
     $default  reduce using rule 55 (expression)
 
 
-State 105
+State 104
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -2019,7 +1971,7 @@ State 105
     $default  reduce using rule 63 (expression)
 
 
-State 106
+State 105
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -2044,7 +1996,7 @@ State 106
     $default  reduce using rule 66 (expression)
 
 
-State 107
+State 106
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -2079,7 +2031,7 @@ State 107
     $default  reduce using rule 52 (expression)
 
 
-State 108
+State 107
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -2120,7 +2072,7 @@ State 108
     $default  reduce using rule 57 (expression)
 
 
-State 109
+State 108
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
@@ -2149,16 +2101,60 @@ State 109
     $default  reduce using rule 62 (expression)
 
 
-State 110
+State 109
 
-   17 parameter_list: parameter_declaration COMMA parameter_list •
+   17 parameter_list: parameter_list COMMA parameter_declaration •
 
     $default  reduce using rule 17 (parameter_list)
 
 
-State 111
+State 110
 
    32 statement: WHILE LPAR expression • RPAR statement
+   51 expression: expression • EQ expression
+   52           | expression • NE expression
+   53           | expression • LE expression
+   54           | expression • GE expression
+   55           | expression • LT expression
+   56           | expression • GT expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • PLUS expression
+   63           | expression • MINUS expression
+   64           | expression • MUL expression
+   65           | expression • DIV expression
+   66           | expression • MOD expression
+   67           | expression • ASSIGN expression
+   68           | expression • COMMA expression
+
+    BITWISEAND  shift, and go to state 56
+    BITWISEOR   shift, and go to state 57
+    BITWISEXOR  shift, and go to state 58
+    AND         shift, and go to state 59
+    ASSIGN      shift, and go to state 60
+    MUL         shift, and go to state 61
+    COMMA       shift, and go to state 62
+    DIV         shift, and go to state 63
+    EQ          shift, and go to state 64
+    GE          shift, and go to state 65
+    GT          shift, and go to state 66
+    LE          shift, and go to state 67
+    LT          shift, and go to state 68
+    MINUS       shift, and go to state 69
+    MOD         shift, and go to state 70
+    NE          shift, and go to state 71
+    OR          shift, and go to state 72
+    PLUS        shift, and go to state 73
+    RPAR        shift, and go to state 116
+
+
+State 111
+
+   33 statement: IF LPAR expression • RPAR statement
+   34          | IF LPAR expression • RPAR statement ELSE statement
    51 expression: expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
@@ -2201,79 +2197,58 @@ State 111
 
 State 112
 
-   33 statement: IF LPAR expression • RPAR statement
-   34          | IF LPAR expression • RPAR statement ELSE statement
-   51 expression: expression • EQ expression
-   52           | expression • NE expression
-   53           | expression • LE expression
-   54           | expression • GE expression
-   55           | expression • LT expression
-   56           | expression • GT expression
-   57           | expression • OR expression
-   58           | expression • AND expression
-   59           | expression • BITWISEAND expression
-   60           | expression • BITWISEOR expression
-   61           | expression • BITWISEXOR expression
-   62           | expression • PLUS expression
-   63           | expression • MINUS expression
-   64           | expression • MUL expression
-   65           | expression • DIV expression
-   66           | expression • MOD expression
-   67           | expression • ASSIGN expression
-   68           | expression • COMMA expression
-
-    BITWISEAND  shift, and go to state 56
-    BITWISEOR   shift, and go to state 57
-    BITWISEXOR  shift, and go to state 58
-    AND         shift, and go to state 59
-    ASSIGN      shift, and go to state 60
-    MUL         shift, and go to state 61
-    COMMA       shift, and go to state 62
-    DIV         shift, and go to state 63
-    EQ          shift, and go to state 64
-    GE          shift, and go to state 65
-    GT          shift, and go to state 66
-    LE          shift, and go to state 67
-    LT          shift, and go to state 68
-    MINUS       shift, and go to state 69
-    MOD         shift, and go to state 70
-    NE          shift, and go to state 71
-    OR          shift, and go to state 72
-    PLUS        shift, and go to state 73
-    RPAR        shift, and go to state 118
-
-
-State 113
-
    31 statement: RETURN expression SEMI •
 
     $default  reduce using rule 31 (statement)
 
 
-State 114
-
-   40 statement_repetition: statement statement_repetition •
-
-    $default  reduce using rule 40 (statement_repetition)
-
-
-State 115
+State 113
 
    35 statement: LBRACE statement_repetition RBRACE •
 
     $default  reduce using rule 35 (statement)
 
 
-State 116
+State 114
 
-   46 expression: IDENTIFIER LPAR arguments RPAR •
+   40 statement_repetition: statement_repetition statement •
+
+    $default  reduce using rule 40 (statement_repetition)
+
+
+State 115
+
+   46 expression: IDENTIFIER LPAR expression RPAR •
 
     $default  reduce using rule 46 (expression)
 
 
-State 117
+State 116
 
    32 statement: WHILE LPAR expression RPAR • statement
+
+    WHILE       shift, and go to state 38
+    IF          shift, and go to state 39
+    RETURN      shift, and go to state 40
+    LBRACE      shift, and go to state 41
+    LPAR        shift, and go to state 26
+    MINUS       shift, and go to state 27
+    NOT         shift, and go to state 28
+    PLUS        shift, and go to state 29
+    SEMI        shift, and go to state 43
+    IDENTIFIER  shift, and go to state 30
+    NATURAL     shift, and go to state 31
+    DECIMAL     shift, and go to state 32
+    CHRLIT      shift, and go to state 33
+
+    statement   go to state 118
+    expression  go to state 48
+
+
+State 117
+
+   33 statement: IF LPAR expression RPAR • statement
+   34          | IF LPAR expression RPAR • statement ELSE statement
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
@@ -2295,45 +2270,22 @@ State 117
 
 State 118
 
-   33 statement: IF LPAR expression RPAR • statement
-   34          | IF LPAR expression RPAR • statement ELSE statement
-
-    WHILE       shift, and go to state 38
-    IF          shift, and go to state 39
-    RETURN      shift, and go to state 40
-    LBRACE      shift, and go to state 41
-    LPAR        shift, and go to state 26
-    MINUS       shift, and go to state 27
-    NOT         shift, and go to state 28
-    PLUS        shift, and go to state 29
-    SEMI        shift, and go to state 43
-    IDENTIFIER  shift, and go to state 30
-    NATURAL     shift, and go to state 31
-    DECIMAL     shift, and go to state 32
-    CHRLIT      shift, and go to state 33
-
-    statement   go to state 120
-    expression  go to state 48
-
-
-State 119
-
    32 statement: WHILE LPAR expression RPAR statement •
 
     $default  reduce using rule 32 (statement)
 
 
-State 120
+State 119
 
    33 statement: IF LPAR expression RPAR statement •
    34          | IF LPAR expression RPAR statement • ELSE statement
 
-    ELSE  shift, and go to state 121
+    ELSE  shift, and go to state 120
 
     $default  reduce using rule 33 (statement)
 
 
-State 121
+State 120
 
    34 statement: IF LPAR expression RPAR statement ELSE • statement
 
@@ -2351,11 +2303,11 @@ State 121
     DECIMAL     shift, and go to state 32
     CHRLIT      shift, and go to state 33
 
-    statement   go to state 122
+    statement   go to state 121
     expression  go to state 48
 
 
-State 122
+State 121
 
    34 statement: IF LPAR expression RPAR statement ELSE statement •
 
