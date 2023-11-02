@@ -1,0 +1,6 @@
+Line 1, column 1: syntax error: intttt
+Line 2, column 1: unrecognized character ($)
+Line 3, column 18: syntax error: ;
+Line 5, column 6: syntax error: char
+Line 9, column 10: syntax error: )
+Line 16, column 19: syntax error: )
