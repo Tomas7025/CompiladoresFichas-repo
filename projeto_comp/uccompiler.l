@@ -95,7 +95,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
     //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #include "y.tab.h"
-    #include "ast.h"
+    //? #include "ast.h"
 
     int yyparse(void);
     void yyerror(char *);
@@ -111,7 +111,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 %}
 %%
 
-{reserved}                                                      { if (feedback) printf("RESERVED(%s)\n", yytext); }
+{reserved}                                                      { if (feedback) printf("RESERVED(%s)\n", yytext); return RESERVED; }
 {keywords}                                                      { if (feedback) { UPPER_CASE(yytext); printf("%s\n", yytext); } return yacc_tkn[map_tk() / 2];}
 
 [a-zA-Z_]{indentifier_body}*                                    { if (feedback) printf("IDENTIFIER(%s)\n", yytext); PASS_TOKEN(); return IDENTIFIER; }
@@ -137,8 +137,8 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
 void yyerror(char *error) {
     errors++;
-    printf("Found %s '%s' (%d,%d)\n", error, yytext, line_number, colum_number);
-    // if (strcmp(error, "syntax error")) { return ERROR; }
+    // printf("Found %s '%s' (%d,%d)\n", error, yytext, previus_l_number, previus_c_number);
+    printf("Line %d, column %d: %s: %s\n", previus_l_number, previus_c_number, error, yytext);
 }
 
 extern int yylex();

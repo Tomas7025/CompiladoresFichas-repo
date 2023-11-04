@@ -2,7 +2,7 @@
 
 %{
 
-#include "ast.h"
+//? #include "ast.h"
 
 int yylex(void);
 void yyerror(char *);
@@ -22,7 +22,7 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 // CHAR, ELSE, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, BITWISEAND, BITWISEOR, BITWISEXOR, AND, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE,   
 // tratar dos reservads
 // break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum|extern|inline|volatile|_Bool|_Complex|for|long|sizeof|register|float|goto|restrict|signed|static|struct|switch|typedef|union|unsigned|_Imaginary
-%token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI
+%token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI RESERVED
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
 %type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression
 
@@ -49,10 +49,12 @@ char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arg
 
 functions_and_declarations: function_defenition                     { ; }
     | function_declaration                                          {;}
-    | declaration                                                   { printf("DEBUG5\n"); }
+    | declaration                                                   { ; } //printf("DEBUG5\n")
     | functions_and_declarations function_defenition                {;}
     | functions_and_declarations function_declaration               {;}
     | functions_and_declarations declaration                        {;}
+    | error SEMI                                                    {;}
+    | functions_and_declarations error SEMI                         {;}
     ;
 
 
@@ -69,6 +71,8 @@ declarations_and_statements: declaration                     {;}
     | statement                                              {;}
     | declaration declarations_and_statements                {;}
     | statement declarations_and_statements                  {;}
+    | error SEMI                                             {;} //printf("DEBUG\n")
+    | error SEMI declarations_and_statements                 {;}
     ;
 
 
@@ -88,15 +92,14 @@ parameter_declaration: typespec IDENTIFIER                   {;}
     | typespec                                               {;}
     ;
 
-declaration: typespec declarator_repetition SEMI             { printf("DEBUG4\n"); }
-           | error SEMI                                      { printf("erro"); }
+declaration: typespec declarator_repetition SEMI             { ; } //printf("DEBUG4\n")
            ;
 
-declarator_repetition: declarator                            { printf("DEBUG3\n"); }
+declarator_repetition: declarator                            { ; } //printf("DEBUG3\n")
     | declarator_repetition COMMA declarator                 {;}
     ;
 
-typespec: CHAR                                               { printf("DEBUG\n"); }
+typespec: CHAR                                               { ; } //printf("DEBUG\n")
     | INT                                                    {;}
     | VOID                                                   {;}
     | SHORT                                                  {;}
@@ -104,7 +107,7 @@ typespec: CHAR                                               { printf("DEBUG\n")
     ;
 
 declarator: IDENTIFIER ASSIGN expression                     {;}
-    | IDENTIFIER                                             {printf("DEBUG2\n");}
+    | IDENTIFIER                                             {;} //printf("DEBUG2\n")
     ;
 
 statement: expression SEMI                                   {;}
@@ -116,7 +119,6 @@ statement: expression SEMI                                   {;}
     | WHILE LPAR expression RPAR statement                   {;}
     | RETURN expression SEMI                                 {;}
     | RETURN SEMI                                            {;}
-    | error SEMI                            {;}
     | LBRACE error RBRACE                   {;}
     ;
 
