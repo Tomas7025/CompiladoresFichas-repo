@@ -131,13 +131,13 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 {operators}                                                     { if (feedback) printf("%s\n", map_tokens[map_tk()]); return yacc_tkn[map_tk() / 2]; }
 \/\/.*                                                          { ; }
 {to_ignore}                                                     { ; }
+<<EOF>>                                                         { previus_l_number = line_number; previus_c_number = colum_number; return 0; }
 .                                                               { printf("Line %d, column %d: unrecognized character (%c)\n", previus_l_number, previus_c_number, yytext[0]); }
 
 %%
 
 void yyerror(char *error) {
     errors++;
-    // printf("Found %s '%s' (%d,%d)\n", error, yytext, previus_l_number, previus_c_number);
     printf("Line %d, column %d: %s: %s\n", previus_l_number, previus_c_number, error, yytext);
 }
 

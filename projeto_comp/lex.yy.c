@@ -1043,19 +1043,21 @@ YY_RULE_SETUP
 #line 133 "uccompiler.l"
 { ; }
 	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 134 "uccompiler.l"
+{ previus_l_number = line_number; previus_c_number = colum_number; return 0; }
+	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 134 "uccompiler.l"
+#line 135 "uccompiler.l"
 { printf("Line %d, column %d: unrecognized character (%c)\n", previus_l_number, previus_c_number, yytext[0]); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 136 "uccompiler.l"
+#line 137 "uccompiler.l"
 ECHO;
 	YY_BREAK
-#line 1057 "lex.yy.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1061 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2058,7 +2060,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 136 "uccompiler.l"
+#line 137 "uccompiler.l"
 
 
 void yyerror(char *error) {
