@@ -184,6 +184,20 @@ Nonterminals, with rules where they appear
 State 0
 
     0 $accept: • functions_and_declarations $end
+    1 functions_and_declarations: • function_defenition
+    2                           | • function_declaration
+    3                           | • declaration
+    4                           | • functions_and_declarations function_defenition
+    5                           | • functions_and_declarations function_declaration
+    6                           | • functions_and_declarations declaration
+    7 function_defenition: • typespec function_declarator function_body
+   14 function_declaration: • typespec function_declarator SEMI
+   20 declaration: • typespec declarator_repetition SEMI
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
 
     CHAR    shift, and go to state 1
     INT     shift, and go to state 2
@@ -239,6 +253,14 @@ State 6
     4 functions_and_declarations: functions_and_declarations • function_defenition
     5                           | functions_and_declarations • function_declaration
     6                           | functions_and_declarations • declaration
+    7 function_defenition: • typespec function_declarator function_body
+   14 function_declaration: • typespec function_declarator SEMI
+   20 declaration: • typespec declarator_repetition SEMI
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
 
     $end    shift, and go to state 11
     CHAR    shift, and go to state 1
@@ -278,7 +300,12 @@ State 10
 
     7 function_defenition: typespec • function_declarator function_body
    14 function_declaration: typespec • function_declarator SEMI
+   15 function_declarator: • IDENTIFIER LPAR parameter_list RPAR
    20 declaration: typespec • declarator_repetition SEMI
+   21 declarator_repetition: • declarator
+   22                      | • declarator_repetition COMMA declarator
+   28 declarator: • IDENTIFIER
+   29           | • IDENTIFIER ASSIGN expression
 
     IDENTIFIER  shift, and go to state 15
 
@@ -318,7 +345,7 @@ State 14
 State 15
 
    15 function_declarator: IDENTIFIER • LPAR parameter_list RPAR
-   28 declarator: IDENTIFIER •
+   28 declarator: IDENTIFIER •  [COMMA, SEMI]
    29           | IDENTIFIER • ASSIGN expression
 
     ASSIGN  shift, and go to state 19
@@ -330,6 +357,8 @@ State 15
 State 16
 
     7 function_defenition: typespec function_declarator • function_body
+    8 function_body: • LBRACE declarations_and_statements RBRACE
+    9              | • LBRACE RBRACE
    14 function_declaration: typespec function_declarator • SEMI
 
     LBRACE  shift, and go to state 21
@@ -357,6 +386,34 @@ State 18
 State 19
 
    29 declarator: IDENTIFIER ASSIGN • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -373,6 +430,15 @@ State 19
 State 20
 
    15 function_declarator: IDENTIFIER LPAR • parameter_list RPAR
+   16 parameter_list: • parameter_declaration
+   17               | • parameter_list COMMA parameter_declaration
+   18 parameter_declaration: • typespec IDENTIFIER
+   19                      | • typespec
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
 
     CHAR    shift, and go to state 1
     INT     shift, and go to state 2
@@ -389,6 +455,53 @@ State 21
 
     8 function_body: LBRACE • declarations_and_statements RBRACE
     9              | LBRACE • RBRACE
+   10 declarations_and_statements: • declaration
+   11                            | • statement
+   12                            | • declaration declarations_and_statements
+   13                            | • statement declarations_and_statements
+   20 declaration: • typespec declarator_repetition SEMI
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     CHAR        shift, and go to state 1
     WHILE       shift, and go to state 38
@@ -434,6 +547,8 @@ State 23
 State 24
 
    22 declarator_repetition: declarator_repetition COMMA • declarator
+   28 declarator: • IDENTIFIER
+   29           | • IDENTIFIER ASSIGN expression
 
     IDENTIFIER  shift, and go to state 49
 
@@ -449,7 +564,35 @@ State 25
 
 State 26
 
-   45 expression: LPAR • expression RPAR
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   45           | LPAR • expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -465,7 +608,35 @@ State 26
 
 State 27
 
-   49 expression: MINUS • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   49           | MINUS • expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -481,7 +652,35 @@ State 27
 
 State 28
 
-   50 expression: NOT • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   50           | NOT • expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -497,7 +696,35 @@ State 28
 
 State 29
 
-   48 expression: PLUS • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   48           | PLUS • expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -513,7 +740,7 @@ State 29
 
 State 30
 
-   41 expression: IDENTIFIER •
+   41 expression: IDENTIFIER •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LE, LT, MINUS, MOD, NE, OR, PLUS, RPAR, SEMI]
    46           | IDENTIFIER • LPAR expression RPAR
    47           | IDENTIFIER • LPAR RPAR
 
@@ -545,7 +772,7 @@ State 33
 
 State 34
 
-   29 declarator: IDENTIFIER ASSIGN expression •
+   29 declarator: IDENTIFIER ASSIGN expression •  [COMMA, SEMI]
    51 expression: expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
@@ -585,6 +812,8 @@ State 34
 
     $default  reduce using rule 29 (declarator)
 
+    Conflict between rule 29 and token COMMA resolved as reduce (COMMA < ASSIGN).
+
 
 State 35
 
@@ -605,7 +834,7 @@ State 36
 State 37
 
    18 parameter_declaration: typespec • IDENTIFIER
-   19                      | typespec •
+   19                      | typespec •  [COMMA, RPAR]
 
     IDENTIFIER  shift, and go to state 76
 
@@ -631,6 +860,34 @@ State 40
 
    30 statement: RETURN • SEMI
    31          | RETURN • expression SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -647,8 +904,47 @@ State 40
 
 State 41
 
-   35 statement: LBRACE • statement_repetition RBRACE
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   35          | LBRACE • statement_repetition RBRACE
+   36          | • LBRACE RBRACE
    36          | LBRACE • RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   39 statement_repetition: • statement
+   40                     | • statement_repetition statement
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
@@ -693,8 +989,55 @@ State 44
 
 State 45
 
-   10 declarations_and_statements: declaration •
+   10 declarations_and_statements: • declaration
+   10                            | declaration •  [RBRACE]
+   11                            | • statement
+   12                            | • declaration declarations_and_statements
    12                            | declaration • declarations_and_statements
+   13                            | • statement declarations_and_statements
+   20 declaration: • typespec declarator_repetition SEMI
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     CHAR        shift, and go to state 1
     WHILE       shift, and go to state 38
@@ -727,6 +1070,10 @@ State 45
 State 46
 
    20 declaration: typespec • declarator_repetition SEMI
+   21 declarator_repetition: • declarator
+   22                      | • declarator_repetition COMMA declarator
+   28 declarator: • IDENTIFIER
+   29           | • IDENTIFIER ASSIGN expression
 
     IDENTIFIER  shift, and go to state 49
 
@@ -736,8 +1083,55 @@ State 46
 
 State 47
 
-   11 declarations_and_statements: statement •
+   10 declarations_and_statements: • declaration
+   11                            | • statement
+   11                            | statement •  [RBRACE]
+   12                            | • declaration declarations_and_statements
+   13                            | • statement declarations_and_statements
    13                            | statement • declarations_and_statements
+   20 declaration: • typespec declarator_repetition SEMI
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     CHAR        shift, and go to state 1
     WHILE       shift, and go to state 38
@@ -812,7 +1206,7 @@ State 48
 
 State 49
 
-   28 declarator: IDENTIFIER •
+   28 declarator: IDENTIFIER •  [COMMA, SEMI]
    29           | IDENTIFIER • ASSIGN expression
 
     ASSIGN  shift, and go to state 19
@@ -872,7 +1266,7 @@ State 51
 
 State 52
 
-   49 expression: MINUS expression •
+   49 expression: MINUS expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, MINUS, NE, OR, PLUS, RPAR, SEMI]
    51           | expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
@@ -898,10 +1292,29 @@ State 52
 
     $default  reduce using rule 49 (expression)
 
+    Conflict between rule 49 and token BITWISEAND resolved as reduce (BITWISEAND < MINUS).
+    Conflict between rule 49 and token BITWISEOR resolved as reduce (BITWISEOR < MINUS).
+    Conflict between rule 49 and token BITWISEXOR resolved as reduce (BITWISEXOR < MINUS).
+    Conflict between rule 49 and token AND resolved as reduce (AND < MINUS).
+    Conflict between rule 49 and token ASSIGN resolved as reduce (ASSIGN < MINUS).
+    Conflict between rule 49 and token MUL resolved as shift (MINUS < MUL).
+    Conflict between rule 49 and token COMMA resolved as reduce (COMMA < MINUS).
+    Conflict between rule 49 and token DIV resolved as shift (MINUS < DIV).
+    Conflict between rule 49 and token EQ resolved as reduce (EQ < MINUS).
+    Conflict between rule 49 and token GE resolved as reduce (GE < MINUS).
+    Conflict between rule 49 and token GT resolved as reduce (GT < MINUS).
+    Conflict between rule 49 and token LE resolved as reduce (LE < MINUS).
+    Conflict between rule 49 and token LT resolved as reduce (LT < MINUS).
+    Conflict between rule 49 and token MINUS resolved as reduce (%left MINUS).
+    Conflict between rule 49 and token MOD resolved as shift (MINUS < MOD).
+    Conflict between rule 49 and token NE resolved as reduce (NE < MINUS).
+    Conflict between rule 49 and token OR resolved as reduce (OR < MINUS).
+    Conflict between rule 49 and token PLUS resolved as reduce (%left PLUS).
+
 
 State 53
 
-   50 expression: NOT expression •
+   50 expression: NOT expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LE, LT, MINUS, MOD, NE, OR, PLUS, RPAR, SEMI]
    51           | expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
@@ -923,10 +1336,29 @@ State 53
 
     $default  reduce using rule 50 (expression)
 
+    Conflict between rule 50 and token BITWISEAND resolved as reduce (BITWISEAND < NOT).
+    Conflict between rule 50 and token BITWISEOR resolved as reduce (BITWISEOR < NOT).
+    Conflict between rule 50 and token BITWISEXOR resolved as reduce (BITWISEXOR < NOT).
+    Conflict between rule 50 and token AND resolved as reduce (AND < NOT).
+    Conflict between rule 50 and token ASSIGN resolved as reduce (ASSIGN < NOT).
+    Conflict between rule 50 and token MUL resolved as reduce (MUL < NOT).
+    Conflict between rule 50 and token COMMA resolved as reduce (COMMA < NOT).
+    Conflict between rule 50 and token DIV resolved as reduce (DIV < NOT).
+    Conflict between rule 50 and token EQ resolved as reduce (EQ < NOT).
+    Conflict between rule 50 and token GE resolved as reduce (GE < NOT).
+    Conflict between rule 50 and token GT resolved as reduce (GT < NOT).
+    Conflict between rule 50 and token LE resolved as reduce (LE < NOT).
+    Conflict between rule 50 and token LT resolved as reduce (LT < NOT).
+    Conflict between rule 50 and token MINUS resolved as reduce (MINUS < NOT).
+    Conflict between rule 50 and token MOD resolved as reduce (MOD < NOT).
+    Conflict between rule 50 and token NE resolved as reduce (NE < NOT).
+    Conflict between rule 50 and token OR resolved as reduce (OR < NOT).
+    Conflict between rule 50 and token PLUS resolved as reduce (PLUS < NOT).
+
 
 State 54
 
-   48 expression: PLUS expression •
+   48 expression: PLUS expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, MINUS, NE, OR, PLUS, RPAR, SEMI]
    51           | expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
@@ -952,11 +1384,58 @@ State 54
 
     $default  reduce using rule 48 (expression)
 
+    Conflict between rule 48 and token BITWISEAND resolved as reduce (BITWISEAND < PLUS).
+    Conflict between rule 48 and token BITWISEOR resolved as reduce (BITWISEOR < PLUS).
+    Conflict between rule 48 and token BITWISEXOR resolved as reduce (BITWISEXOR < PLUS).
+    Conflict between rule 48 and token AND resolved as reduce (AND < PLUS).
+    Conflict between rule 48 and token ASSIGN resolved as reduce (ASSIGN < PLUS).
+    Conflict between rule 48 and token MUL resolved as shift (PLUS < MUL).
+    Conflict between rule 48 and token COMMA resolved as reduce (COMMA < PLUS).
+    Conflict between rule 48 and token DIV resolved as shift (PLUS < DIV).
+    Conflict between rule 48 and token EQ resolved as reduce (EQ < PLUS).
+    Conflict between rule 48 and token GE resolved as reduce (GE < PLUS).
+    Conflict between rule 48 and token GT resolved as reduce (GT < PLUS).
+    Conflict between rule 48 and token LE resolved as reduce (LE < PLUS).
+    Conflict between rule 48 and token LT resolved as reduce (LT < PLUS).
+    Conflict between rule 48 and token MINUS resolved as reduce (%left MINUS).
+    Conflict between rule 48 and token MOD resolved as shift (PLUS < MOD).
+    Conflict between rule 48 and token NE resolved as reduce (NE < PLUS).
+    Conflict between rule 48 and token OR resolved as reduce (OR < PLUS).
+    Conflict between rule 48 and token PLUS resolved as reduce (%left PLUS).
+
 
 State 55
 
-   46 expression: IDENTIFIER LPAR • expression RPAR
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   46           | IDENTIFIER LPAR • expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
    47           | IDENTIFIER LPAR • RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -973,7 +1452,35 @@ State 55
 
 State 56
 
-   59 expression: expression BITWISEAND • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   59           | expression BITWISEAND • expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -989,7 +1496,35 @@ State 56
 
 State 57
 
-   60 expression: expression BITWISEOR • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   60           | expression BITWISEOR • expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1005,7 +1540,35 @@ State 57
 
 State 58
 
-   61 expression: expression BITWISEXOR • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   61           | expression BITWISEXOR • expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1021,7 +1584,35 @@ State 58
 
 State 59
 
-   58 expression: expression AND • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   58           | expression AND • expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1037,7 +1628,35 @@ State 59
 
 State 60
 
-   67 expression: expression ASSIGN • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   67           | expression ASSIGN • expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1053,7 +1672,35 @@ State 60
 
 State 61
 
-   64 expression: expression MUL • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   64           | expression MUL • expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1069,7 +1716,35 @@ State 61
 
 State 62
 
-   68 expression: expression COMMA • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
+   68           | expression COMMA • expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1085,7 +1760,35 @@ State 62
 
 State 63
 
-   65 expression: expression DIV • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   65           | expression DIV • expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1101,7 +1804,35 @@ State 63
 
 State 64
 
-   51 expression: expression EQ • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   51           | expression EQ • expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1117,7 +1848,35 @@ State 64
 
 State 65
 
-   54 expression: expression GE • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   54           | expression GE • expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1133,7 +1892,35 @@ State 65
 
 State 66
 
-   56 expression: expression GT • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   56           | expression GT • expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1149,7 +1936,35 @@ State 66
 
 State 67
 
-   53 expression: expression LE • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   53           | expression LE • expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1165,7 +1980,35 @@ State 67
 
 State 68
 
-   55 expression: expression LT • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   55           | expression LT • expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1181,7 +2024,35 @@ State 68
 
 State 69
 
-   63 expression: expression MINUS • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   63           | expression MINUS • expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1197,7 +2068,35 @@ State 69
 
 State 70
 
-   66 expression: expression MOD • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   66           | expression MOD • expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1213,7 +2112,35 @@ State 70
 
 State 71
 
-   52 expression: expression NE • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   52           | expression NE • expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1229,7 +2156,35 @@ State 71
 
 State 72
 
-   57 expression: expression OR • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   57           | expression OR • expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1245,7 +2200,35 @@ State 72
 
 State 73
 
-   62 expression: expression PLUS • expression
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   62           | expression PLUS • expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1262,6 +2245,13 @@ State 73
 State 74
 
    17 parameter_list: parameter_list COMMA • parameter_declaration
+   18 parameter_declaration: • typespec IDENTIFIER
+   19                      | • typespec
+   23 typespec: • CHAR
+   24         | • INT
+   25         | • VOID
+   26         | • SHORT
+   27         | • DOUBLE
 
     CHAR    shift, and go to state 1
     INT     shift, and go to state 2
@@ -1290,6 +2280,34 @@ State 76
 State 77
 
    32 statement: WHILE LPAR • expression RPAR statement
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1307,6 +2325,34 @@ State 78
 
    33 statement: IF LPAR • expression RPAR statement
    34          | IF LPAR • expression RPAR statement ELSE statement
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     LPAR        shift, and go to state 26
     MINUS       shift, and go to state 27
@@ -1386,8 +2432,45 @@ State 82
 
 State 83
 
-   35 statement: LBRACE statement_repetition • RBRACE
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   35          | LBRACE statement_repetition • RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
    40 statement_repetition: statement_repetition • statement
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
@@ -1504,7 +2587,7 @@ State 91
    57           | expression • OR expression
    58           | expression • AND expression
    59           | expression • BITWISEAND expression
-   59           | expression BITWISEAND expression •
+   59           | expression BITWISEAND expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, OR, RPAR, SEMI]
    60           | expression • BITWISEOR expression
    61           | expression • BITWISEXOR expression
    62           | expression • PLUS expression
@@ -1529,6 +2612,25 @@ State 91
 
     $default  reduce using rule 59 (expression)
 
+    Conflict between rule 59 and token BITWISEAND resolved as reduce (%left BITWISEAND).
+    Conflict between rule 59 and token BITWISEOR resolved as reduce (BITWISEOR < BITWISEAND).
+    Conflict between rule 59 and token BITWISEXOR resolved as reduce (BITWISEXOR < BITWISEAND).
+    Conflict between rule 59 and token AND resolved as reduce (AND < BITWISEAND).
+    Conflict between rule 59 and token ASSIGN resolved as reduce (ASSIGN < BITWISEAND).
+    Conflict between rule 59 and token MUL resolved as shift (BITWISEAND < MUL).
+    Conflict between rule 59 and token COMMA resolved as reduce (COMMA < BITWISEAND).
+    Conflict between rule 59 and token DIV resolved as shift (BITWISEAND < DIV).
+    Conflict between rule 59 and token EQ resolved as shift (BITWISEAND < EQ).
+    Conflict between rule 59 and token GE resolved as shift (BITWISEAND < GE).
+    Conflict between rule 59 and token GT resolved as shift (BITWISEAND < GT).
+    Conflict between rule 59 and token LE resolved as shift (BITWISEAND < LE).
+    Conflict between rule 59 and token LT resolved as shift (BITWISEAND < LT).
+    Conflict between rule 59 and token MINUS resolved as shift (BITWISEAND < MINUS).
+    Conflict between rule 59 and token MOD resolved as shift (BITWISEAND < MOD).
+    Conflict between rule 59 and token NE resolved as shift (BITWISEAND < NE).
+    Conflict between rule 59 and token OR resolved as reduce (OR < BITWISEAND).
+    Conflict between rule 59 and token PLUS resolved as shift (BITWISEAND < PLUS).
+
 
 State 92
 
@@ -1542,7 +2644,7 @@ State 92
    58           | expression • AND expression
    59           | expression • BITWISEAND expression
    60           | expression • BITWISEOR expression
-   60           | expression BITWISEOR expression •
+   60           | expression BITWISEOR expression •  [BITWISEOR, AND, ASSIGN, COMMA, OR, RPAR, SEMI]
    61           | expression • BITWISEXOR expression
    62           | expression • PLUS expression
    63           | expression • MINUS expression
@@ -1568,6 +2670,25 @@ State 92
 
     $default  reduce using rule 60 (expression)
 
+    Conflict between rule 60 and token BITWISEAND resolved as shift (BITWISEOR < BITWISEAND).
+    Conflict between rule 60 and token BITWISEOR resolved as reduce (%left BITWISEOR).
+    Conflict between rule 60 and token BITWISEXOR resolved as shift (BITWISEOR < BITWISEXOR).
+    Conflict between rule 60 and token AND resolved as reduce (AND < BITWISEOR).
+    Conflict between rule 60 and token ASSIGN resolved as reduce (ASSIGN < BITWISEOR).
+    Conflict between rule 60 and token MUL resolved as shift (BITWISEOR < MUL).
+    Conflict between rule 60 and token COMMA resolved as reduce (COMMA < BITWISEOR).
+    Conflict between rule 60 and token DIV resolved as shift (BITWISEOR < DIV).
+    Conflict between rule 60 and token EQ resolved as shift (BITWISEOR < EQ).
+    Conflict between rule 60 and token GE resolved as shift (BITWISEOR < GE).
+    Conflict between rule 60 and token GT resolved as shift (BITWISEOR < GT).
+    Conflict between rule 60 and token LE resolved as shift (BITWISEOR < LE).
+    Conflict between rule 60 and token LT resolved as shift (BITWISEOR < LT).
+    Conflict between rule 60 and token MINUS resolved as shift (BITWISEOR < MINUS).
+    Conflict between rule 60 and token MOD resolved as shift (BITWISEOR < MOD).
+    Conflict between rule 60 and token NE resolved as shift (BITWISEOR < NE).
+    Conflict between rule 60 and token OR resolved as reduce (OR < BITWISEOR).
+    Conflict between rule 60 and token PLUS resolved as shift (BITWISEOR < PLUS).
+
 
 State 93
 
@@ -1582,7 +2703,7 @@ State 93
    59           | expression • BITWISEAND expression
    60           | expression • BITWISEOR expression
    61           | expression • BITWISEXOR expression
-   61           | expression BITWISEXOR expression •
+   61           | expression BITWISEXOR expression •  [BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, OR, RPAR, SEMI]
    62           | expression • PLUS expression
    63           | expression • MINUS expression
    64           | expression • MUL expression
@@ -1606,6 +2727,25 @@ State 93
 
     $default  reduce using rule 61 (expression)
 
+    Conflict between rule 61 and token BITWISEAND resolved as shift (BITWISEXOR < BITWISEAND).
+    Conflict between rule 61 and token BITWISEOR resolved as reduce (BITWISEOR < BITWISEXOR).
+    Conflict between rule 61 and token BITWISEXOR resolved as reduce (%left BITWISEXOR).
+    Conflict between rule 61 and token AND resolved as reduce (AND < BITWISEXOR).
+    Conflict between rule 61 and token ASSIGN resolved as reduce (ASSIGN < BITWISEXOR).
+    Conflict between rule 61 and token MUL resolved as shift (BITWISEXOR < MUL).
+    Conflict between rule 61 and token COMMA resolved as reduce (COMMA < BITWISEXOR).
+    Conflict between rule 61 and token DIV resolved as shift (BITWISEXOR < DIV).
+    Conflict between rule 61 and token EQ resolved as shift (BITWISEXOR < EQ).
+    Conflict between rule 61 and token GE resolved as shift (BITWISEXOR < GE).
+    Conflict between rule 61 and token GT resolved as shift (BITWISEXOR < GT).
+    Conflict between rule 61 and token LE resolved as shift (BITWISEXOR < LE).
+    Conflict between rule 61 and token LT resolved as shift (BITWISEXOR < LT).
+    Conflict between rule 61 and token MINUS resolved as shift (BITWISEXOR < MINUS).
+    Conflict between rule 61 and token MOD resolved as shift (BITWISEXOR < MOD).
+    Conflict between rule 61 and token NE resolved as shift (BITWISEXOR < NE).
+    Conflict between rule 61 and token OR resolved as reduce (OR < BITWISEXOR).
+    Conflict between rule 61 and token PLUS resolved as shift (BITWISEXOR < PLUS).
+
 
 State 94
 
@@ -1617,7 +2757,7 @@ State 94
    56           | expression • GT expression
    57           | expression • OR expression
    58           | expression • AND expression
-   58           | expression AND expression •
+   58           | expression AND expression •  [AND, ASSIGN, COMMA, OR, RPAR, SEMI]
    59           | expression • BITWISEAND expression
    60           | expression • BITWISEOR expression
    61           | expression • BITWISEXOR expression
@@ -1646,6 +2786,25 @@ State 94
 
     $default  reduce using rule 58 (expression)
 
+    Conflict between rule 58 and token BITWISEAND resolved as shift (AND < BITWISEAND).
+    Conflict between rule 58 and token BITWISEOR resolved as shift (AND < BITWISEOR).
+    Conflict between rule 58 and token BITWISEXOR resolved as shift (AND < BITWISEXOR).
+    Conflict between rule 58 and token AND resolved as reduce (%left AND).
+    Conflict between rule 58 and token ASSIGN resolved as reduce (ASSIGN < AND).
+    Conflict between rule 58 and token MUL resolved as shift (AND < MUL).
+    Conflict between rule 58 and token COMMA resolved as reduce (COMMA < AND).
+    Conflict between rule 58 and token DIV resolved as shift (AND < DIV).
+    Conflict between rule 58 and token EQ resolved as shift (AND < EQ).
+    Conflict between rule 58 and token GE resolved as shift (AND < GE).
+    Conflict between rule 58 and token GT resolved as shift (AND < GT).
+    Conflict between rule 58 and token LE resolved as shift (AND < LE).
+    Conflict between rule 58 and token LT resolved as shift (AND < LT).
+    Conflict between rule 58 and token MINUS resolved as shift (AND < MINUS).
+    Conflict between rule 58 and token MOD resolved as shift (AND < MOD).
+    Conflict between rule 58 and token NE resolved as shift (AND < NE).
+    Conflict between rule 58 and token OR resolved as reduce (OR < AND).
+    Conflict between rule 58 and token PLUS resolved as shift (AND < PLUS).
+
 
 State 95
 
@@ -1666,7 +2825,7 @@ State 95
    65           | expression • DIV expression
    66           | expression • MOD expression
    67           | expression • ASSIGN expression
-   67           | expression ASSIGN expression •
+   67           | expression ASSIGN expression •  [COMMA, RPAR, SEMI]
    68           | expression • COMMA expression
 
     BITWISEAND  shift, and go to state 56
@@ -1689,6 +2848,25 @@ State 95
 
     $default  reduce using rule 67 (expression)
 
+    Conflict between rule 67 and token BITWISEAND resolved as shift (ASSIGN < BITWISEAND).
+    Conflict between rule 67 and token BITWISEOR resolved as shift (ASSIGN < BITWISEOR).
+    Conflict between rule 67 and token BITWISEXOR resolved as shift (ASSIGN < BITWISEXOR).
+    Conflict between rule 67 and token AND resolved as shift (ASSIGN < AND).
+    Conflict between rule 67 and token ASSIGN resolved as shift (%right ASSIGN).
+    Conflict between rule 67 and token MUL resolved as shift (ASSIGN < MUL).
+    Conflict between rule 67 and token COMMA resolved as reduce (COMMA < ASSIGN).
+    Conflict between rule 67 and token DIV resolved as shift (ASSIGN < DIV).
+    Conflict between rule 67 and token EQ resolved as shift (ASSIGN < EQ).
+    Conflict between rule 67 and token GE resolved as shift (ASSIGN < GE).
+    Conflict between rule 67 and token GT resolved as shift (ASSIGN < GT).
+    Conflict between rule 67 and token LE resolved as shift (ASSIGN < LE).
+    Conflict between rule 67 and token LT resolved as shift (ASSIGN < LT).
+    Conflict between rule 67 and token MINUS resolved as shift (ASSIGN < MINUS).
+    Conflict between rule 67 and token MOD resolved as shift (ASSIGN < MOD).
+    Conflict between rule 67 and token NE resolved as shift (ASSIGN < NE).
+    Conflict between rule 67 and token OR resolved as shift (ASSIGN < OR).
+    Conflict between rule 67 and token PLUS resolved as shift (ASSIGN < PLUS).
+
 
 State 96
 
@@ -1706,13 +2884,32 @@ State 96
    62           | expression • PLUS expression
    63           | expression • MINUS expression
    64           | expression • MUL expression
-   64           | expression MUL expression •
+   64           | expression MUL expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LE, LT, MINUS, MOD, NE, OR, PLUS, RPAR, SEMI]
    65           | expression • DIV expression
    66           | expression • MOD expression
    67           | expression • ASSIGN expression
    68           | expression • COMMA expression
 
     $default  reduce using rule 64 (expression)
+
+    Conflict between rule 64 and token BITWISEAND resolved as reduce (BITWISEAND < MUL).
+    Conflict between rule 64 and token BITWISEOR resolved as reduce (BITWISEOR < MUL).
+    Conflict between rule 64 and token BITWISEXOR resolved as reduce (BITWISEXOR < MUL).
+    Conflict between rule 64 and token AND resolved as reduce (AND < MUL).
+    Conflict between rule 64 and token ASSIGN resolved as reduce (ASSIGN < MUL).
+    Conflict between rule 64 and token MUL resolved as reduce (%left MUL).
+    Conflict between rule 64 and token COMMA resolved as reduce (COMMA < MUL).
+    Conflict between rule 64 and token DIV resolved as reduce (%left DIV).
+    Conflict between rule 64 and token EQ resolved as reduce (EQ < MUL).
+    Conflict between rule 64 and token GE resolved as reduce (GE < MUL).
+    Conflict between rule 64 and token GT resolved as reduce (GT < MUL).
+    Conflict between rule 64 and token LE resolved as reduce (LE < MUL).
+    Conflict between rule 64 and token LT resolved as reduce (LT < MUL).
+    Conflict between rule 64 and token MINUS resolved as reduce (MINUS < MUL).
+    Conflict between rule 64 and token MOD resolved as reduce (%left MOD).
+    Conflict between rule 64 and token NE resolved as reduce (NE < MUL).
+    Conflict between rule 64 and token OR resolved as reduce (OR < MUL).
+    Conflict between rule 64 and token PLUS resolved as reduce (PLUS < MUL).
 
 
 State 97
@@ -1735,7 +2932,7 @@ State 97
    66           | expression • MOD expression
    67           | expression • ASSIGN expression
    68           | expression • COMMA expression
-   68           | expression COMMA expression •
+   68           | expression COMMA expression •  [COMMA, RPAR, SEMI]
 
     BITWISEAND  shift, and go to state 56
     BITWISEOR   shift, and go to state 57
@@ -1757,6 +2954,25 @@ State 97
 
     $default  reduce using rule 68 (expression)
 
+    Conflict between rule 68 and token BITWISEAND resolved as shift (COMMA < BITWISEAND).
+    Conflict between rule 68 and token BITWISEOR resolved as shift (COMMA < BITWISEOR).
+    Conflict between rule 68 and token BITWISEXOR resolved as shift (COMMA < BITWISEXOR).
+    Conflict between rule 68 and token AND resolved as shift (COMMA < AND).
+    Conflict between rule 68 and token ASSIGN resolved as shift (COMMA < ASSIGN).
+    Conflict between rule 68 and token MUL resolved as shift (COMMA < MUL).
+    Conflict between rule 68 and token COMMA resolved as reduce (%left COMMA).
+    Conflict between rule 68 and token DIV resolved as shift (COMMA < DIV).
+    Conflict between rule 68 and token EQ resolved as shift (COMMA < EQ).
+    Conflict between rule 68 and token GE resolved as shift (COMMA < GE).
+    Conflict between rule 68 and token GT resolved as shift (COMMA < GT).
+    Conflict between rule 68 and token LE resolved as shift (COMMA < LE).
+    Conflict between rule 68 and token LT resolved as shift (COMMA < LT).
+    Conflict between rule 68 and token MINUS resolved as shift (COMMA < MINUS).
+    Conflict between rule 68 and token MOD resolved as shift (COMMA < MOD).
+    Conflict between rule 68 and token NE resolved as shift (COMMA < NE).
+    Conflict between rule 68 and token OR resolved as shift (COMMA < OR).
+    Conflict between rule 68 and token PLUS resolved as shift (COMMA < PLUS).
+
 
 State 98
 
@@ -1775,18 +2991,37 @@ State 98
    63           | expression • MINUS expression
    64           | expression • MUL expression
    65           | expression • DIV expression
-   65           | expression DIV expression •
+   65           | expression DIV expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LE, LT, MINUS, MOD, NE, OR, PLUS, RPAR, SEMI]
    66           | expression • MOD expression
    67           | expression • ASSIGN expression
    68           | expression • COMMA expression
 
     $default  reduce using rule 65 (expression)
 
+    Conflict between rule 65 and token BITWISEAND resolved as reduce (BITWISEAND < DIV).
+    Conflict between rule 65 and token BITWISEOR resolved as reduce (BITWISEOR < DIV).
+    Conflict between rule 65 and token BITWISEXOR resolved as reduce (BITWISEXOR < DIV).
+    Conflict between rule 65 and token AND resolved as reduce (AND < DIV).
+    Conflict between rule 65 and token ASSIGN resolved as reduce (ASSIGN < DIV).
+    Conflict between rule 65 and token MUL resolved as reduce (%left MUL).
+    Conflict between rule 65 and token COMMA resolved as reduce (COMMA < DIV).
+    Conflict between rule 65 and token DIV resolved as reduce (%left DIV).
+    Conflict between rule 65 and token EQ resolved as reduce (EQ < DIV).
+    Conflict between rule 65 and token GE resolved as reduce (GE < DIV).
+    Conflict between rule 65 and token GT resolved as reduce (GT < DIV).
+    Conflict between rule 65 and token LE resolved as reduce (LE < DIV).
+    Conflict between rule 65 and token LT resolved as reduce (LT < DIV).
+    Conflict between rule 65 and token MINUS resolved as reduce (MINUS < DIV).
+    Conflict between rule 65 and token MOD resolved as reduce (%left MOD).
+    Conflict between rule 65 and token NE resolved as reduce (NE < DIV).
+    Conflict between rule 65 and token OR resolved as reduce (OR < DIV).
+    Conflict between rule 65 and token PLUS resolved as reduce (PLUS < DIV).
+
 
 State 99
 
    51 expression: expression • EQ expression
-   51           | expression EQ expression •
+   51           | expression EQ expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, NE, OR, RPAR, SEMI]
    52           | expression • NE expression
    53           | expression • LE expression
    54           | expression • GE expression
@@ -1817,6 +3052,25 @@ State 99
 
     $default  reduce using rule 51 (expression)
 
+    Conflict between rule 51 and token BITWISEAND resolved as reduce (BITWISEAND < EQ).
+    Conflict between rule 51 and token BITWISEOR resolved as reduce (BITWISEOR < EQ).
+    Conflict between rule 51 and token BITWISEXOR resolved as reduce (BITWISEXOR < EQ).
+    Conflict between rule 51 and token AND resolved as reduce (AND < EQ).
+    Conflict between rule 51 and token ASSIGN resolved as reduce (ASSIGN < EQ).
+    Conflict between rule 51 and token MUL resolved as shift (EQ < MUL).
+    Conflict between rule 51 and token COMMA resolved as reduce (COMMA < EQ).
+    Conflict between rule 51 and token DIV resolved as shift (EQ < DIV).
+    Conflict between rule 51 and token EQ resolved as reduce (%left EQ).
+    Conflict between rule 51 and token GE resolved as shift (EQ < GE).
+    Conflict between rule 51 and token GT resolved as shift (EQ < GT).
+    Conflict between rule 51 and token LE resolved as shift (EQ < LE).
+    Conflict between rule 51 and token LT resolved as shift (EQ < LT).
+    Conflict between rule 51 and token MINUS resolved as shift (EQ < MINUS).
+    Conflict between rule 51 and token MOD resolved as shift (EQ < MOD).
+    Conflict between rule 51 and token NE resolved as reduce (%left NE).
+    Conflict between rule 51 and token OR resolved as reduce (OR < EQ).
+    Conflict between rule 51 and token PLUS resolved as shift (EQ < PLUS).
+
 
 State 100
 
@@ -1824,7 +3078,7 @@ State 100
    52           | expression • NE expression
    53           | expression • LE expression
    54           | expression • GE expression
-   54           | expression GE expression •
+   54           | expression GE expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, NE, OR, RPAR, SEMI]
    55           | expression • LT expression
    56           | expression • GT expression
    57           | expression • OR expression
@@ -1848,6 +3102,25 @@ State 100
 
     $default  reduce using rule 54 (expression)
 
+    Conflict between rule 54 and token BITWISEAND resolved as reduce (BITWISEAND < GE).
+    Conflict between rule 54 and token BITWISEOR resolved as reduce (BITWISEOR < GE).
+    Conflict between rule 54 and token BITWISEXOR resolved as reduce (BITWISEXOR < GE).
+    Conflict between rule 54 and token AND resolved as reduce (AND < GE).
+    Conflict between rule 54 and token ASSIGN resolved as reduce (ASSIGN < GE).
+    Conflict between rule 54 and token MUL resolved as shift (GE < MUL).
+    Conflict between rule 54 and token COMMA resolved as reduce (COMMA < GE).
+    Conflict between rule 54 and token DIV resolved as shift (GE < DIV).
+    Conflict between rule 54 and token EQ resolved as reduce (EQ < GE).
+    Conflict between rule 54 and token GE resolved as reduce (%left GE).
+    Conflict between rule 54 and token GT resolved as reduce (%left GT).
+    Conflict between rule 54 and token LE resolved as reduce (%left LE).
+    Conflict between rule 54 and token LT resolved as reduce (%left LT).
+    Conflict between rule 54 and token MINUS resolved as shift (GE < MINUS).
+    Conflict between rule 54 and token MOD resolved as shift (GE < MOD).
+    Conflict between rule 54 and token NE resolved as reduce (NE < GE).
+    Conflict between rule 54 and token OR resolved as reduce (OR < GE).
+    Conflict between rule 54 and token PLUS resolved as shift (GE < PLUS).
+
 
 State 101
 
@@ -1857,7 +3130,7 @@ State 101
    54           | expression • GE expression
    55           | expression • LT expression
    56           | expression • GT expression
-   56           | expression GT expression •
+   56           | expression GT expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, NE, OR, RPAR, SEMI]
    57           | expression • OR expression
    58           | expression • AND expression
    59           | expression • BITWISEAND expression
@@ -1879,13 +3152,32 @@ State 101
 
     $default  reduce using rule 56 (expression)
 
+    Conflict between rule 56 and token BITWISEAND resolved as reduce (BITWISEAND < GT).
+    Conflict between rule 56 and token BITWISEOR resolved as reduce (BITWISEOR < GT).
+    Conflict between rule 56 and token BITWISEXOR resolved as reduce (BITWISEXOR < GT).
+    Conflict between rule 56 and token AND resolved as reduce (AND < GT).
+    Conflict between rule 56 and token ASSIGN resolved as reduce (ASSIGN < GT).
+    Conflict between rule 56 and token MUL resolved as shift (GT < MUL).
+    Conflict between rule 56 and token COMMA resolved as reduce (COMMA < GT).
+    Conflict between rule 56 and token DIV resolved as shift (GT < DIV).
+    Conflict between rule 56 and token EQ resolved as reduce (EQ < GT).
+    Conflict between rule 56 and token GE resolved as reduce (%left GE).
+    Conflict between rule 56 and token GT resolved as reduce (%left GT).
+    Conflict between rule 56 and token LE resolved as reduce (%left LE).
+    Conflict between rule 56 and token LT resolved as reduce (%left LT).
+    Conflict between rule 56 and token MINUS resolved as shift (GT < MINUS).
+    Conflict between rule 56 and token MOD resolved as shift (GT < MOD).
+    Conflict between rule 56 and token NE resolved as reduce (NE < GT).
+    Conflict between rule 56 and token OR resolved as reduce (OR < GT).
+    Conflict between rule 56 and token PLUS resolved as shift (GT < PLUS).
+
 
 State 102
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
    53           | expression • LE expression
-   53           | expression LE expression •
+   53           | expression LE expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, NE, OR, RPAR, SEMI]
    54           | expression • GE expression
    55           | expression • LT expression
    56           | expression • GT expression
@@ -1910,6 +3202,25 @@ State 102
 
     $default  reduce using rule 53 (expression)
 
+    Conflict between rule 53 and token BITWISEAND resolved as reduce (BITWISEAND < LE).
+    Conflict between rule 53 and token BITWISEOR resolved as reduce (BITWISEOR < LE).
+    Conflict between rule 53 and token BITWISEXOR resolved as reduce (BITWISEXOR < LE).
+    Conflict between rule 53 and token AND resolved as reduce (AND < LE).
+    Conflict between rule 53 and token ASSIGN resolved as reduce (ASSIGN < LE).
+    Conflict between rule 53 and token MUL resolved as shift (LE < MUL).
+    Conflict between rule 53 and token COMMA resolved as reduce (COMMA < LE).
+    Conflict between rule 53 and token DIV resolved as shift (LE < DIV).
+    Conflict between rule 53 and token EQ resolved as reduce (EQ < LE).
+    Conflict between rule 53 and token GE resolved as reduce (%left GE).
+    Conflict between rule 53 and token GT resolved as reduce (%left GT).
+    Conflict between rule 53 and token LE resolved as reduce (%left LE).
+    Conflict between rule 53 and token LT resolved as reduce (%left LT).
+    Conflict between rule 53 and token MINUS resolved as shift (LE < MINUS).
+    Conflict between rule 53 and token MOD resolved as shift (LE < MOD).
+    Conflict between rule 53 and token NE resolved as reduce (NE < LE).
+    Conflict between rule 53 and token OR resolved as reduce (OR < LE).
+    Conflict between rule 53 and token PLUS resolved as shift (LE < PLUS).
+
 
 State 103
 
@@ -1918,7 +3229,7 @@ State 103
    53           | expression • LE expression
    54           | expression • GE expression
    55           | expression • LT expression
-   55           | expression LT expression •
+   55           | expression LT expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, NE, OR, RPAR, SEMI]
    56           | expression • GT expression
    57           | expression • OR expression
    58           | expression • AND expression
@@ -1941,6 +3252,25 @@ State 103
 
     $default  reduce using rule 55 (expression)
 
+    Conflict between rule 55 and token BITWISEAND resolved as reduce (BITWISEAND < LT).
+    Conflict between rule 55 and token BITWISEOR resolved as reduce (BITWISEOR < LT).
+    Conflict between rule 55 and token BITWISEXOR resolved as reduce (BITWISEXOR < LT).
+    Conflict between rule 55 and token AND resolved as reduce (AND < LT).
+    Conflict between rule 55 and token ASSIGN resolved as reduce (ASSIGN < LT).
+    Conflict between rule 55 and token MUL resolved as shift (LT < MUL).
+    Conflict between rule 55 and token COMMA resolved as reduce (COMMA < LT).
+    Conflict between rule 55 and token DIV resolved as shift (LT < DIV).
+    Conflict between rule 55 and token EQ resolved as reduce (EQ < LT).
+    Conflict between rule 55 and token GE resolved as reduce (%left GE).
+    Conflict between rule 55 and token GT resolved as reduce (%left GT).
+    Conflict between rule 55 and token LE resolved as reduce (%left LE).
+    Conflict between rule 55 and token LT resolved as reduce (%left LT).
+    Conflict between rule 55 and token MINUS resolved as shift (LT < MINUS).
+    Conflict between rule 55 and token MOD resolved as shift (LT < MOD).
+    Conflict between rule 55 and token NE resolved as reduce (NE < LT).
+    Conflict between rule 55 and token OR resolved as reduce (OR < LT).
+    Conflict between rule 55 and token PLUS resolved as shift (LT < PLUS).
+
 
 State 104
 
@@ -1957,7 +3287,7 @@ State 104
    61           | expression • BITWISEXOR expression
    62           | expression • PLUS expression
    63           | expression • MINUS expression
-   63           | expression MINUS expression •
+   63           | expression MINUS expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, MINUS, NE, OR, PLUS, RPAR, SEMI]
    64           | expression • MUL expression
    65           | expression • DIV expression
    66           | expression • MOD expression
@@ -1969,6 +3299,25 @@ State 104
     MOD  shift, and go to state 70
 
     $default  reduce using rule 63 (expression)
+
+    Conflict between rule 63 and token BITWISEAND resolved as reduce (BITWISEAND < MINUS).
+    Conflict between rule 63 and token BITWISEOR resolved as reduce (BITWISEOR < MINUS).
+    Conflict between rule 63 and token BITWISEXOR resolved as reduce (BITWISEXOR < MINUS).
+    Conflict between rule 63 and token AND resolved as reduce (AND < MINUS).
+    Conflict between rule 63 and token ASSIGN resolved as reduce (ASSIGN < MINUS).
+    Conflict between rule 63 and token MUL resolved as shift (MINUS < MUL).
+    Conflict between rule 63 and token COMMA resolved as reduce (COMMA < MINUS).
+    Conflict between rule 63 and token DIV resolved as shift (MINUS < DIV).
+    Conflict between rule 63 and token EQ resolved as reduce (EQ < MINUS).
+    Conflict between rule 63 and token GE resolved as reduce (GE < MINUS).
+    Conflict between rule 63 and token GT resolved as reduce (GT < MINUS).
+    Conflict between rule 63 and token LE resolved as reduce (LE < MINUS).
+    Conflict between rule 63 and token LT resolved as reduce (LT < MINUS).
+    Conflict between rule 63 and token MINUS resolved as reduce (%left MINUS).
+    Conflict between rule 63 and token MOD resolved as shift (MINUS < MOD).
+    Conflict between rule 63 and token NE resolved as reduce (NE < MINUS).
+    Conflict between rule 63 and token OR resolved as reduce (OR < MINUS).
+    Conflict between rule 63 and token PLUS resolved as reduce (%left PLUS).
 
 
 State 105
@@ -1989,18 +3338,37 @@ State 105
    64           | expression • MUL expression
    65           | expression • DIV expression
    66           | expression • MOD expression
-   66           | expression MOD expression •
+   66           | expression MOD expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LE, LT, MINUS, MOD, NE, OR, PLUS, RPAR, SEMI]
    67           | expression • ASSIGN expression
    68           | expression • COMMA expression
 
     $default  reduce using rule 66 (expression)
+
+    Conflict between rule 66 and token BITWISEAND resolved as reduce (BITWISEAND < MOD).
+    Conflict between rule 66 and token BITWISEOR resolved as reduce (BITWISEOR < MOD).
+    Conflict between rule 66 and token BITWISEXOR resolved as reduce (BITWISEXOR < MOD).
+    Conflict between rule 66 and token AND resolved as reduce (AND < MOD).
+    Conflict between rule 66 and token ASSIGN resolved as reduce (ASSIGN < MOD).
+    Conflict between rule 66 and token MUL resolved as reduce (%left MUL).
+    Conflict between rule 66 and token COMMA resolved as reduce (COMMA < MOD).
+    Conflict between rule 66 and token DIV resolved as reduce (%left DIV).
+    Conflict between rule 66 and token EQ resolved as reduce (EQ < MOD).
+    Conflict between rule 66 and token GE resolved as reduce (GE < MOD).
+    Conflict between rule 66 and token GT resolved as reduce (GT < MOD).
+    Conflict between rule 66 and token LE resolved as reduce (LE < MOD).
+    Conflict between rule 66 and token LT resolved as reduce (LT < MOD).
+    Conflict between rule 66 and token MINUS resolved as reduce (MINUS < MOD).
+    Conflict between rule 66 and token MOD resolved as reduce (%left MOD).
+    Conflict between rule 66 and token NE resolved as reduce (NE < MOD).
+    Conflict between rule 66 and token OR resolved as reduce (OR < MOD).
+    Conflict between rule 66 and token PLUS resolved as reduce (PLUS < MOD).
 
 
 State 106
 
    51 expression: expression • EQ expression
    52           | expression • NE expression
-   52           | expression NE expression •
+   52           | expression NE expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, NE, OR, RPAR, SEMI]
    53           | expression • LE expression
    54           | expression • GE expression
    55           | expression • LT expression
@@ -2030,6 +3398,25 @@ State 106
 
     $default  reduce using rule 52 (expression)
 
+    Conflict between rule 52 and token BITWISEAND resolved as reduce (BITWISEAND < NE).
+    Conflict between rule 52 and token BITWISEOR resolved as reduce (BITWISEOR < NE).
+    Conflict between rule 52 and token BITWISEXOR resolved as reduce (BITWISEXOR < NE).
+    Conflict between rule 52 and token AND resolved as reduce (AND < NE).
+    Conflict between rule 52 and token ASSIGN resolved as reduce (ASSIGN < NE).
+    Conflict between rule 52 and token MUL resolved as shift (NE < MUL).
+    Conflict between rule 52 and token COMMA resolved as reduce (COMMA < NE).
+    Conflict between rule 52 and token DIV resolved as shift (NE < DIV).
+    Conflict between rule 52 and token EQ resolved as reduce (%left EQ).
+    Conflict between rule 52 and token GE resolved as shift (NE < GE).
+    Conflict between rule 52 and token GT resolved as shift (NE < GT).
+    Conflict between rule 52 and token LE resolved as shift (NE < LE).
+    Conflict between rule 52 and token LT resolved as shift (NE < LT).
+    Conflict between rule 52 and token MINUS resolved as shift (NE < MINUS).
+    Conflict between rule 52 and token MOD resolved as shift (NE < MOD).
+    Conflict between rule 52 and token NE resolved as reduce (%left NE).
+    Conflict between rule 52 and token OR resolved as reduce (OR < NE).
+    Conflict between rule 52 and token PLUS resolved as shift (NE < PLUS).
+
 
 State 107
 
@@ -2040,7 +3427,7 @@ State 107
    55           | expression • LT expression
    56           | expression • GT expression
    57           | expression • OR expression
-   57           | expression OR expression •
+   57           | expression OR expression •  [ASSIGN, COMMA, OR, RPAR, SEMI]
    58           | expression • AND expression
    59           | expression • BITWISEAND expression
    60           | expression • BITWISEOR expression
@@ -2071,6 +3458,25 @@ State 107
 
     $default  reduce using rule 57 (expression)
 
+    Conflict between rule 57 and token BITWISEAND resolved as shift (OR < BITWISEAND).
+    Conflict between rule 57 and token BITWISEOR resolved as shift (OR < BITWISEOR).
+    Conflict between rule 57 and token BITWISEXOR resolved as shift (OR < BITWISEXOR).
+    Conflict between rule 57 and token AND resolved as shift (OR < AND).
+    Conflict between rule 57 and token ASSIGN resolved as reduce (ASSIGN < OR).
+    Conflict between rule 57 and token MUL resolved as shift (OR < MUL).
+    Conflict between rule 57 and token COMMA resolved as reduce (COMMA < OR).
+    Conflict between rule 57 and token DIV resolved as shift (OR < DIV).
+    Conflict between rule 57 and token EQ resolved as shift (OR < EQ).
+    Conflict between rule 57 and token GE resolved as shift (OR < GE).
+    Conflict between rule 57 and token GT resolved as shift (OR < GT).
+    Conflict between rule 57 and token LE resolved as shift (OR < LE).
+    Conflict between rule 57 and token LT resolved as shift (OR < LT).
+    Conflict between rule 57 and token MINUS resolved as shift (OR < MINUS).
+    Conflict between rule 57 and token MOD resolved as shift (OR < MOD).
+    Conflict between rule 57 and token NE resolved as shift (OR < NE).
+    Conflict between rule 57 and token OR resolved as reduce (%left OR).
+    Conflict between rule 57 and token PLUS resolved as shift (OR < PLUS).
+
 
 State 108
 
@@ -2086,7 +3492,7 @@ State 108
    60           | expression • BITWISEOR expression
    61           | expression • BITWISEXOR expression
    62           | expression • PLUS expression
-   62           | expression PLUS expression •
+   62           | expression PLUS expression •  [BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, COMMA, EQ, GE, GT, LE, LT, MINUS, NE, OR, PLUS, RPAR, SEMI]
    63           | expression • MINUS expression
    64           | expression • MUL expression
    65           | expression • DIV expression
@@ -2099,6 +3505,25 @@ State 108
     MOD  shift, and go to state 70
 
     $default  reduce using rule 62 (expression)
+
+    Conflict between rule 62 and token BITWISEAND resolved as reduce (BITWISEAND < PLUS).
+    Conflict between rule 62 and token BITWISEOR resolved as reduce (BITWISEOR < PLUS).
+    Conflict between rule 62 and token BITWISEXOR resolved as reduce (BITWISEXOR < PLUS).
+    Conflict between rule 62 and token AND resolved as reduce (AND < PLUS).
+    Conflict between rule 62 and token ASSIGN resolved as reduce (ASSIGN < PLUS).
+    Conflict between rule 62 and token MUL resolved as shift (PLUS < MUL).
+    Conflict between rule 62 and token COMMA resolved as reduce (COMMA < PLUS).
+    Conflict between rule 62 and token DIV resolved as shift (PLUS < DIV).
+    Conflict between rule 62 and token EQ resolved as reduce (EQ < PLUS).
+    Conflict between rule 62 and token GE resolved as reduce (GE < PLUS).
+    Conflict between rule 62 and token GT resolved as reduce (GT < PLUS).
+    Conflict between rule 62 and token LE resolved as reduce (LE < PLUS).
+    Conflict between rule 62 and token LT resolved as reduce (LT < PLUS).
+    Conflict between rule 62 and token MINUS resolved as reduce (%left MINUS).
+    Conflict between rule 62 and token MOD resolved as shift (PLUS < MOD).
+    Conflict between rule 62 and token NE resolved as reduce (NE < PLUS).
+    Conflict between rule 62 and token OR resolved as reduce (OR < PLUS).
+    Conflict between rule 62 and token PLUS resolved as reduce (%left PLUS).
 
 
 State 109
@@ -2225,7 +3650,44 @@ State 115
 
 State 116
 
-   32 statement: WHILE LPAR expression RPAR • statement
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   32          | WHILE LPAR expression RPAR • statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
@@ -2247,8 +3709,45 @@ State 116
 
 State 117
 
-   33 statement: IF LPAR expression RPAR • statement
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   33          | IF LPAR expression RPAR • statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
    34          | IF LPAR expression RPAR • statement ELSE statement
+   35          | • LBRACE statement_repetition RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
@@ -2277,17 +3776,56 @@ State 118
 
 State 119
 
-   33 statement: IF LPAR expression RPAR statement •
+   33 statement: IF LPAR expression RPAR statement •  [CHAR, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, LBRACE, LPAR, MINUS, NOT, PLUS, RBRACE, SEMI, IDENTIFIER, NATURAL, DECIMAL, CHRLIT]
    34          | IF LPAR expression RPAR statement • ELSE statement
 
     ELSE  shift, and go to state 120
 
     $default  reduce using rule 33 (statement)
 
+    Conflict between rule 33 and token ELSE resolved as shift (LOGIC < ELSE).
+
 
 State 120
 
-   34 statement: IF LPAR expression RPAR statement ELSE • statement
+   30 statement: • RETURN SEMI
+   31          | • RETURN expression SEMI
+   32          | • WHILE LPAR expression RPAR statement
+   33          | • IF LPAR expression RPAR statement
+   34          | • IF LPAR expression RPAR statement ELSE statement
+   34          | IF LPAR expression RPAR statement ELSE • statement
+   35          | • LBRACE statement_repetition RBRACE
+   36          | • LBRACE RBRACE
+   37          | • expression SEMI
+   38          | • SEMI
+   41 expression: • IDENTIFIER
+   42           | • NATURAL
+   43           | • CHRLIT
+   44           | • DECIMAL
+   45           | • LPAR expression RPAR
+   46           | • IDENTIFIER LPAR expression RPAR
+   47           | • IDENTIFIER LPAR RPAR
+   48           | • PLUS expression
+   49           | • MINUS expression
+   50           | • NOT expression
+   51           | • expression EQ expression
+   52           | • expression NE expression
+   53           | • expression LE expression
+   54           | • expression GE expression
+   55           | • expression LT expression
+   56           | • expression GT expression
+   57           | • expression OR expression
+   58           | • expression AND expression
+   59           | • expression BITWISEAND expression
+   60           | • expression BITWISEOR expression
+   61           | • expression BITWISEXOR expression
+   62           | • expression PLUS expression
+   63           | • expression MINUS expression
+   64           | • expression MUL expression
+   65           | • expression DIV expression
+   66           | • expression MOD expression
+   67           | • expression ASSIGN expression
+   68           | • expression COMMA expression
 
     WHILE       shift, and go to state 38
     IF          shift, and go to state 39
