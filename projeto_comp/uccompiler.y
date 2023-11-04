@@ -3,9 +3,10 @@
 %{
 
 //#include "ast.h"
-
-int yylex(void);
+#include <stdio.h>
+extern int yylex(void);
 void yyerror(char *);
+extern char *yytext;
 
 struct node *program;
 
@@ -87,8 +88,8 @@ parameter_declaration: typespec IDENTIFIER                   {;}
     | typespec                                               {;}
     ;
 
-declaration: typespec declarator_repetition SEMI             {printf("declaration\n");}
-    | error SEMI                                             {printf("error semi\n");}
+declaration: typespec declarator_repetition SEMI             {;} //printf("declaration\n")
+    | error SEMI                                             {;}
     ;
 
 declarator_repetition: declarator                            {;}
@@ -96,14 +97,14 @@ declarator_repetition: declarator                            {;}
     ;
 
 typespec: CHAR                                               {;}
-    | INT                                                    {printf("transformou em typespec\n");}
+    | INT                                                    {;} //printf("transformou em typespec\n")
     | VOID                                                   {;}
     | SHORT                                                  {;}
     | DOUBLE                                                 {;}
     ;
 
 declarator: IDENTIFIER ASSIGN expression                     {;}
-    | IDENTIFIER                                             {printf("ID --> declarator\n");}
+    | IDENTIFIER                                             {;} //printf("ID --> declarator\n")
     ;
 
 statement: expression SEMI                                   {;}
@@ -115,20 +116,20 @@ statement: expression SEMI                                   {;}
     | WHILE LPAR expression RPAR statement                   {;}
     | RETURN expression SEMI                                 {;}
     | RETURN SEMI                                            {;}
-
-
     | LBRACE error RBRACE                                    {;}
-    | WHILE LPAR expression RPAR error                       {;}
-    | IF LPAR expression RPAR error %prec LOGIC              {;}    
-    | IF LPAR expression RPAR statement ELSE error           {;}    
-    | IF LPAR expression RPAR error ELSE statement           {;}    
-    | IF LPAR expression RPAR error ELSE error               {;}
-    //| RETURN error SEMI                                             {;}
+
+    
+    | IF LPAR expression RPAR error SEMI %prec LOGIC          {;}
+    | IF LPAR expression RPAR error SEMI ELSE statement       {;}
+    | IF LPAR expression RPAR statement ELSE error SEMI       {;}
+    | IF LPAR expression RPAR error SEMI ELSE error SEMI       {;}
+    | WHILE LPAR expression RPAR error SEMI                   {;}
     ;
 
 statement_repetition: statement             {;}
     | statement_repetition statement        {;}
-    | statement_repetition error            {;}
+    | statement_repetition error SEMI       {;}
+    | error SEMI                            {;}
     ;
 
 expression: expression ASSIGN expression    {;}
@@ -160,12 +161,11 @@ expression: expression ASSIGN expression    {;}
     | IDENTIFIER LPAR expression RPAR       {;}
     | IDENTIFIER LPAR RPAR                  {;}
 
-    | IDENTIFIER                            {printf("exp\n");}
+    | IDENTIFIER                            {;} //printf("exp\n")
     | NATURAL                               {;}
     | CHRLIT                                {;}
     | DECIMAL                               {;}
     | LPAR expression RPAR                  {;}
-
     | IDENTIFIER LPAR error RPAR            {;}
     | LPAR error RPAR                       {;}
     ;
@@ -174,3 +174,10 @@ expression: expression ASSIGN expression    {;}
 
 %%
 
+/* 
+Declaration −→ error SEMI
+Statement −→ error SEMI
+Statement −→ LBRACE error RBRACE
+Expression −→ IDENTIFIER LPAR error RPAR
+Expression −→ LPAR error RPAR
+*/
