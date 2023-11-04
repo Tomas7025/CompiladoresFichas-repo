@@ -2065,7 +2065,6 @@ void yyfree (void * ptr )
 
 void yyerror(char *error) {
     errors++;
-    // printf("Found %s '%s' (%d,%d)\n", error, yytext, previus_l_number, previus_c_number);
     printf("Line %d, column %d: %s: %s\n", previus_l_number, previus_c_number, error, yytext);
 }
 

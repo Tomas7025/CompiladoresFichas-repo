@@ -109,7 +109,7 @@ struct node *program;
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -1558,13 +1558,13 @@ yyreduce:
 
   case 21: /* declaration: typespec declarator_repetition SEMI  */
 #line 90 "uccompiler.y"
-                                                             {;}
+                                                             {printf("declaration\n");}
 #line 1563 "y.tab.c"
     break;
 
   case 22: /* declaration: error SEMI  */
 #line 91 "uccompiler.y"
-                                                             {;}
+                                                             {printf("error semi\n");}
 #line 1569 "y.tab.c"
     break;
 
@@ -1588,7 +1588,7 @@ yyreduce:
 
   case 26: /* typespec: INT  */
 #line 99 "uccompiler.y"
-                                                             {;}
+                                                             {printf("transformou em typespec\n");}
 #line 1593 "y.tab.c"
     break;
 
@@ -1618,7 +1618,7 @@ yyreduce:
 
   case 31: /* declarator: IDENTIFIER  */
 #line 106 "uccompiler.y"
-                                                             {;}
+                                                             {printf("ID --> declarator\n");}
 #line 1623 "y.tab.c"
     break;
 
@@ -1870,7 +1870,7 @@ yyreduce:
 
   case 73: /* expression: IDENTIFIER  */
 #line 163 "uccompiler.y"
-                                            {;}
+                                            {printf("exp\n");}
 #line 1875 "y.tab.c"
     break;
 

@@ -87,8 +87,8 @@ parameter_declaration: typespec IDENTIFIER                   {;}
     | typespec                                               {;}
     ;
 
-declaration: typespec declarator_repetition SEMI             {;}
-    | error SEMI                                             {;}
+declaration: typespec declarator_repetition SEMI             {printf("declaration\n");}
+    | error SEMI                                             {printf("error semi\n");}
     ;
 
 declarator_repetition: declarator                            {;}
@@ -96,14 +96,14 @@ declarator_repetition: declarator                            {;}
     ;
 
 typespec: CHAR                                               {;}
-    | INT                                                    {;}
+    | INT                                                    {printf("transformou em typespec\n");}
     | VOID                                                   {;}
     | SHORT                                                  {;}
     | DOUBLE                                                 {;}
     ;
 
 declarator: IDENTIFIER ASSIGN expression                     {;}
-    | IDENTIFIER                                             {;}
+    | IDENTIFIER                                             {printf("ID --> declarator\n");}
     ;
 
 statement: expression SEMI                                   {;}
@@ -160,7 +160,7 @@ expression: expression ASSIGN expression    {;}
     | IDENTIFIER LPAR expression RPAR       {;}
     | IDENTIFIER LPAR RPAR                  {;}
 
-    | IDENTIFIER                            {;}
+    | IDENTIFIER                            {printf("exp\n");}
     | NATURAL                               {;}
     | CHRLIT                                {;}
     | DECIMAL                               {;}
