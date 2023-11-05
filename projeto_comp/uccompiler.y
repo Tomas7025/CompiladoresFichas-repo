@@ -10,6 +10,7 @@ void yyerror(char *);
 extern char *yytext;
 
 struct node *program;
+extern int errors;
 extern char *category_m[];
 %}
 
@@ -47,23 +48,28 @@ extern char *category_m[];
 
 %%
 
-functions_and_declarations: function_defenition                     { $$ = program = newnode(Program, NULL); 
+functions_and_declarations: function_defenition                     { if (errors > 0) { break; }
+                                                                      $$ = program = newnode(Program, NULL); 
                                                                       addchild($$, $1);
                                                                     }
-    | function_declaration                                          { $$ = program = newnode(Program, NULL); 
+    | function_declaration                                          { if (errors > 0) { break; }
+                                                                      $$ = program = newnode(Program, NULL); 
                                                                       addchild($$, $1);
                                                                     }
-    | declaration                                                   { $$ = $1; 
+    | declaration                                                   { if (errors > 0) { break; }
+                                                                      $$ = $1; 
                                                                       $$->category = Program;
                                                                       program = $$;
                                                                     }
-    | functions_and_declarations function_defenition                { addchild($1, $2);
+    | functions_and_declarations function_defenition                { if (errors > 0) { break; }
+                                                                      addchild($1, $2);
                                                                       $$ = $1;
                                                                     }
-    | functions_and_declarations function_declaration               { addchild($1, $2);
+    | functions_and_declarations function_declaration               { if (errors > 0) { break; }
+                                                                      addchild($1, $2);
                                                                       $$ = $1;
                                                                     }
-    | functions_and_declarations declaration                        { 
+    | functions_and_declarations declaration                        { if (errors > 0) { break; }
                                                                       struct node_list *aux = $1->children->next;   //Aponta para o 1o de $1
                                                                       while(aux->next) { aux = aux->next; }         //Avança aux para apontar para o ultimo elemento
                                                                       aux->next = $2->children->next;               //Liga ao 1o de funcBody
@@ -76,7 +82,8 @@ functions_and_declarations: function_defenition                     { $$ = progr
     ;
 
 
-function_defenition: typespec function_declarator function_body     { $$ = $2; 
+function_defenition: typespec function_declarator function_body     { if (errors > 0) { break; }
+                                                                      $$ = $2; 
                                                                       $$->category = FuncDefinition;
                                                                       // Insere typespec no inicio
                                                                       struct node_list *temp = (struct node_list *)malloc(sizeof(struct node_list));
@@ -89,23 +96,27 @@ function_defenition: typespec function_declarator function_body     { $$ = $2;
     ;
 
 
-function_body: LBRACE declarations_and_statements RBRACE     { if($2 != NULL)
+function_body: LBRACE declarations_and_statements RBRACE     { if (errors > 0) { break; }
+                                                               if($2 != NULL)
                                                                 $$ = $2;
                                                                else
                                                                 $$ = newnode(FuncBody, NULL);
                                                              }
-    | LBRACE RBRACE                                          { $$ = newnode(FuncBody, NULL); }
+    | LBRACE RBRACE                                          {if (errors > 0) { break; }
+                                                              $$ = newnode(FuncBody, NULL); }
     ;
 
 
-declarations_and_statements: declaration                     { $$ = $1; }
-    | statement                                              { if ($1 != NULL) {
+declarations_and_statements: declaration                     { if (errors > 0) { break; }
+                                                               $$ = $1; }
+    | statement                                              { if (errors > 0) { break; }
+                                                               if ($1 != NULL) {
                                                                 $$ = newnode(FuncBody, NULL);
                                                                 addchild($$, $1);
                                                                } else
                                                                 $$ = NULL;
                                                              }
-    | declarations_and_statements declaration                { 
+    | declarations_and_statements declaration                { if (errors > 0) { break; }
                                                                if($1 == NULL)
                                                                 $$ = newnode(FuncBody, NULL);
                                                                struct node_list *aux = $$->children; 
@@ -116,7 +127,8 @@ declarations_and_statements: declaration                     { $$ = $1; }
                                                               //  free($2->children);
                                                               //  free($2);
                                                              }
-    | declarations_and_statements statement                  { if($1 != NULL){
+    | declarations_and_statements statement                  { if (errors > 0) { break; }
+                                                                if($1 != NULL){
                                                                 $$ = $1;
                                                                 if($2 != NULL) addchild($$, $2);
                                                                } else {
@@ -130,7 +142,8 @@ declarations_and_statements: declaration                     { $$ = $1; }
     ;
 
 
-function_declaration: typespec function_declarator SEMI      { $$ = $2;
+function_declaration: typespec function_declarator SEMI      { if (errors > 0) { break; }
+                                                               $$ = $2;
                                                                $$->category = FuncDeclaration;
                                                                // Insere typespec no inicio
                                                                struct node_list *temp = (struct node_list *)malloc(sizeof(struct node_list));
@@ -141,79 +154,86 @@ function_declaration: typespec function_declarator SEMI      { $$ = $2;
     ;
 
 
-function_declarator: IDENTIFIER LPAR parameter_list RPAR     { $$ = newnode(Null, NULL);
-                                                               addchild($$, newnode(Identifier, $1));
+function_declarator: IDENTIFIER LPAR parameter_list RPAR    { if (errors > 0) { break; }
+                                                              $$ = newnode(Null, NULL);
+                                                              addchild($$, newnode(Identifier, $1));
+                                                              addchild($$, $3);
+                                                            }
+    ;
+
+
+parameter_list: parameter_declaration                       { if (errors > 0) { break; }
+                                                              $$ = newnode(ParamList, NULL); 
+                                                              addchild($$, $1);
+                                                            }
+    | parameter_list COMMA parameter_declaration            { if (errors > 0) { break; }
+                                                              addchild($1, $3); 
+                                                              $$ = $1;
+                                                            }
+    
+parameter_declaration: typespec IDENTIFIER                  { if (errors > 0) { break; }
+                                                              $$ = newnode(ParamDeclaration, NULL); 
+                                                              addchild($$, $1);
+                                                              addchild($$, newnode(Identifier, $2));
+                                                            }
+    | typespec                                              { if (errors > 0) { break; }
+                                                              $$ = newnode(ParamDeclaration, NULL); 
+                                                              addchild($$, $1);
+                                                            }
+    
+declaration: typespec declarator_repetition SEMI            { if (errors > 0) { break; }
+                                                              struct node_list *aux = $2->children->next;                                         // Aponta para o primeiro filho do node FuncBody
+                                                              while(aux != NULL){                                                                 // Percorre os filhos dele
+                                                                  struct node_list* temp = (struct node_list*)malloc(sizeof(struct node_list));   // Cria um novo node_list
+                                                                  temp->node = $1;                                                                // Que guarda o TypeSpec
+                                                                  temp->next = aux->node->children->next;                                         // E que aponta para o antigo 1o node
+                                                                  aux->node->children->next = temp;                                               // O 1o node passa a ser o temp (TypeSpec)
+                                                                  
+                                                                  aux = aux->next;                                                                // Avança para o proximo filho FuncBody
+                                                              }
+                                                              $$ = $2;                                                                            // Passa para $$ o FuncBody
+                                                            }
+    | error SEMI                                            {;}
+    
+declarator_repetition: declarator                           { if (errors > 0) { break; }            
+                                                              $$ = newnode(FuncBody, NULL);
+                                                              addchild($$, $1);            
+                                                            }
+    | declarator_repetition COMMA declarator                { if (errors > 0) { break; }
+                                                              addchild($1, $3); 
+                                                              $$ = $1;
+                                                            }
+    
+typespec: CHAR                                              { if (errors > 0) { break; }
+                                                              $$ = newnode(Char, NULL); }
+    | INT                                                   { if (errors > 0) { break; }
+                                                              $$ = newnode(Int, NULL); }   //printf("transformou em typespec\n")
+    | VOID                                                  { if (errors > 0) { break; }
+                                                              $$ = newnode(Void, NULL); }
+    | SHORT                                                 { if (errors > 0) { break; }
+                                                              $$ = newnode(Short, NULL); }
+    | DOUBLE                                                { if (errors > 0) { break; }
+                                                              $$ = newnode(Double, NULL); }
+    
+declarator: IDENTIFIER ASSIGN expression                    { if (errors > 0) { break; }
+                                                              $$ = newnode(Declaration, NULL);      
+                                                              addchild($$, newnode(Identifier, $1));
+                                                              addchild($$, $3);
+                                                            }
+    | IDENTIFIER                                            { if (errors > 0) { break; }
+                                                              $$ = newnode(Declaration, NULL);             // Declaration
+                                                              addchild($$, newnode(Identifier, $1));       //   | ID               
+                                                            } 
+    ;
+
+statement: expression SEMI                                   { if (errors > 0) { break; }$$ = $1; }
+    | SEMI                                                    { if (errors > 0) { break; }$$ = NULL; }
+    | LBRACE statement_repetition RBRACE                     { if (errors > 0) { break; }$$ = $2; }
+    | LBRACE RBRACE                                           { if (errors > 0) { break; }$$ = NULL; }
+
+    | IF LPAR expression RPAR statement %prec LOGIC          { if (errors > 0) { break; }
+                                                               $$ = newnode(If, NULL);
                                                                addchild($$, $3);
-                                                             }
-    ;
-
-
-parameter_list: parameter_declaration                        { $$ = newnode(ParamList, NULL); 
-                                                               addchild($$, $1);
-                                                             }
-    | parameter_list COMMA parameter_declaration             { addchild($1, $3); 
-                                                               $$ = $1;
-                                                             }
-    ;
-
-parameter_declaration: typespec IDENTIFIER                   { $$ = newnode(ParamDeclaration, NULL); 
-                                                               addchild($$, $1);
-                                                               addchild($$, newnode(Identifier, $2));
-                                                             }
-    | typespec                                               { $$ = newnode(ParamDeclaration, NULL); 
-                                                               addchild($$, $1);
-                                                             }
-    ;
-
-declaration: typespec declarator_repetition SEMI             {
-                                                                struct node_list *aux = $2->children->next;                                         // Aponta para o primeiro filho do node FuncBody
-
-                                                                while(aux != NULL){                                                                 // Percorre os filhos dele
-                                                                    struct node_list* temp = (struct node_list*)malloc(sizeof(struct node_list));   // Cria um novo node_list
-                                                                    temp->node = $1;                                                                // Que guarda o TypeSpec
-                                                                    temp->next = aux->node->children->next;                                         // E que aponta para o antigo 1o node
-                                                                    aux->node->children->next = temp;                                               // O 1o node passa a ser o temp (TypeSpec)
-                                                                    
-                                                                    aux = aux->next;                                                                // Avança para o proximo filho FuncBody
-                                                                }
-                                                                $$ = $2;                                                                            // Passa para $$ o FuncBody
-                                                             }
-    | error SEMI                                             {;}
-    ;
-
-declarator_repetition: declarator                            {             
-                                                               $$ = newnode(FuncBody, NULL);
-                                                               addchild($$, $1);            
-                                                             }
-    | declarator_repetition COMMA declarator                 { addchild($1, $3); 
-                                                               $$ = $1;
-                                                             }
-    ;
-
-typespec: CHAR                                               { $$ = newnode(Char, NULL); }
-    | INT                                                    { $$ = newnode(Int, NULL); }   //printf("transformou em typespec\n")
-    | VOID                                                   { $$ = newnode(Void, NULL); }
-    | SHORT                                                  { $$ = newnode(Short, NULL); }
-    | DOUBLE                                                 { $$ = newnode(Double, NULL); }
-    ;
-
-declarator: IDENTIFIER ASSIGN expression                     {  $$ = newnode(Declaration, NULL);      
-                                                                addchild($$, newnode(Identifier, $1));
-                                                                addchild($$, $3);
-                                                             }
-    | IDENTIFIER                                             { 
-                                                               $$ = newnode(Declaration, NULL);             // Declaration
-                                                               addchild($$, newnode(Identifier, $1));       //   | ID               
-                                                             } 
-    ;
-
-statement: expression SEMI                                   { $$ = $1; }
-    | SEMI                                                    { $$ = NULL; }
-    | LBRACE statement_repetition RBRACE                     { $$ = $2; }
-    | LBRACE RBRACE                                           { $$ = NULL; }
-    | IF LPAR expression RPAR statement %prec LOGIC          { $$ = newnode(If, NULL);
-                                                               addchild($$, $3);
-                                                               
                                                                if ($5 == NULL) 
                                                                  addchild($$, newnode(Null, NULL));
                                                                 else
@@ -221,7 +241,8 @@ statement: expression SEMI                                   { $$ = $1; }
                                                                
                                                                addchild($$, newnode(Null, NULL));
                                                              }
-    | IF LPAR expression RPAR statement ELSE statement       { $$ = newnode(If, NULL);
+    | IF LPAR expression RPAR statement ELSE statement       { if (errors > 0) { break; }
+                                                               $$ = newnode(If, NULL);
                                                                addchild($$, $3);
                                                                
                                                                if ($5 == NULL) 
@@ -235,17 +256,20 @@ statement: expression SEMI                                   { $$ = $1; }
                                                                  addchild($$, $7);
 
                                                              }
-    | WHILE LPAR expression RPAR statement                   { $$ = newnode(While, NULL);
+    | WHILE LPAR expression RPAR statement                   { if (errors > 0) { break; }
+                                                               $$ = newnode(While, NULL);
                                                                addchild($$, $3);
                                                                if ($5 == NULL) 
                                                                  addchild($$, newnode(Null, NULL));
                                                                 else
                                                                  addchild($$, $5);
                                                              }
-    | RETURN expression SEMI                                 { $$ = newnode(Return, NULL);
+    | RETURN expression SEMI                                 { if (errors > 0) { break; }
+                                                               $$ = newnode(Return, NULL);
                                                                addchild($$, $2);
                                                              }
-    | RETURN SEMI                                            { $$ = newnode(Return, NULL);
+    | RETURN SEMI                                            { if (errors > 0) { break; }
+                                                               $$ = newnode(Return, NULL);
                                                                addchild($$, newnode(Null, NULL));
                                                              }
     | LBRACE error RBRACE                                    {;}
@@ -258,8 +282,9 @@ statement: expression SEMI                                   { $$ = $1; }
     | WHILE LPAR expression RPAR error SEMI                   {;}
     ;
 
-statement_repetition: statement             { $$ = $1; }
-    | statement_repetition statement        { if($2 != NULL){
+statement_repetition: statement             { if (errors > 0) { break; } $$ = $1; }
+    | statement_repetition statement        { if (errors > 0) { break; }
+                                              if($2 != NULL){
                                                 if ($1 != NULL && $1->category == StatList)  {
                                                   addchild($1, $2);
                                                   $$ = $1;
@@ -275,124 +300,155 @@ statement_repetition: statement             { $$ = $1; }
                                               }
                                             }
 
-    | statement_repetition error SEMI       { $$ = newnode(Error, NULL); 
+    | statement_repetition error SEMI       { if (errors > 0) { break; }
+                                              $$ = newnode(Error, NULL); 
                                               if ($1) addchild($$, $1);
                                             }
-    | error SEMI                            { $$ = newnode(Store, NULL); }
+    | error SEMI                            { ; }
     ;
 
-expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);
+expression: expression ASSIGN expression    { if (errors > 0) { break; }
+                                          $$ = newnode(Store, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression COMMA expression           { $$ = newnode(Comma, NULL);
+    | expression COMMA expression           { if (errors > 0) { break; }
+                                              $$ = newnode(Comma, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                               // printf("->COMMA<-\n");
                                             }
 
-    | expression PLUS expression            { $$ = newnode(Add, NULL);
+    | expression PLUS expression            { if (errors > 0) { break; }
+                                              $$ = newnode(Add, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression MINUS expression           { $$ = newnode(Sub, NULL);
+    | expression MINUS expression           { if (errors > 0) { break; }
+                                              $$ = newnode(Sub, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression MUL expression             { $$ = newnode(Mul, NULL);
+    | expression MUL expression             { if (errors > 0) { break; }
+                                              $$ = newnode(Mul, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression DIV expression             { $$ = newnode(Div, NULL);
+    | expression DIV expression             { if (errors > 0) { break; }
+                                              $$ = newnode(Div, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression MOD expression             { $$ = newnode(Mod, NULL);
-                                              addchild($$, $1); 
-                                              addchild($$, $3); 
-                                            }
-    
-    | expression OR expression              { $$ = newnode(Or, NULL);
-                                              addchild($$, $1); 
-                                              addchild($$, $3); 
-                                            }
-    | expression AND expression             { $$ = newnode(And, NULL);
-                                              addchild($$, $1); 
-                                              addchild($$, $3); 
-                                            }
-    | expression BITWISEAND expression      { $$ = newnode(BitWiseAnd, NULL);
-                                              addchild($$, $1); 
-                                              addchild($$, $3); 
-                                            }
-    | expression BITWISEOR expression       { $$ = newnode(BitWiseOr, NULL);
-                                              addchild($$, $1); 
-                                              addchild($$, $3); 
-                                            }
-    | expression BITWISEXOR expression      { $$ = newnode(BitWiseXor, NULL);
+    | expression MOD expression             { if (errors > 0) { break; }
+                                              $$ = newnode(Mod, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
     
-    | expression EQ expression              { $$ = newnode(Eq, NULL);
+    | expression OR expression              { if (errors > 0) { break; }
+                                              $$ = newnode(Or, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression NE expression              { $$ = newnode(Ne, NULL);
+    | expression AND expression             { if (errors > 0) { break; }
+                                              $$ = newnode(And, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression LE expression              { $$ = newnode(Le, NULL);
+    | expression BITWISEAND expression      { if (errors > 0) { break; }
+                                              $$ = newnode(BitWiseAnd, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression GE expression              { $$ = newnode(Ge, NULL);
+    | expression BITWISEOR expression       { if (errors > 0) { break; }
+                                              $$ = newnode(BitWiseOr, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
-    | expression LT expression              { $$ = newnode(Lt, NULL);
-                                              addchild($$, $1); 
-                                              addchild($$, $3); 
-                                            }
-    | expression GT expression              { $$ = newnode(Gt, NULL);
+    | expression BITWISEXOR expression      { if (errors > 0) { break; }
+                                              $$ = newnode(BitWiseXor, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                             }
     
-    | PLUS expression %prec POLARITY        { $$ = newnode(Plus, NULL);
+    | expression EQ expression              { if (errors > 0) { break; }
+                                              $$ = newnode(Eq, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression NE expression              { if (errors > 0) { break; } 
+                                              $$ = newnode(Ne, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression LE expression              { if (errors > 0) { break; } 
+                                              $$ = newnode(Le, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression GE expression              { if (errors > 0) { break; } 
+                                              $$ = newnode(Ge, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression LT expression              { if (errors > 0) { break; } 
+                                              $$ = newnode(Lt, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression GT expression              { if (errors > 0) { break; } 
+                                              $$ = newnode(Gt, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    
+    | PLUS expression %prec POLARITY        { if (errors > 0) { break; } 
+                                              $$ = newnode(Plus, NULL);
                                               addchild($$, $2); 
                                             }
-    | MINUS expression %prec POLARITY       { $$ = newnode(Minus, NULL);
+    | MINUS expression %prec POLARITY       { if (errors > 0) { break; } 
+                                              $$ = newnode(Minus, NULL);
                                               addchild($$, $2); 
                                             }
-    | NOT expression                        { $$ = newnode(Not, NULL);
+    | NOT expression                        { if (errors > 0) { break; } 
+                                              $$ = newnode(Not, NULL);
                                               addchild($$, $2);  
                                             }
 
-    | IDENTIFIER LPAR expression_repetition RPAR       { $$ = $3;
+    | IDENTIFIER LPAR expression_repetition RPAR       { if (errors > 0) { break; }
+                                                         $$ = $3;
                                                          struct node_list *temp = (struct node_list *) malloc(sizeof(struct node_list));
                                                          temp->node = newnode(Identifier, $1);
                                                          temp->next = $3->children->next;
                                                          $3->children->next = temp;
                                                         //  printf("->CALL<-\n");
                                                        }
-    | IDENTIFIER LPAR RPAR                  { $$ = newnode(Call, NULL); 
+    | IDENTIFIER LPAR RPAR                  { if (errors > 0) { break; }
+                                              $$ = newnode(Call, NULL); 
                                               addchild($$, newnode(Identifier, $1));
                                             }
 
-    | IDENTIFIER                            { $$ = newnode(Identifier, $1); }
-    | NATURAL                               { $$ = newnode(Natural, $1); }
-    | CHRLIT                                { $$ = newnode(ChrLit, $1); }
-    | DECIMAL                               { $$ = newnode(Decimal, $1); }
-    | LPAR expression RPAR                  { $$ = $2; }
+    | IDENTIFIER                            { if (errors > 0) { break; }
+                                              $$ = newnode(Identifier, $1); }
+    | NATURAL                               { if (errors > 0) { break; }
+                                              $$ = newnode(Natural, $1); }
+    | CHRLIT                                { if (errors > 0) { break; }
+                                              $$ = newnode(ChrLit, $1); }
+    | DECIMAL                               { if (errors > 0) { break; }
+                                              $$ = newnode(Decimal, $1); }
+    | LPAR expression RPAR                  { if (errors > 0) { break; }
+                                              $$ = $2; }
 
-    | IDENTIFIER LPAR error RPAR            { $$ = newnode(Error, NULL); }
-    | LPAR error RPAR                       { $$ = newnode(Error, NULL); }
+    | IDENTIFIER LPAR error RPAR            { ; }
+    | LPAR error RPAR                       { ; }
     ;
 
-expression_repetition: expression %prec ARGS                  { $$ = newnode(Call, NULL);
+expression_repetition: expression %prec ARGS                  { if (errors > 0) { break; }
+                                                                $$ = newnode(Call, NULL);
                                                                 addchild($$, $1);
                                                               }
-  | expression_repetition COMMA expression                    { $$ = $1;
+  | expression_repetition COMMA expression                    { if (errors > 0) { break; }
+                                                                $$ = $1;
                                                                 addchild($$, $3);
                                                               }
   ;
