@@ -2,14 +2,14 @@
 
 %{
 
-//#include "ast.h"
+#include "ast.h"
 #include <stdio.h>
 extern int yylex(void);
 void yyerror(char *);
 extern char *yytext;
 
 struct node *program;
-
+extern char *category_m[];
 // char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arguments", "Integer", "Double", "Identifier", "Natural", "Decimal", "Call", "If", "Add", "Sub", "Mul", "Div" };
 
 %}
@@ -20,7 +20,6 @@ struct node *program;
     struct node *node;
 }
 
-// CHAR, ELSE, WHILE, IF, INT, SHORT, DOUBLE, RETURN, VOID, BITWISEAND, BITWISEOR, BITWISEXOR, AND, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE,   
 // tratar dos reservads
 %token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI RESERVED
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
@@ -47,132 +46,296 @@ struct node *program;
 
 %%
 
-functions_and_declarations: function_defenition                     {;}
-    | function_declaration                                          {;}
-    | declaration                                                   {;}
-    | functions_and_declarations function_defenition                {;}
-    | functions_and_declarations function_declaration               {;}
-    | functions_and_declarations declaration                        {;}
+functions_and_declarations: function_defenition                     { $$ = program = newnode(Program, NULL); 
+                                                                      addchild($$, $1);
+                                                                    }
+    | function_declaration                                          { $$ = program = newnode(Program, NULL); 
+                                                                      addchild($$, $1);
+                                                                    }
+    | declaration                                                   { $$ = program = newnode(Program, NULL); 
+                                                                      addchild($$, $1);
+                                                                    }
+    | functions_and_declarations function_defenition                { addchild($1, $2);
+                                                                      $$ = $1;
+                                                                    }
+    | functions_and_declarations function_declaration               { addchild($1, $2);
+                                                                      $$ = $1;
+                                                                    }
+    | functions_and_declarations declaration                        { addchild($1, $2);
+                                                                      $$ = $1;
+                                                                    }
     ;
 
 
-function_defenition: typespec function_declarator function_body     {;}
+function_defenition: typespec function_declarator function_body     { $$ = $2; 
+                                                                      $$->category = FuncDefinition;
+                                                                      // Insere typespec no inicio
+                                                                      struct node_list *temp = (struct node_list *)malloc(sizeof(struct node_list));
+                                                                      temp->node = $1;
+                                                                      temp->next = $$->children->next;
+                                                                      $$->children->next = temp;
+                                                                      
+                                                                      addchild($$, $3);
+                                                                    }
     ;
 
 
-function_body: LBRACE declarations_and_statements RBRACE     {;}
-    | LBRACE RBRACE                                          {;}
+function_body: LBRACE declarations_and_statements RBRACE     { $$ = $2;}
+    | LBRACE RBRACE                                          { $$ = newnode(FuncBody, NULL); }
     ;
 
 
-declarations_and_statements: declaration                     {;}
-    | statement                                              {;}
-    | declaration declarations_and_statements                {;}
-    | statement declarations_and_statements                  {;}
+declarations_and_statements: declaration                     { $$ = $1; }
+    | statement                                              { $$ = newnode(FuncBody, NULL);
+                                                               addchild($$, $1);
+                                                             }
+    | declarations_and_statements declaration                { struct node_list *aux = $$->children; 
+                                                               while (aux->next != NULL) {
+                                                                aux = aux->next;
+                                                               }
+                                                               aux->next = $2->children->next;
+                                                               free($2->children);
+                                                               free($2);
+                                                             }
+    | declarations_and_statements statement                  { $$ = $1;
+                                                               addchild($$, $2);
+                                                             }
     ;
 
 
-function_declaration: typespec function_declarator SEMI      {;}
+function_declaration: typespec function_declarator SEMI      { $$ = $2;
+                                                               $$->category = FuncDeclaration;
+                                                               // Insere typespec no inicio
+                                                               struct node_list *temp = (struct node_list *)malloc(sizeof(struct node_list));
+                                                               temp->node = $1;
+                                                               temp->next = $$->children->next;
+                                                               $$->children->next = temp;
+                                                             }
     ;
 
 
-function_declarator: IDENTIFIER LPAR parameter_list RPAR     {;}
+function_declarator: IDENTIFIER LPAR parameter_list RPAR     { $$ = newnode(Null, NULL);
+                                                               addchild($$, newnode(Identifier, $1));
+                                                               addchild($$, $3);
+                                                             }
     ;
 
 
-parameter_list: parameter_declaration                        {;}
-    | parameter_list COMMA parameter_declaration             {;}
+parameter_list: parameter_declaration                        { $$ = newnode(ParamList, NULL); 
+                                                               addchild($$, $1);
+                                                             }
+    | parameter_list COMMA parameter_declaration             { addchild($1, $3); 
+                                                               $$ = $1;
+                                                             }
     ;
 
-parameter_declaration: typespec IDENTIFIER                   {;}
-    | typespec                                               {;}
+parameter_declaration: typespec IDENTIFIER                   { $$ = newnode(ParamDeclaration, NULL); 
+                                                               addchild($$, $1);
+                                                               addchild($$, newnode(Identifier, $2));
+                                                             }
+    | typespec                                               { $$ = newnode(ParamDeclaration, NULL); 
+                                                               addchild($$, $1);
+                                                             }
     ;
 
-declaration: typespec declarator_repetition SEMI             {;} //printf("declaration\n")
+declaration: typespec declarator_repetition SEMI             {
+                                                                struct node_list *aux = $2->children->next;                                         // Aponta para o primeiro filho do node FuncBody
+                                                                while(aux != NULL){                                                                 // Percorre os filhos dele
+                                                                    struct node_list* temp = (struct node_list*)malloc(sizeof(struct node_list));   // Cria um novo node_list
+                                                                    temp->node = $1;                                                                // Que guarda o TypeSpec
+                                                                    temp->next = aux->node->children->next;                                         // E que aponta para o antigo 1o node
+                                                                    aux->node->children->next = temp;                                               // O 1o node passa a ser o temp (TypeSpec)
+                                                                    
+                                                                    aux = aux->next;                                                                // Avança para o proximo filho FuncBody
+                                                                }
+                                                                $$ = $2;                                                                            // Passa para $$ o FuncBody
+                                                             }
     | error SEMI                                             {;}
     ;
 
-declarator_repetition: declarator                            {;}
-    | declarator_repetition COMMA declarator                 {;}
+declarator_repetition: declarator                            {             
+                                                               $$ = newnode(FuncBody, NULL);
+                                                               addchild($$, $1);            
+                                                             }
+    | declarator_repetition COMMA declarator                 { addchild($1, $3); 
+                                                               $$ = $1;
+                                                             }
     ;
 
-typespec: CHAR                                               {;}
-    | INT                                                    {;} //printf("transformou em typespec\n")
-    | VOID                                                   {;}
-    | SHORT                                                  {;}
-    | DOUBLE                                                 {;}
+typespec: CHAR                                               { $$ = newnode(Char, NULL); }
+    | INT                                                    { $$ = newnode(Int, NULL); }   //printf("transformou em typespec\n")
+    | VOID                                                   { $$ = newnode(Void, NULL); }
+    | SHORT                                                  { $$ = newnode(Short, NULL); }
+    | DOUBLE                                                 { $$ = newnode(Double, NULL); }
     ;
 
-declarator: IDENTIFIER ASSIGN expression                     {;}
-    | IDENTIFIER                                             {;} //printf("ID --> declarator\n")
+declarator: IDENTIFIER ASSIGN expression                     { printf("DEBUGGG: %s\n", category_m[$3->category]);
+                                                                $$ = newnode(Declaration, NULL);                 // Declaration
+                                                               addchild($$, newnode(Identifier, $1));          //   /      \   
+                                                               addchild($$, $3);                            // ID           EXP
+                                                             }
+    | IDENTIFIER                                             { $$ = newnode(Declaration, NULL);             // Declaration
+                                                               addchild($$, newnode(Identifier, $1));       //   | ID               
+                                                             } 
     ;
 
-statement: expression SEMI                                   {;}
-    | SEMI                                                   {;}
-    | LBRACE statement_repetition RBRACE                     {;}
-    | LBRACE RBRACE                                          {;}
-    | IF LPAR expression RPAR statement %prec LOGIC          {;}
-    | IF LPAR expression RPAR statement ELSE statement       {;}
-    | WHILE LPAR expression RPAR statement                   {;}
-    | RETURN expression SEMI                                 {;}
-    | RETURN SEMI                                            {;}
+statement: expression SEMI                                   { $$ = $1; }
+    | SEMI                                                   { $$ = newnode(Null, NULL); }
+    | LBRACE statement_repetition RBRACE                     { $$ = $2; }
+    | LBRACE RBRACE                                          { $$ = newnode(Null, NULL); }
+    | IF LPAR expression RPAR statement %prec LOGIC          { $$ = newnode(If, NULL);
+                                                               addchild($$, $3);
+                                                               addchild($$, $5);
+                                                               addchild($$, newnode(Null, NULL));
+                                                             }
+    | IF LPAR expression RPAR statement ELSE statement       { $$ = newnode(If, NULL);
+                                                               addchild($$, $3);
+                                                               addchild($$, $5);
+                                                               addchild($$, $7);
+                                                             }
+    | WHILE LPAR expression RPAR statement                   { $$ = newnode(While, NULL);
+                                                               addchild($$, $3);
+                                                               addchild($$, $5);
+                                                             }
+    | RETURN expression SEMI                                 { $$ = newnode(Return, NULL);
+                                                               addchild($$, $2);
+                                                             }
+    | RETURN SEMI                                            { $$ = newnode(Return, NULL);
+                                                               addchild($$, newnode(Null, NULL));
+                                                             }
     | LBRACE error RBRACE                                    {;}
 
     
     | IF LPAR expression RPAR error SEMI %prec LOGIC          {;}
     | IF LPAR expression RPAR error SEMI ELSE statement       {;}
     | IF LPAR expression RPAR statement ELSE error SEMI       {;}
-    | IF LPAR expression RPAR error SEMI ELSE error SEMI       {;}
+    | IF LPAR expression RPAR error SEMI ELSE error SEMI      {;}
     | WHILE LPAR expression RPAR error SEMI                   {;}
     ;
 
-statement_repetition: statement             {;}
-    | statement_repetition statement        {;}
+statement_repetition: statement             { $$ = $1; }
+    | statement_repetition statement        { if ($1->category == StatList)  {
+                                                addchild($1, $2);
+                                                $$ = $1;
+                                              } else {
+                                                $$ = newnode(StatList, NULL);
+                                                addchild($$, $1);
+                                                addchild($$, $2);
+                                              }
+                                            }
+
     | statement_repetition error SEMI       {;}
     | error SEMI                            {;}
     ;
 
-expression: expression ASSIGN expression    {;}
-    | expression COMMA expression           {;}
+expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression COMMA expression           { $$ = newnode(Comma, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
 
-    | expression PLUS expression            {;}
-    | expression MINUS expression           {;}
-    | expression MUL expression             {;}
-    | expression DIV expression             {;}
-    | expression MOD expression             {;}
+    | expression PLUS expression            { $$ = newnode(Add, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression MINUS expression           { $$ = newnode(Sub, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression MUL expression             { $$ = newnode(Mul, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression DIV expression             { $$ = newnode(Div, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression MOD expression             { $$ = newnode(Mod, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
     
-    | expression OR expression              {;}
-    | expression AND expression             {;}
-    | expression BITWISEAND expression      {;}
-    | expression BITWISEOR expression       {;}
-    | expression BITWISEXOR expression      {;}
+    | expression OR expression              { $$ = newnode(Or, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression AND expression             { $$ = newnode(And, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression BITWISEAND expression      { $$ = newnode(BitWiseAnd, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression BITWISEOR expression       { $$ = newnode(BitWiseOr, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression BITWISEXOR expression      { $$ = newnode(BitWiseXor, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
     
-    | expression EQ expression              {;}
-    | expression NE expression              {;}
-    | expression LE expression              {;}
-    | expression GE expression              {;}
-    | expression LT expression              {;}
-    | expression GT expression              {;}
+    | expression EQ expression              { $$ = newnode(Eq, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression NE expression              { $$ = newnode(Ne, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression LE expression              { $$ = newnode(Le, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression GE expression              { $$ = newnode(Ge, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression LT expression              { $$ = newnode(Lt, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
+    | expression GT expression              { $$ = newnode(Gt, NULL);
+                                              addchild($$, $1); 
+                                              addchild($$, $3); 
+                                            }
     
-    | PLUS expression                       {;}
-    | MINUS expression                      {;}
-    | NOT expression                        {;}
+    | PLUS expression                       { $$ = newnode(Plus, NULL);
+                                              addchild($$, $2); 
+                                            }
+    | MINUS expression                      { $$ = newnode(Minus, NULL);
+                                              addchild($$, $2); 
+                                            }
+    | NOT expression                        { $$ = newnode(Not, NULL);
+                                              addchild($$, $2);  
+                                            }
 
-    | IDENTIFIER LPAR expression RPAR       {;}
-    | IDENTIFIER LPAR RPAR                  {;}
+    | IDENTIFIER LPAR expression RPAR       { $$ = newnode(Call, NULL); 
+                                              addchild($$, newnode(Identifier, $1));
+                                              addchild($$, $3); 
+                                            }
+    | IDENTIFIER LPAR RPAR                  { $$ = newnode(Call, NULL); 
+                                              addchild($$, newnode(Identifier, $1));
+                                            }
 
-    | IDENTIFIER                            {;} //printf("exp\n")
-    | NATURAL                               {;}
-    | CHRLIT                                {;}
-    | DECIMAL                               {;}
-    | LPAR expression RPAR                  {;}
-    | IDENTIFIER LPAR error RPAR            {;}
-    | LPAR error RPAR                       {;}
+    | IDENTIFIER                            { $$ = newnode(Identifier, $1); }
+    | NATURAL                               { $$ = newnode(Natural, $1); }
+    | CHRLIT                                { $$ = newnode(ChrLit, $1); }
+    | DECIMAL                               { $$ = newnode(Decimal, $1); }
+    | LPAR expression RPAR                  { $$ = $2; }
+
+    | IDENTIFIER LPAR error RPAR            { $$ = newnode(Error, NULL); }
+    | LPAR error RPAR                       { $$ = newnode(Error, NULL); }
     ;
 
 
-
 %%
+
+
 
 /* 
 Declaration −→ error SEMI

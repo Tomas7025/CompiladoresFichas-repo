@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "ast.h"
 
+
 // create a node of a given category with a given lexical symbol
 struct node *newnode(enum category category, char *token) {
     struct node *new = malloc(sizeof(struct node));
@@ -28,12 +29,11 @@ void addchild(struct node *parent, struct node *child) {
 void show(struct node *node, int depth) {
     // if (node == NULL) return;
     for (int i = 0; i < depth; i++) printf("__");
+    categoryMap(node->category);
     if (node->token) {
-        categoryMap(node->category);
         printf("(%s)\n", node->token);
     }
     else {
-        categoryMap(node->category);
         printf("\n");
     }
     struct node_list *aux = node->children->next;

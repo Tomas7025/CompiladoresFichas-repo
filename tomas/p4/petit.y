@@ -121,9 +121,9 @@ void show(struct node *node, int depth){
     printf("__");
   }
   if(node->category == Program || node->category ==  Function || node->category ==  Parameters || node->category == Parameter || node->category == Arguments || node->category == Integer || node->category == Double || node->category == Call || node->category == If || node->category == Add || node->category == Sub || node->category == Mul || node->category == Div){
-    printf("%s\n", l_category[node->category]);
+    printf("%s\n", category_map[node->category]);
   } else {    
-    printf("%s(%s)\n", l_category[node->category], node->token);
+    printf("%s(%s)\n", category_map[node->category], node->token);
   }
   struct node_list *l_child = node->children;
   while(l_child != NULL){

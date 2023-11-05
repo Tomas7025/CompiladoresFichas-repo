@@ -21,8 +21,8 @@ Grammar
 
    10 declarations_and_statements: declaration
    11                            | statement
-   12                            | declaration declarations_and_statements
-   13                            | statement declarations_and_statements
+   12                            | declarations_and_statements declaration
+   13                            | declarations_and_statements statement
 
    14 function_declaration: typespec function_declarator SEMI
 
@@ -59,90 +59,91 @@ Grammar
    38          | RETURN expression SEMI
    39          | RETURN SEMI
    40          | LBRACE error RBRACE
-   41          | WHILE LPAR expression RPAR error
-   42          | IF LPAR expression RPAR error
-   43          | IF LPAR expression RPAR statement ELSE error
-   44          | IF LPAR expression RPAR error ELSE statement
-   45          | IF LPAR expression RPAR error ELSE error
+   41          | IF LPAR expression RPAR error SEMI
+   42          | IF LPAR expression RPAR error SEMI ELSE statement
+   43          | IF LPAR expression RPAR statement ELSE error SEMI
+   44          | IF LPAR expression RPAR error SEMI ELSE error SEMI
+   45          | WHILE LPAR expression RPAR error SEMI
 
    46 statement_repetition: statement
    47                     | statement_repetition statement
-   48                     | statement_repetition error
+   48                     | statement_repetition error SEMI
+   49                     | error SEMI
 
-   49 expression: expression ASSIGN expression
-   50           | expression COMMA expression
-   51           | expression PLUS expression
-   52           | expression MINUS expression
-   53           | expression MUL expression
-   54           | expression DIV expression
-   55           | expression MOD expression
-   56           | expression OR expression
-   57           | expression AND expression
-   58           | expression BITWISEAND expression
-   59           | expression BITWISEOR expression
-   60           | expression BITWISEXOR expression
-   61           | expression EQ expression
-   62           | expression NE expression
-   63           | expression LE expression
-   64           | expression GE expression
-   65           | expression LT expression
-   66           | expression GT expression
-   67           | PLUS expression
-   68           | MINUS expression
-   69           | NOT expression
-   70           | IDENTIFIER LPAR expression RPAR
-   71           | IDENTIFIER LPAR RPAR
-   72           | IDENTIFIER
-   73           | NATURAL
-   74           | CHRLIT
-   75           | DECIMAL
-   76           | LPAR expression RPAR
-   77           | IDENTIFIER LPAR error RPAR
-   78           | LPAR error RPAR
+   50 expression: expression ASSIGN expression
+   51           | expression COMMA expression
+   52           | expression PLUS expression
+   53           | expression MINUS expression
+   54           | expression MUL expression
+   55           | expression DIV expression
+   56           | expression MOD expression
+   57           | expression OR expression
+   58           | expression AND expression
+   59           | expression BITWISEAND expression
+   60           | expression BITWISEOR expression
+   61           | expression BITWISEXOR expression
+   62           | expression EQ expression
+   63           | expression NE expression
+   64           | expression LE expression
+   65           | expression GE expression
+   66           | expression LT expression
+   67           | expression GT expression
+   68           | PLUS expression
+   69           | MINUS expression
+   70           | NOT expression
+   71           | IDENTIFIER LPAR expression RPAR
+   72           | IDENTIFIER LPAR RPAR
+   73           | IDENTIFIER
+   74           | NATURAL
+   75           | CHRLIT
+   76           | DECIMAL
+   77           | LPAR expression RPAR
+   78           | IDENTIFIER LPAR error RPAR
+   79           | LPAR error RPAR
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    error (256) 21 40 41 42 43 44 45 48 77 78
+    error (256) 21 40 41 42 43 44 45 48 49 78 79
     CHAR (258) 24
-    ELSE (259) 36 43 44 45
-    WHILE (260) 37 41
-    IF (261) 35 36 42 43 44 45
+    ELSE (259) 36 42 43 44
+    WHILE (260) 37 45
+    IF (261) 35 36 41 42 43 44
     INT (262) 25
     SHORT (263) 27
     DOUBLE (264) 28
     RETURN (265) 38 39
     VOID (266) 26
-    BITWISEAND (267) 58
-    BITWISEOR (268) 59
-    BITWISEXOR (269) 60
-    AND (270) 57
-    ASSIGN (271) 29 49
-    MUL (272) 53
-    COMMA (273) 17 23 50
-    DIV (274) 54
-    EQ (275) 61
-    GE (276) 64
-    GT (277) 66
+    BITWISEAND (267) 59
+    BITWISEOR (268) 60
+    BITWISEXOR (269) 61
+    AND (270) 58
+    ASSIGN (271) 29 50
+    MUL (272) 54
+    COMMA (273) 17 23 51
+    DIV (274) 55
+    EQ (275) 62
+    GE (276) 65
+    GT (277) 67
     LBRACE (278) 8 9 33 34 40
-    LE (279) 63
-    LPAR (280) 15 35 36 37 41 42 43 44 45 70 71 76 77 78
-    LT (281) 65
-    MINUS (282) 52 68
-    MOD (283) 55
-    NE (284) 62
-    NOT (285) 69
-    OR (286) 56
-    PLUS (287) 51 67
+    LE (279) 64
+    LPAR (280) 15 35 36 37 41 42 43 44 45 71 72 77 78 79
+    LT (281) 66
+    MINUS (282) 53 69
+    MOD (283) 56
+    NE (284) 63
+    NOT (285) 70
+    OR (286) 57
+    PLUS (287) 52 68
     RBRACE (288) 8 9 33 34 40
-    RPAR (289) 15 35 36 37 41 42 43 44 45 70 71 76 77 78
-    SEMI (290) 14 20 21 31 32 38 39
+    RPAR (289) 15 35 36 37 41 42 43 44 45 71 72 77 78 79
+    SEMI (290) 14 20 21 31 32 38 39 41 42 43 44 45 48 49
     RESERVED (291)
-    IDENTIFIER <token> (292) 15 18 29 30 70 71 72 77
-    NATURAL <token> (293) 73
-    DECIMAL <token> (294) 75
-    CHRLIT <token> (295) 74
+    IDENTIFIER <token> (292) 15 18 29 30 71 72 73 78
+    NATURAL <token> (293) 74
+    DECIMAL <token> (294) 76
+    CHRLIT <token> (295) 75
     LOGIC (296)
 
 
@@ -188,13 +189,13 @@ Nonterminals, with rules where they appear
         on right: 22 23
     statement <node> (55)
         on left: 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45
-        on right: 11 13 35 36 37 43 44 46 47
+        on right: 11 13 35 36 37 42 43 46 47
     statement_repetition <node> (56)
-        on left: 46 47 48
+        on left: 46 47 48 49
         on right: 33 47 48
     expression <node> (57)
-        on left: 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78
-        on right: 29 31 35 36 37 38 41 42 43 44 45 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 76
+        on left: 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79
+        on right: 29 31 35 36 37 38 41 42 43 44 45 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 77
 
 
 State 0
@@ -482,8 +483,8 @@ State 27
 
 State 28
 
-   76 expression: LPAR • expression RPAR
-   78           | LPAR • error RPAR
+   77 expression: LPAR • expression RPAR
+   79           | LPAR • error RPAR
 
     error       shift, and go to state 53
     LPAR        shift, and go to state 28
@@ -500,7 +501,7 @@ State 28
 
 State 29
 
-   68 expression: MINUS • expression
+   69 expression: MINUS • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -516,7 +517,7 @@ State 29
 
 State 30
 
-   69 expression: NOT • expression
+   70 expression: NOT • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -532,7 +533,7 @@ State 30
 
 State 31
 
-   67 expression: PLUS • expression
+   68 expression: PLUS • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -548,58 +549,58 @@ State 31
 
 State 32
 
-   70 expression: IDENTIFIER • LPAR expression RPAR
-   71           | IDENTIFIER • LPAR RPAR
-   72           | IDENTIFIER •
-   77           | IDENTIFIER • LPAR error RPAR
+   71 expression: IDENTIFIER • LPAR expression RPAR
+   72           | IDENTIFIER • LPAR RPAR
+   73           | IDENTIFIER •
+   78           | IDENTIFIER • LPAR error RPAR
 
     LPAR  shift, and go to state 58
-
-    $default  reduce using rule 72 (expression)
-
-
-State 33
-
-   73 expression: NATURAL •
 
     $default  reduce using rule 73 (expression)
 
 
+State 33
+
+   74 expression: NATURAL •
+
+    $default  reduce using rule 74 (expression)
+
+
 State 34
 
-   75 expression: DECIMAL •
+   76 expression: DECIMAL •
 
-    $default  reduce using rule 75 (expression)
+    $default  reduce using rule 76 (expression)
 
 
 State 35
 
-   74 expression: CHRLIT •
+   75 expression: CHRLIT •
 
-    $default  reduce using rule 74 (expression)
+    $default  reduce using rule 75 (expression)
 
 
 State 36
 
    29 declarator: IDENTIFIER ASSIGN expression •
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
 
     BITWISEAND  shift, and go to state 59
     BITWISEOR   shift, and go to state 60
@@ -651,7 +652,7 @@ State 39
 State 40
 
    37 statement: WHILE • LPAR expression RPAR statement
-   41          | WHILE • LPAR expression RPAR error
+   45          | WHILE • LPAR expression RPAR error SEMI
 
     LPAR  shift, and go to state 80
 
@@ -660,10 +661,10 @@ State 41
 
    35 statement: IF • LPAR expression RPAR statement
    36          | IF • LPAR expression RPAR statement ELSE statement
-   42          | IF • LPAR expression RPAR error
-   43          | IF • LPAR expression RPAR statement ELSE error
-   44          | IF • LPAR expression RPAR error ELSE statement
-   45          | IF • LPAR expression RPAR error ELSE error
+   41          | IF • LPAR expression RPAR error SEMI
+   42          | IF • LPAR expression RPAR error SEMI ELSE statement
+   43          | IF • LPAR expression RPAR statement ELSE error SEMI
+   44          | IF • LPAR expression RPAR error SEMI ELSE error SEMI
 
     LPAR  shift, and go to state 81
 
@@ -730,14 +731,8 @@ State 45
 State 46
 
     8 function_body: LBRACE declarations_and_statements • RBRACE
-
-    RBRACE  shift, and go to state 88
-
-
-State 47
-
-   10 declarations_and_statements: declaration •
-   12                            | declaration • declarations_and_statements
+   12 declarations_and_statements: declarations_and_statements • declaration
+   13                            | declarations_and_statements • statement
 
     error       shift, and go to state 1
     CHAR        shift, and go to state 2
@@ -753,19 +748,24 @@ State 47
     MINUS       shift, and go to state 29
     NOT         shift, and go to state 30
     PLUS        shift, and go to state 31
+    RBRACE      shift, and go to state 88
     SEMI        shift, and go to state 45
     IDENTIFIER  shift, and go to state 32
     NATURAL     shift, and go to state 33
     DECIMAL     shift, and go to state 34
     CHRLIT      shift, and go to state 35
 
-    RBRACE  reduce using rule 10 (declarations_and_statements)
+    declaration  go to state 89
+    typespec     go to state 48
+    statement    go to state 90
+    expression   go to state 50
 
-    declarations_and_statements  go to state 89
-    declaration                  go to state 47
-    typespec                     go to state 48
-    statement                    go to state 49
-    expression                   go to state 50
+
+State 47
+
+   10 declarations_and_statements: declaration •
+
+    $default  reduce using rule 10 (declarations_and_statements)
 
 
 State 48
@@ -781,58 +781,31 @@ State 48
 State 49
 
    11 declarations_and_statements: statement •
-   13                            | statement • declarations_and_statements
 
-    error       shift, and go to state 1
-    CHAR        shift, and go to state 2
-    WHILE       shift, and go to state 40
-    IF          shift, and go to state 41
-    INT         shift, and go to state 3
-    SHORT       shift, and go to state 4
-    DOUBLE      shift, and go to state 5
-    RETURN      shift, and go to state 42
-    VOID        shift, and go to state 6
-    LBRACE      shift, and go to state 43
-    LPAR        shift, and go to state 28
-    MINUS       shift, and go to state 29
-    NOT         shift, and go to state 30
-    PLUS        shift, and go to state 31
-    SEMI        shift, and go to state 45
-    IDENTIFIER  shift, and go to state 32
-    NATURAL     shift, and go to state 33
-    DECIMAL     shift, and go to state 34
-    CHRLIT      shift, and go to state 35
-
-    RBRACE  reduce using rule 11 (declarations_and_statements)
-
-    declarations_and_statements  go to state 90
-    declaration                  go to state 47
-    typespec                     go to state 48
-    statement                    go to state 49
-    expression                   go to state 50
+    $default  reduce using rule 11 (declarations_and_statements)
 
 
 State 50
 
    31 statement: expression • SEMI
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
 
     BITWISEAND  shift, and go to state 59
     BITWISEOR   shift, and go to state 60
@@ -874,32 +847,32 @@ State 52
 
 State 53
 
-   78 expression: LPAR error • RPAR
+   79 expression: LPAR error • RPAR
 
     RPAR  shift, and go to state 92
 
 
 State 54
 
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-   76           | LPAR expression • RPAR
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+   77           | LPAR expression • RPAR
 
     BITWISEAND  shift, and go to state 59
     BITWISEOR   shift, and go to state 60
@@ -924,25 +897,79 @@ State 54
 
 State 55
 
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-   68           | MINUS expression •
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+   69           | MINUS expression •
+
+    MUL  shift, and go to state 64
+    DIV  shift, and go to state 66
+    MOD  shift, and go to state 73
+
+    $default  reduce using rule 69 (expression)
+
+
+State 56
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+   70           | NOT expression •
+
+    $default  reduce using rule 70 (expression)
+
+
+State 57
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+   68           | PLUS expression •
 
     MUL  shift, and go to state 64
     DIV  shift, and go to state 66
@@ -951,65 +978,11 @@ State 55
     $default  reduce using rule 68 (expression)
 
 
-State 56
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-   69           | NOT expression •
-
-    $default  reduce using rule 69 (expression)
-
-
-State 57
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-   67           | PLUS expression •
-
-    MUL  shift, and go to state 64
-    DIV  shift, and go to state 66
-    MOD  shift, and go to state 73
-
-    $default  reduce using rule 67 (expression)
-
-
 State 58
 
-   70 expression: IDENTIFIER LPAR • expression RPAR
-   71           | IDENTIFIER LPAR • RPAR
-   77           | IDENTIFIER LPAR • error RPAR
+   71 expression: IDENTIFIER LPAR • expression RPAR
+   72           | IDENTIFIER LPAR • RPAR
+   78           | IDENTIFIER LPAR • error RPAR
 
     error       shift, and go to state 94
     LPAR        shift, and go to state 28
@@ -1027,7 +1000,7 @@ State 58
 
 State 59
 
-   58 expression: expression BITWISEAND • expression
+   59 expression: expression BITWISEAND • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1043,7 +1016,7 @@ State 59
 
 State 60
 
-   59 expression: expression BITWISEOR • expression
+   60 expression: expression BITWISEOR • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1059,7 +1032,7 @@ State 60
 
 State 61
 
-   60 expression: expression BITWISEXOR • expression
+   61 expression: expression BITWISEXOR • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1075,7 +1048,7 @@ State 61
 
 State 62
 
-   57 expression: expression AND • expression
+   58 expression: expression AND • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1091,7 +1064,7 @@ State 62
 
 State 63
 
-   49 expression: expression ASSIGN • expression
+   50 expression: expression ASSIGN • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1107,7 +1080,7 @@ State 63
 
 State 64
 
-   53 expression: expression MUL • expression
+   54 expression: expression MUL • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1123,7 +1096,7 @@ State 64
 
 State 65
 
-   50 expression: expression COMMA • expression
+   51 expression: expression COMMA • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1139,7 +1112,7 @@ State 65
 
 State 66
 
-   54 expression: expression DIV • expression
+   55 expression: expression DIV • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1155,7 +1128,7 @@ State 66
 
 State 67
 
-   61 expression: expression EQ • expression
+   62 expression: expression EQ • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1171,7 +1144,7 @@ State 67
 
 State 68
 
-   64 expression: expression GE • expression
+   65 expression: expression GE • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1187,7 +1160,7 @@ State 68
 
 State 69
 
-   66 expression: expression GT • expression
+   67 expression: expression GT • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1203,7 +1176,7 @@ State 69
 
 State 70
 
-   63 expression: expression LE • expression
+   64 expression: expression LE • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1219,7 +1192,7 @@ State 70
 
 State 71
 
-   65 expression: expression LT • expression
+   66 expression: expression LT • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1235,7 +1208,7 @@ State 71
 
 State 72
 
-   52 expression: expression MINUS • expression
+   53 expression: expression MINUS • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1251,7 +1224,7 @@ State 72
 
 State 73
 
-   55 expression: expression MOD • expression
+   56 expression: expression MOD • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1267,7 +1240,7 @@ State 73
 
 State 74
 
-   62 expression: expression NE • expression
+   63 expression: expression NE • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1283,7 +1256,7 @@ State 74
 
 State 75
 
-   56 expression: expression OR • expression
+   57 expression: expression OR • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1299,7 +1272,7 @@ State 75
 
 State 76
 
-   51 expression: expression PLUS • expression
+   52 expression: expression PLUS • expression
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1344,7 +1317,7 @@ State 79
 State 80
 
    37 statement: WHILE LPAR • expression RPAR statement
-   41          | WHILE LPAR • expression RPAR error
+   45          | WHILE LPAR • expression RPAR error SEMI
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1362,10 +1335,10 @@ State 81
 
    35 statement: IF LPAR • expression RPAR statement
    36          | IF LPAR • expression RPAR statement ELSE statement
-   42          | IF LPAR • expression RPAR error
-   43          | IF LPAR • expression RPAR statement ELSE error
-   44          | IF LPAR • expression RPAR error ELSE statement
-   45          | IF LPAR • expression RPAR error ELSE error
+   41          | IF LPAR • expression RPAR error SEMI
+   42          | IF LPAR • expression RPAR error SEMI ELSE statement
+   43          | IF LPAR • expression RPAR statement ELSE error SEMI
+   44          | IF LPAR • expression RPAR error SEMI ELSE error SEMI
 
     LPAR        shift, and go to state 28
     MINUS       shift, and go to state 29
@@ -1389,24 +1362,24 @@ State 82
 State 83
 
    38 statement: RETURN expression • SEMI
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
 
     BITWISEAND  shift, and go to state 59
     BITWISEOR   shift, and go to state 60
@@ -1432,8 +1405,10 @@ State 83
 State 84
 
    40 statement: LBRACE error • RBRACE
+   49 statement_repetition: error • SEMI
 
     RBRACE  shift, and go to state 119
+    SEMI    shift, and go to state 120
 
 
 State 85
@@ -1454,9 +1429,9 @@ State 87
 
    33 statement: LBRACE statement_repetition • RBRACE
    47 statement_repetition: statement_repetition • statement
-   48                     | statement_repetition • error
+   48                     | statement_repetition • error SEMI
 
-    error       shift, and go to state 120
+    error       shift, and go to state 121
     WHILE       shift, and go to state 40
     IF          shift, and go to state 41
     RETURN      shift, and go to state 42
@@ -1465,14 +1440,14 @@ State 87
     MINUS       shift, and go to state 29
     NOT         shift, and go to state 30
     PLUS        shift, and go to state 31
-    RBRACE      shift, and go to state 121
+    RBRACE      shift, and go to state 122
     SEMI        shift, and go to state 45
     IDENTIFIER  shift, and go to state 32
     NATURAL     shift, and go to state 33
     DECIMAL     shift, and go to state 34
     CHRLIT      shift, and go to state 35
 
-    statement   go to state 122
+    statement   go to state 123
     expression  go to state 50
 
 
@@ -1485,14 +1460,14 @@ State 88
 
 State 89
 
-   12 declarations_and_statements: declaration declarations_and_statements •
+   12 declarations_and_statements: declarations_and_statements declaration •
 
     $default  reduce using rule 12 (declarations_and_statements)
 
 
 State 90
 
-   13 declarations_and_statements: statement declarations_and_statements •
+   13 declarations_and_statements: declarations_and_statements statement •
 
     $default  reduce using rule 13 (declarations_and_statements)
 
@@ -1506,712 +1481,53 @@ State 91
 
 State 92
 
-   78 expression: LPAR error RPAR •
+   79 expression: LPAR error RPAR •
 
-    $default  reduce using rule 78 (expression)
+    $default  reduce using rule 79 (expression)
 
 
 State 93
 
-   76 expression: LPAR expression RPAR •
+   77 expression: LPAR expression RPAR •
 
-    $default  reduce using rule 76 (expression)
+    $default  reduce using rule 77 (expression)
 
 
 State 94
 
-   77 expression: IDENTIFIER LPAR error • RPAR
+   78 expression: IDENTIFIER LPAR error • RPAR
 
-    RPAR  shift, and go to state 123
+    RPAR  shift, and go to state 124
 
 
 State 95
 
-   71 expression: IDENTIFIER LPAR RPAR •
+   72 expression: IDENTIFIER LPAR RPAR •
 
-    $default  reduce using rule 71 (expression)
+    $default  reduce using rule 72 (expression)
 
 
 State 96
 
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-   70           | IDENTIFIER LPAR expression • RPAR
-
-    BITWISEAND  shift, and go to state 59
-    BITWISEOR   shift, and go to state 60
-    BITWISEXOR  shift, and go to state 61
-    AND         shift, and go to state 62
-    ASSIGN      shift, and go to state 63
-    MUL         shift, and go to state 64
-    COMMA       shift, and go to state 65
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    OR          shift, and go to state 75
-    PLUS        shift, and go to state 76
-    RPAR        shift, and go to state 124
-
-
-State 97
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   58           | expression BITWISEAND expression •
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    EQ     shift, and go to state 67
-    GE     shift, and go to state 68
-    GT     shift, and go to state 69
-    LE     shift, and go to state 70
-    LT     shift, and go to state 71
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    NE     shift, and go to state 74
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 58 (expression)
-
-
-State 98
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   59           | expression BITWISEOR expression •
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    BITWISEAND  shift, and go to state 59
-    BITWISEXOR  shift, and go to state 61
-    MUL         shift, and go to state 64
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    PLUS        shift, and go to state 76
-
-    $default  reduce using rule 59 (expression)
-
-
-State 99
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   60           | expression BITWISEXOR expression •
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    BITWISEAND  shift, and go to state 59
-    MUL         shift, and go to state 64
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    PLUS        shift, and go to state 76
-
-    $default  reduce using rule 60 (expression)
-
-
-State 100
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   57           | expression AND expression •
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    BITWISEAND  shift, and go to state 59
-    BITWISEOR   shift, and go to state 60
-    BITWISEXOR  shift, and go to state 61
-    MUL         shift, and go to state 64
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    PLUS        shift, and go to state 76
-
-    $default  reduce using rule 57 (expression)
-
-
-State 101
-
-   49 expression: expression • ASSIGN expression
-   49           | expression ASSIGN expression •
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    BITWISEAND  shift, and go to state 59
-    BITWISEOR   shift, and go to state 60
-    BITWISEXOR  shift, and go to state 61
-    AND         shift, and go to state 62
-    ASSIGN      shift, and go to state 63
-    MUL         shift, and go to state 64
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    OR          shift, and go to state 75
-    PLUS        shift, and go to state 76
-
-    $default  reduce using rule 49 (expression)
-
-
-State 102
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   53           | expression MUL expression •
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    $default  reduce using rule 53 (expression)
-
-
-State 103
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   50           | expression COMMA expression •
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    BITWISEAND  shift, and go to state 59
-    BITWISEOR   shift, and go to state 60
-    BITWISEXOR  shift, and go to state 61
-    AND         shift, and go to state 62
-    ASSIGN      shift, and go to state 63
-    MUL         shift, and go to state 64
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    OR          shift, and go to state 75
-    PLUS        shift, and go to state 76
-
-    $default  reduce using rule 50 (expression)
-
-
-State 104
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   54           | expression DIV expression •
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    $default  reduce using rule 54 (expression)
-
-
-State 105
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   61           | expression EQ expression •
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    GE     shift, and go to state 68
-    GT     shift, and go to state 69
-    LE     shift, and go to state 70
-    LT     shift, and go to state 71
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 61 (expression)
-
-
-State 106
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   64           | expression GE expression •
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 64 (expression)
-
-
-State 107
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-   66           | expression GT expression •
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 66 (expression)
-
-
-State 108
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   63           | expression LE expression •
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 63 (expression)
-
-
-State 109
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   65           | expression LT expression •
-   66           | expression • GT expression
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 65 (expression)
-
-
-State 110
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   52           | expression MINUS expression •
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL  shift, and go to state 64
-    DIV  shift, and go to state 66
-    MOD  shift, and go to state 73
-
-    $default  reduce using rule 52 (expression)
-
-
-State 111
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   55           | expression MOD expression •
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    $default  reduce using rule 55 (expression)
-
-
-State 112
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   62           | expression NE expression •
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL    shift, and go to state 64
-    DIV    shift, and go to state 66
-    GE     shift, and go to state 68
-    GT     shift, and go to state 69
-    LE     shift, and go to state 70
-    LT     shift, and go to state 71
-    MINUS  shift, and go to state 72
-    MOD    shift, and go to state 73
-    PLUS   shift, and go to state 76
-
-    $default  reduce using rule 62 (expression)
-
-
-State 113
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   56           | expression OR expression •
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    BITWISEAND  shift, and go to state 59
-    BITWISEOR   shift, and go to state 60
-    BITWISEXOR  shift, and go to state 61
-    AND         shift, and go to state 62
-    MUL         shift, and go to state 64
-    DIV         shift, and go to state 66
-    EQ          shift, and go to state 67
-    GE          shift, and go to state 68
-    GT          shift, and go to state 69
-    LE          shift, and go to state 70
-    LT          shift, and go to state 71
-    MINUS       shift, and go to state 72
-    MOD         shift, and go to state 73
-    NE          shift, and go to state 74
-    PLUS        shift, and go to state 76
-
-    $default  reduce using rule 56 (expression)
-
-
-State 114
-
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   51           | expression PLUS expression •
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
-
-    MUL  shift, and go to state 64
-    DIV  shift, and go to state 66
-    MOD  shift, and go to state 73
-
-    $default  reduce using rule 51 (expression)
-
-
-State 115
-
-   17 parameter_list: parameter_list COMMA parameter_declaration •
-
-    $default  reduce using rule 17 (parameter_list)
-
-
-State 116
-
-   37 statement: WHILE LPAR expression • RPAR statement
-   41          | WHILE LPAR expression • RPAR error
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+   71           | IDENTIFIER LPAR expression • RPAR
 
     BITWISEAND  shift, and go to state 59
     BITWISEOR   shift, and go to state 60
@@ -2234,32 +1550,643 @@ State 116
     RPAR        shift, and go to state 125
 
 
-State 117
+State 97
 
-   35 statement: IF LPAR expression • RPAR statement
-   36          | IF LPAR expression • RPAR statement ELSE statement
-   42          | IF LPAR expression • RPAR error
-   43          | IF LPAR expression • RPAR statement ELSE error
-   44          | IF LPAR expression • RPAR error ELSE statement
-   45          | IF LPAR expression • RPAR error ELSE error
-   49 expression: expression • ASSIGN expression
-   50           | expression • COMMA expression
-   51           | expression • PLUS expression
-   52           | expression • MINUS expression
-   53           | expression • MUL expression
-   54           | expression • DIV expression
-   55           | expression • MOD expression
-   56           | expression • OR expression
-   57           | expression • AND expression
-   58           | expression • BITWISEAND expression
-   59           | expression • BITWISEOR expression
-   60           | expression • BITWISEXOR expression
-   61           | expression • EQ expression
-   62           | expression • NE expression
-   63           | expression • LE expression
-   64           | expression • GE expression
-   65           | expression • LT expression
-   66           | expression • GT expression
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   59           | expression BITWISEAND expression •
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    EQ     shift, and go to state 67
+    GE     shift, and go to state 68
+    GT     shift, and go to state 69
+    LE     shift, and go to state 70
+    LT     shift, and go to state 71
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    NE     shift, and go to state 74
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 59 (expression)
+
+
+State 98
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   60           | expression BITWISEOR expression •
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    BITWISEXOR  shift, and go to state 61
+    MUL         shift, and go to state 64
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    PLUS        shift, and go to state 76
+
+    $default  reduce using rule 60 (expression)
+
+
+State 99
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   61           | expression BITWISEXOR expression •
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    MUL         shift, and go to state 64
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    PLUS        shift, and go to state 76
+
+    $default  reduce using rule 61 (expression)
+
+
+State 100
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   58           | expression AND expression •
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    BITWISEOR   shift, and go to state 60
+    BITWISEXOR  shift, and go to state 61
+    MUL         shift, and go to state 64
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    PLUS        shift, and go to state 76
+
+    $default  reduce using rule 58 (expression)
+
+
+State 101
+
+   50 expression: expression • ASSIGN expression
+   50           | expression ASSIGN expression •
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    BITWISEOR   shift, and go to state 60
+    BITWISEXOR  shift, and go to state 61
+    AND         shift, and go to state 62
+    ASSIGN      shift, and go to state 63
+    MUL         shift, and go to state 64
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    OR          shift, and go to state 75
+    PLUS        shift, and go to state 76
+
+    $default  reduce using rule 50 (expression)
+
+
+State 102
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   54           | expression MUL expression •
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    $default  reduce using rule 54 (expression)
+
+
+State 103
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   51           | expression COMMA expression •
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    BITWISEOR   shift, and go to state 60
+    BITWISEXOR  shift, and go to state 61
+    AND         shift, and go to state 62
+    ASSIGN      shift, and go to state 63
+    MUL         shift, and go to state 64
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    OR          shift, and go to state 75
+    PLUS        shift, and go to state 76
+
+    $default  reduce using rule 51 (expression)
+
+
+State 104
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   55           | expression DIV expression •
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    $default  reduce using rule 55 (expression)
+
+
+State 105
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   62           | expression EQ expression •
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    GE     shift, and go to state 68
+    GT     shift, and go to state 69
+    LE     shift, and go to state 70
+    LT     shift, and go to state 71
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 62 (expression)
+
+
+State 106
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   65           | expression GE expression •
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 65 (expression)
+
+
+State 107
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+   67           | expression GT expression •
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 67 (expression)
+
+
+State 108
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   64           | expression LE expression •
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 64 (expression)
+
+
+State 109
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   66           | expression LT expression •
+   67           | expression • GT expression
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 66 (expression)
+
+
+State 110
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   53           | expression MINUS expression •
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL  shift, and go to state 64
+    DIV  shift, and go to state 66
+    MOD  shift, and go to state 73
+
+    $default  reduce using rule 53 (expression)
+
+
+State 111
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   56           | expression MOD expression •
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    $default  reduce using rule 56 (expression)
+
+
+State 112
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   63           | expression NE expression •
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL    shift, and go to state 64
+    DIV    shift, and go to state 66
+    GE     shift, and go to state 68
+    GT     shift, and go to state 69
+    LE     shift, and go to state 70
+    LT     shift, and go to state 71
+    MINUS  shift, and go to state 72
+    MOD    shift, and go to state 73
+    PLUS   shift, and go to state 76
+
+    $default  reduce using rule 63 (expression)
+
+
+State 113
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   57           | expression OR expression •
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    BITWISEOR   shift, and go to state 60
+    BITWISEXOR  shift, and go to state 61
+    AND         shift, and go to state 62
+    MUL         shift, and go to state 64
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    PLUS        shift, and go to state 76
+
+    $default  reduce using rule 57 (expression)
+
+
+State 114
+
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   52           | expression PLUS expression •
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    MUL  shift, and go to state 64
+    DIV  shift, and go to state 66
+    MOD  shift, and go to state 73
+
+    $default  reduce using rule 52 (expression)
+
+
+State 115
+
+   17 parameter_list: parameter_list COMMA parameter_declaration •
+
+    $default  reduce using rule 17 (parameter_list)
+
+
+State 116
+
+   37 statement: WHILE LPAR expression • RPAR statement
+   45          | WHILE LPAR expression • RPAR error SEMI
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
 
     BITWISEAND  shift, and go to state 59
     BITWISEOR   shift, and go to state 60
@@ -2282,6 +2209,54 @@ State 117
     RPAR        shift, and go to state 126
 
 
+State 117
+
+   35 statement: IF LPAR expression • RPAR statement
+   36          | IF LPAR expression • RPAR statement ELSE statement
+   41          | IF LPAR expression • RPAR error SEMI
+   42          | IF LPAR expression • RPAR error SEMI ELSE statement
+   43          | IF LPAR expression • RPAR statement ELSE error SEMI
+   44          | IF LPAR expression • RPAR error SEMI ELSE error SEMI
+   50 expression: expression • ASSIGN expression
+   51           | expression • COMMA expression
+   52           | expression • PLUS expression
+   53           | expression • MINUS expression
+   54           | expression • MUL expression
+   55           | expression • DIV expression
+   56           | expression • MOD expression
+   57           | expression • OR expression
+   58           | expression • AND expression
+   59           | expression • BITWISEAND expression
+   60           | expression • BITWISEOR expression
+   61           | expression • BITWISEXOR expression
+   62           | expression • EQ expression
+   63           | expression • NE expression
+   64           | expression • LE expression
+   65           | expression • GE expression
+   66           | expression • LT expression
+   67           | expression • GT expression
+
+    BITWISEAND  shift, and go to state 59
+    BITWISEOR   shift, and go to state 60
+    BITWISEXOR  shift, and go to state 61
+    AND         shift, and go to state 62
+    ASSIGN      shift, and go to state 63
+    MUL         shift, and go to state 64
+    COMMA       shift, and go to state 65
+    DIV         shift, and go to state 66
+    EQ          shift, and go to state 67
+    GE          shift, and go to state 68
+    GT          shift, and go to state 69
+    LE          shift, and go to state 70
+    LT          shift, and go to state 71
+    MINUS       shift, and go to state 72
+    MOD         shift, and go to state 73
+    NE          shift, and go to state 74
+    OR          shift, and go to state 75
+    PLUS        shift, and go to state 76
+    RPAR        shift, and go to state 127
+
+
 State 118
 
    38 statement: RETURN expression SEMI •
@@ -2298,71 +2273,50 @@ State 119
 
 State 120
 
-   48 statement_repetition: statement_repetition error •
+   49 statement_repetition: error SEMI •
 
-    $default  reduce using rule 48 (statement_repetition)
+    $default  reduce using rule 49 (statement_repetition)
 
 
 State 121
+
+   48 statement_repetition: statement_repetition error • SEMI
+
+    SEMI  shift, and go to state 128
+
+
+State 122
 
    33 statement: LBRACE statement_repetition RBRACE •
 
     $default  reduce using rule 33 (statement)
 
 
-State 122
+State 123
 
    47 statement_repetition: statement_repetition statement •
 
     $default  reduce using rule 47 (statement_repetition)
 
 
-State 123
-
-   77 expression: IDENTIFIER LPAR error RPAR •
-
-    $default  reduce using rule 77 (expression)
-
-
 State 124
 
-   70 expression: IDENTIFIER LPAR expression RPAR •
+   78 expression: IDENTIFIER LPAR error RPAR •
 
-    $default  reduce using rule 70 (expression)
+    $default  reduce using rule 78 (expression)
 
 
 State 125
 
-   37 statement: WHILE LPAR expression RPAR • statement
-   41          | WHILE LPAR expression RPAR • error
+   71 expression: IDENTIFIER LPAR expression RPAR •
 
-    error       shift, and go to state 127
-    WHILE       shift, and go to state 40
-    IF          shift, and go to state 41
-    RETURN      shift, and go to state 42
-    LBRACE      shift, and go to state 43
-    LPAR        shift, and go to state 28
-    MINUS       shift, and go to state 29
-    NOT         shift, and go to state 30
-    PLUS        shift, and go to state 31
-    SEMI        shift, and go to state 45
-    IDENTIFIER  shift, and go to state 32
-    NATURAL     shift, and go to state 33
-    DECIMAL     shift, and go to state 34
-    CHRLIT      shift, and go to state 35
-
-    statement   go to state 128
-    expression  go to state 50
+    $default  reduce using rule 71 (expression)
 
 
 State 126
 
-   35 statement: IF LPAR expression RPAR • statement
-   36          | IF LPAR expression RPAR • statement ELSE statement
-   42          | IF LPAR expression RPAR • error
-   43          | IF LPAR expression RPAR • statement ELSE error
-   44          | IF LPAR expression RPAR • error ELSE statement
-   45          | IF LPAR expression RPAR • error ELSE error
+   37 statement: WHILE LPAR expression RPAR • statement
+   45          | WHILE LPAR expression RPAR • error SEMI
 
     error       shift, and go to state 129
     WHILE       shift, and go to state 40
@@ -2385,111 +2339,176 @@ State 126
 
 State 127
 
-   41 statement: WHILE LPAR expression RPAR error •
+   35 statement: IF LPAR expression RPAR • statement
+   36          | IF LPAR expression RPAR • statement ELSE statement
+   41          | IF LPAR expression RPAR • error SEMI
+   42          | IF LPAR expression RPAR • error SEMI ELSE statement
+   43          | IF LPAR expression RPAR • statement ELSE error SEMI
+   44          | IF LPAR expression RPAR • error SEMI ELSE error SEMI
 
-    $default  reduce using rule 41 (statement)
+    error       shift, and go to state 131
+    WHILE       shift, and go to state 40
+    IF          shift, and go to state 41
+    RETURN      shift, and go to state 42
+    LBRACE      shift, and go to state 43
+    LPAR        shift, and go to state 28
+    MINUS       shift, and go to state 29
+    NOT         shift, and go to state 30
+    PLUS        shift, and go to state 31
+    SEMI        shift, and go to state 45
+    IDENTIFIER  shift, and go to state 32
+    NATURAL     shift, and go to state 33
+    DECIMAL     shift, and go to state 34
+    CHRLIT      shift, and go to state 35
+
+    statement   go to state 132
+    expression  go to state 50
 
 
 State 128
+
+   48 statement_repetition: statement_repetition error SEMI •
+
+    $default  reduce using rule 48 (statement_repetition)
+
+
+State 129
+
+   45 statement: WHILE LPAR expression RPAR error • SEMI
+
+    SEMI  shift, and go to state 133
+
+
+State 130
 
    37 statement: WHILE LPAR expression RPAR statement •
 
     $default  reduce using rule 37 (statement)
 
 
-State 129
-
-   42 statement: IF LPAR expression RPAR error •
-   44          | IF LPAR expression RPAR error • ELSE statement
-   45          | IF LPAR expression RPAR error • ELSE error
-
-    ELSE  shift, and go to state 131
-
-    $default  reduce using rule 42 (statement)
-
-
-State 130
-
-   35 statement: IF LPAR expression RPAR statement •
-   36          | IF LPAR expression RPAR statement • ELSE statement
-   43          | IF LPAR expression RPAR statement • ELSE error
-
-    ELSE  shift, and go to state 132
-
-    $default  reduce using rule 35 (statement)
-
-
 State 131
 
-   44 statement: IF LPAR expression RPAR error ELSE • statement
-   45          | IF LPAR expression RPAR error ELSE • error
+   41 statement: IF LPAR expression RPAR error • SEMI
+   42          | IF LPAR expression RPAR error • SEMI ELSE statement
+   44          | IF LPAR expression RPAR error • SEMI ELSE error SEMI
 
-    error       shift, and go to state 133
-    WHILE       shift, and go to state 40
-    IF          shift, and go to state 41
-    RETURN      shift, and go to state 42
-    LBRACE      shift, and go to state 43
-    LPAR        shift, and go to state 28
-    MINUS       shift, and go to state 29
-    NOT         shift, and go to state 30
-    PLUS        shift, and go to state 31
-    SEMI        shift, and go to state 45
-    IDENTIFIER  shift, and go to state 32
-    NATURAL     shift, and go to state 33
-    DECIMAL     shift, and go to state 34
-    CHRLIT      shift, and go to state 35
-
-    statement   go to state 134
-    expression  go to state 50
+    SEMI  shift, and go to state 134
 
 
 State 132
 
-   36 statement: IF LPAR expression RPAR statement ELSE • statement
-   43          | IF LPAR expression RPAR statement ELSE • error
+   35 statement: IF LPAR expression RPAR statement •
+   36          | IF LPAR expression RPAR statement • ELSE statement
+   43          | IF LPAR expression RPAR statement • ELSE error SEMI
 
-    error       shift, and go to state 135
-    WHILE       shift, and go to state 40
-    IF          shift, and go to state 41
-    RETURN      shift, and go to state 42
-    LBRACE      shift, and go to state 43
-    LPAR        shift, and go to state 28
-    MINUS       shift, and go to state 29
-    NOT         shift, and go to state 30
-    PLUS        shift, and go to state 31
-    SEMI        shift, and go to state 45
-    IDENTIFIER  shift, and go to state 32
-    NATURAL     shift, and go to state 33
-    DECIMAL     shift, and go to state 34
-    CHRLIT      shift, and go to state 35
+    ELSE  shift, and go to state 135
 
-    statement   go to state 136
-    expression  go to state 50
+    $default  reduce using rule 35 (statement)
 
 
 State 133
 
-   45 statement: IF LPAR expression RPAR error ELSE error •
+   45 statement: WHILE LPAR expression RPAR error SEMI •
 
     $default  reduce using rule 45 (statement)
 
 
 State 134
 
-   44 statement: IF LPAR expression RPAR error ELSE statement •
+   41 statement: IF LPAR expression RPAR error SEMI •
+   42          | IF LPAR expression RPAR error SEMI • ELSE statement
+   44          | IF LPAR expression RPAR error SEMI • ELSE error SEMI
 
-    $default  reduce using rule 44 (statement)
+    ELSE  shift, and go to state 136
+
+    $default  reduce using rule 41 (statement)
 
 
 State 135
 
-   43 statement: IF LPAR expression RPAR statement ELSE error •
+   36 statement: IF LPAR expression RPAR statement ELSE • statement
+   43          | IF LPAR expression RPAR statement ELSE • error SEMI
 
-    $default  reduce using rule 43 (statement)
+    error       shift, and go to state 137
+    WHILE       shift, and go to state 40
+    IF          shift, and go to state 41
+    RETURN      shift, and go to state 42
+    LBRACE      shift, and go to state 43
+    LPAR        shift, and go to state 28
+    MINUS       shift, and go to state 29
+    NOT         shift, and go to state 30
+    PLUS        shift, and go to state 31
+    SEMI        shift, and go to state 45
+    IDENTIFIER  shift, and go to state 32
+    NATURAL     shift, and go to state 33
+    DECIMAL     shift, and go to state 34
+    CHRLIT      shift, and go to state 35
+
+    statement   go to state 138
+    expression  go to state 50
 
 
 State 136
 
+   42 statement: IF LPAR expression RPAR error SEMI ELSE • statement
+   44          | IF LPAR expression RPAR error SEMI ELSE • error SEMI
+
+    error       shift, and go to state 139
+    WHILE       shift, and go to state 40
+    IF          shift, and go to state 41
+    RETURN      shift, and go to state 42
+    LBRACE      shift, and go to state 43
+    LPAR        shift, and go to state 28
+    MINUS       shift, and go to state 29
+    NOT         shift, and go to state 30
+    PLUS        shift, and go to state 31
+    SEMI        shift, and go to state 45
+    IDENTIFIER  shift, and go to state 32
+    NATURAL     shift, and go to state 33
+    DECIMAL     shift, and go to state 34
+    CHRLIT      shift, and go to state 35
+
+    statement   go to state 140
+    expression  go to state 50
+
+
+State 137
+
+   43 statement: IF LPAR expression RPAR statement ELSE error • SEMI
+
+    SEMI  shift, and go to state 141
+
+
+State 138
+
    36 statement: IF LPAR expression RPAR statement ELSE statement •
 
     $default  reduce using rule 36 (statement)
+
+
+State 139
+
+   44 statement: IF LPAR expression RPAR error SEMI ELSE error • SEMI
+
+    SEMI  shift, and go to state 142
+
+
+State 140
+
+   42 statement: IF LPAR expression RPAR error SEMI ELSE statement •
+
+    $default  reduce using rule 42 (statement)
+
+
+State 141
+
+   43 statement: IF LPAR expression RPAR statement ELSE error SEMI •
+
+    $default  reduce using rule 43 (statement)
+
+
+State 142
+
+   44 statement: IF LPAR expression RPAR error SEMI ELSE error SEMI •
+
+    $default  reduce using rule 44 (statement)

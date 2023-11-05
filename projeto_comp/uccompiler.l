@@ -15,7 +15,6 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
 %{
     #include <string.h>
-
     int feedback = 0;
 
     #define YY_USER_ACTION \
@@ -95,7 +94,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
     //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #include "y.tab.h"
-    //? #include "ast.h"
+    #include "ast.h"
 
     int yyparse(void);
     void yyerror(char *);
@@ -104,6 +103,8 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
     int yacc_tkn[] = { BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE, LPAR, LT, MINUS, MOD, NE, NOT, OR, PLUS, RBRACE, RPAR, SEMI, DOUBLE, IF, ELSE, CHAR, VOID, RETURN, WHILE, SHORT, INT };
     #define PASS_TOKEN() yylval.token = strdup(yytext);
+
+    extern struct node *program;
     //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
                      
@@ -148,7 +149,8 @@ int main(int argc, char *argv[]) {
         feedback = 1;
     }
     yyparse();
-    yylex();    /* run the lexical analysis automaton */
+    show(program, 0);
+    // yylex();    /* run the lexical analysis automaton */
     return 0;
 }
 int yywrap() {  /* called on EOF, return 1 to terminate */
