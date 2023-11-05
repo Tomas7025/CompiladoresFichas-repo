@@ -4,13 +4,13 @@
 
 #include "ast.h"
 #include <stdio.h>
+#include <stdlib.h>
 extern int yylex(void);
 void yyerror(char *);
 extern char *yytext;
 
 struct node *program;
 extern char *category_m[];
-
 %}
 
 
@@ -67,8 +67,9 @@ functions_and_declarations: function_defenition                     { $$ = progr
                                                                       struct node_list *aux = $1->children->next;   //Aponta para o 1o de $1
                                                                       while(aux->next) { aux = aux->next; }         //Avança aux para apontar para o ultimo elemento
                                                                       aux->next = $2->children->next;               //Liga ao 1o de funcBody
-                                                                      free($2->children);
-                                                                      free($2);
+                                                                      // free($2->children);
+                                                                      // free($2);
+                                                                      
                                                                       // addchild($1, $2);
                                                                       // $$ = $1;
                                                                     }
@@ -112,8 +113,8 @@ declarations_and_statements: declaration                     { $$ = $1; }
                                                                 aux = aux->next;
                                                                }
                                                                aux->next = $2->children->next;
-                                                               free($2->children);
-                                                               free($2);
+                                                              //  free($2->children);
+                                                              //  free($2);
                                                              }
     | declarations_and_statements statement                  { if($1 != NULL){
                                                                 $$ = $1;
@@ -274,8 +275,10 @@ statement_repetition: statement             { $$ = $1; }
                                               }
                                             }
 
-    | statement_repetition error SEMI       {;}
-    | error SEMI                            {;}
+    | statement_repetition error SEMI       { $$ = newnode(Error, NULL); 
+                                              if ($1) addchild($$, $1);
+                                            }
+    | error SEMI                            { $$ = newnode(Store, NULL); }
     ;
 
 expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);

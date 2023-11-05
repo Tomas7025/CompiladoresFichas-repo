@@ -103,8 +103,10 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
     int yacc_tkn[] = { BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE, LPAR, LT, MINUS, MOD, NE, NOT, OR, PLUS, RBRACE, RPAR, SEMI, DOUBLE, IF, ELSE, CHAR, VOID, RETURN, WHILE, SHORT, INT };
     #define PASS_TOKEN() yylval.token = strdup(yytext);
+    struct node_list *gc;
 
     extern struct node *program;
+    extern char *category_m[];
     //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
                      
@@ -145,17 +147,29 @@ void yyerror(char *error) {
 extern int yylex();
 int main(int argc, char *argv[]) {
 
+    gc = (struct node_list *) malloc(sizeof(struct node_list));
+    gc->node = NULL;
+    gc->next = NULL;
+
     if (argc >= 2 && strcmp(argv[1], "-l") == 0) {
         feedback = 1;
     }
     
-    
-
     yyparse();
 
     if (argc >= 2 && strcmp(argv[1], "-t") == 0) {
         if (errors == 0) show(program, 0);
     }
+
+    struct node_list *cursor = gc->next;
+    // if (gc->next->node->category) printf("DEBUG\n");
+    int c = 0;
+    while (cursor) {
+        printf("%s(%s) -> ", category_m[cursor->node->category], cursor->node->token);
+        cursor = cursor->next;
+        c++;
+    }
+    printf("\nNr de elementos: %d\n", c);
 
     // yylex();    /* run the lexical analysis automaton */
     return 0;

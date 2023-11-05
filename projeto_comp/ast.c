@@ -3,6 +3,8 @@
 #include "ast.h"
 
 char *category_m[] = category_map;
+extern struct node_list *gc;
+
 
 // create a node of a given category with a given lexical symbol
 struct node *newnode(enum category category, char *token) {
@@ -12,6 +14,9 @@ struct node *newnode(enum category category, char *token) {
     new->children = malloc(sizeof(struct node_list));
     new->children->node = NULL;
     new->children->next = NULL;
+
+    add_gc(new);
+
     return new;
 }
 
@@ -43,4 +48,27 @@ void show(struct node *node, int depth){
     show(child->node, depth + 1);
     child = child->next;
   }
+}
+
+void clear(struct node *node) {
+  if (node == NULL) return;
+  struct node_list *cursor = node->children->next;   // 1o elemento de node
+  struct node_list *aux;
+  while (cursor) {
+    clear(cursor->node);            // Chama clear para os seus filhos
+    aux = cursor->next;             // Guarda o seguinte
+    free(cursor);                   // Liberta o atual
+    cursor = aux;                   // cursor avança
+  }
+  free(node->children);
+  free(node);
+}
+
+void add_gc(struct node *node) {
+  struct node_list *cursor = gc;
+  while (cursor->next) cursor = cursor->next;                                       // avanca para o final do gc
+  struct node_list *temp = (struct node_list *)malloc(sizeof(struct node_list));    // alloc no novo node de node_list
+  temp->node = node;                                                                // node desse novo passa a ser node
+  temp->next = NULL;           
+  cursor->next = temp;                                                     // o proximo é NULL
 }
