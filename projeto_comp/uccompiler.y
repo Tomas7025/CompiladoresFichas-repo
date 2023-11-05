@@ -10,7 +10,6 @@ extern char *yytext;
 
 struct node *program;
 extern char *category_m[];
-// char l_category[][20] = { "Program", "Function", "Parameters", "Parameter", "Arguments", "Integer", "Double", "Identifier", "Natural", "Decimal", "Call", "If", "Add", "Sub", "Mul", "Div" };
 
 %}
 
@@ -41,6 +40,7 @@ extern char *category_m[];
 %left MUL DIV MOD
 %right NOT
 
+%nonassoc POLARITY
 
 /* START grammar rules section -- BNF grammar */
 
@@ -140,6 +140,7 @@ parameter_declaration: typespec IDENTIFIER                   { $$ = newnode(Para
 
 declaration: typespec declarator_repetition SEMI             {
                                                                 struct node_list *aux = $2->children->next;                                         // Aponta para o primeiro filho do node FuncBody
+
                                                                 while(aux != NULL){                                                                 // Percorre os filhos dele
                                                                     struct node_list* temp = (struct node_list*)malloc(sizeof(struct node_list));   // Cria um novo node_list
                                                                     temp->node = $1;                                                                // Que guarda o TypeSpec
@@ -169,12 +170,12 @@ typespec: CHAR                                               { $$ = newnode(Char
     | DOUBLE                                                 { $$ = newnode(Double, NULL); }
     ;
 
-declarator: IDENTIFIER ASSIGN expression                     { printf("DEBUGGG: %s\n", category_m[$3->category]);
-                                                                $$ = newnode(Declaration, NULL);                 // Declaration
-                                                               addchild($$, newnode(Identifier, $1));          //   /      \   
-                                                               addchild($$, $3);                            // ID           EXP
+declarator: IDENTIFIER ASSIGN expression                     {  $$ = newnode(Declaration, NULL);      
+                                                                addchild($$, newnode(Identifier, $1));
+                                                                addchild($$, $3);
                                                              }
-    | IDENTIFIER                                             { $$ = newnode(Declaration, NULL);             // Declaration
+    | IDENTIFIER                                             { 
+                                                               $$ = newnode(Declaration, NULL);             // Declaration
                                                                addchild($$, newnode(Identifier, $1));       //   | ID               
                                                              } 
     ;
@@ -304,10 +305,10 @@ expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);
                                               addchild($$, $3); 
                                             }
     
-    | PLUS expression                       { $$ = newnode(Plus, NULL);
+    | PLUS expression %prec POLARITY        { $$ = newnode(Plus, NULL);
                                               addchild($$, $2); 
                                             }
-    | MINUS expression                      { $$ = newnode(Minus, NULL);
+    | MINUS expression %prec POLARITY       { $$ = newnode(Minus, NULL);
                                               addchild($$, $2); 
                                             }
     | NOT expression                        { $$ = newnode(Not, NULL);

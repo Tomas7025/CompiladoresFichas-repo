@@ -163,7 +163,8 @@ extern int yydebug;
     NATURAL = 293,                 /* NATURAL  */
     DECIMAL = 294,                 /* DECIMAL  */
     CHRLIT = 295,                  /* CHRLIT  */
-    LOGIC = 296                    /* LOGIC  */
+    LOGIC = 296,                   /* LOGIC  */
+    POLARITY = 297                 /* POLARITY  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -211,6 +212,7 @@ extern int yydebug;
 #define DECIMAL 294
 #define CHRLIT 295
 #define LOGIC 296
+#define POLARITY 297
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -221,7 +223,7 @@ union YYSTYPE
     char *token;
     struct node *node;
 
-#line 225 "y.tab.c"
+#line 227 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -283,22 +285,23 @@ enum yysymbol_kind_t
   YYSYMBOL_DECIMAL = 39,                   /* DECIMAL  */
   YYSYMBOL_CHRLIT = 40,                    /* CHRLIT  */
   YYSYMBOL_LOGIC = 41,                     /* LOGIC  */
-  YYSYMBOL_YYACCEPT = 42,                  /* $accept  */
-  YYSYMBOL_functions_and_declarations = 43, /* functions_and_declarations  */
-  YYSYMBOL_function_defenition = 44,       /* function_defenition  */
-  YYSYMBOL_function_body = 45,             /* function_body  */
-  YYSYMBOL_declarations_and_statements = 46, /* declarations_and_statements  */
-  YYSYMBOL_function_declaration = 47,      /* function_declaration  */
-  YYSYMBOL_function_declarator = 48,       /* function_declarator  */
-  YYSYMBOL_parameter_list = 49,            /* parameter_list  */
-  YYSYMBOL_parameter_declaration = 50,     /* parameter_declaration  */
-  YYSYMBOL_declaration = 51,               /* declaration  */
-  YYSYMBOL_declarator_repetition = 52,     /* declarator_repetition  */
-  YYSYMBOL_typespec = 53,                  /* typespec  */
-  YYSYMBOL_declarator = 54,                /* declarator  */
-  YYSYMBOL_statement = 55,                 /* statement  */
-  YYSYMBOL_statement_repetition = 56,      /* statement_repetition  */
-  YYSYMBOL_expression = 57                 /* expression  */
+  YYSYMBOL_POLARITY = 42,                  /* POLARITY  */
+  YYSYMBOL_YYACCEPT = 43,                  /* $accept  */
+  YYSYMBOL_functions_and_declarations = 44, /* functions_and_declarations  */
+  YYSYMBOL_function_defenition = 45,       /* function_defenition  */
+  YYSYMBOL_function_body = 46,             /* function_body  */
+  YYSYMBOL_declarations_and_statements = 47, /* declarations_and_statements  */
+  YYSYMBOL_function_declaration = 48,      /* function_declaration  */
+  YYSYMBOL_function_declarator = 49,       /* function_declarator  */
+  YYSYMBOL_parameter_list = 50,            /* parameter_list  */
+  YYSYMBOL_parameter_declaration = 51,     /* parameter_declaration  */
+  YYSYMBOL_declaration = 52,               /* declaration  */
+  YYSYMBOL_declarator_repetition = 53,     /* declarator_repetition  */
+  YYSYMBOL_typespec = 54,                  /* typespec  */
+  YYSYMBOL_declarator = 55,                /* declarator  */
+  YYSYMBOL_statement = 56,                 /* statement  */
+  YYSYMBOL_statement_repetition = 57,      /* statement_repetition  */
+  YYSYMBOL_expression = 58                 /* expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -629,7 +632,7 @@ union yyalloc
 #define YYLAST   620
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  42
+#define YYNTOKENS  43
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  16
 /* YYNRULES -- Number of rules.  */
@@ -638,7 +641,7 @@ union yyalloc
 #define YYNSTATES  143
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   296
+#define YYMAXUTOK   297
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -681,22 +684,22 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41
+      35,    36,    37,    38,    39,    40,    41,    42
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    49,    49,    52,    55,    58,    61,    64,    70,    83,
-      84,    88,    89,    92,   100,   106,   117,   124,   127,   132,
-     136,   141,   153,   156,   160,   165,   166,   167,   168,   169,
-     172,   177,   182,   183,   184,   185,   186,   191,   196,   200,
-     203,   206,   209,   210,   211,   212,   213,   216,   217,   227,
-     228,   231,   235,   240,   244,   248,   252,   256,   261,   265,
-     269,   273,   277,   282,   286,   290,   294,   298,   302,   307,
-     310,   313,   317,   321,   325,   326,   327,   328,   329,   331,
-     332
+       0,    50,    50,    53,    56,    59,    62,    65,    71,    84,
+      85,    89,    90,    93,   101,   107,   118,   125,   128,   133,
+     137,   142,   155,   158,   162,   167,   168,   169,   170,   171,
+     174,   178,   184,   185,   186,   187,   188,   193,   198,   202,
+     205,   208,   211,   212,   213,   214,   215,   218,   219,   229,
+     230,   233,   237,   242,   246,   250,   254,   258,   263,   267,
+     271,   275,   279,   284,   288,   292,   296,   300,   304,   309,
+     312,   315,   319,   323,   327,   328,   329,   330,   331,   333,
+     334
 };
 #endif
 
@@ -717,7 +720,7 @@ static const char *const yytname[] =
   "BITWISEOR", "BITWISEXOR", "AND", "ASSIGN", "MUL", "COMMA", "DIV", "EQ",
   "GE", "GT", "LBRACE", "LE", "LPAR", "LT", "MINUS", "MOD", "NE", "NOT",
   "OR", "PLUS", "RBRACE", "RPAR", "SEMI", "RESERVED", "IDENTIFIER",
-  "NATURAL", "DECIMAL", "CHRLIT", "LOGIC", "$accept",
+  "NATURAL", "DECIMAL", "CHRLIT", "LOGIC", "POLARITY", "$accept",
   "functions_and_declarations", "function_defenition", "function_body",
   "declarations_and_statements", "function_declaration",
   "function_declarator", "parameter_list", "parameter_declaration",
@@ -751,7 +754,7 @@ static const yytype_int16 yypact[] =
      -44,   562,   609,    71,   -44,   -44,    -1,   -44,   128,   562,
      562,   562,     7,   -44,   -44,   -44,   469,    -9,   -44,     0,
       17,    41,   208,   151,   -44,   -44,   111,   -44,    -1,   -44,
-     329,    54,   -44,    51,   377,     2,   -44,     2,     1,   562,
+     329,    54,   -44,    51,   377,   -44,   -44,   -44,     1,   562,
      562,   562,   562,   562,   562,   562,   562,   562,   562,   562,
      562,   562,   562,   562,   562,   562,   562,   609,   -44,   -44,
      562,   562,   -44,   353,    36,   -44,   -44,   191,   -44,   -44,
@@ -940,35 +943,35 @@ static const yytype_int16 yycheck[] =
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     1,     3,     7,     8,     9,    11,    43,    44,    47,
-      51,    53,    35,     0,    44,    47,    51,    37,    48,    52,
-      54,    16,    25,    23,    35,    45,    18,    35,    25,    27,
-      30,    32,    37,    38,    39,    40,    57,    49,    50,    53,
-       5,     6,    10,    23,    33,    35,    46,    51,    53,    55,
-      57,    37,    54,     1,    57,    57,    57,    57,    25,    12,
+       0,     1,     3,     7,     8,     9,    11,    44,    45,    48,
+      52,    54,    35,     0,    45,    48,    52,    37,    49,    53,
+      55,    16,    25,    23,    35,    46,    18,    35,    25,    27,
+      30,    32,    37,    38,    39,    40,    58,    50,    51,    54,
+       5,     6,    10,    23,    33,    35,    47,    52,    54,    56,
+      58,    37,    55,     1,    58,    58,    58,    58,    25,    12,
       13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
       24,    26,    27,    28,    29,    31,    32,    18,    34,    37,
-      25,    25,    35,    57,     1,    33,    55,    56,    33,    51,
-      55,    35,    34,    34,     1,    34,    57,    57,    57,    57,
-      57,    57,    57,    57,    57,    57,    57,    57,    57,    57,
-      57,    57,    57,    57,    57,    50,    57,    57,    35,    33,
-      35,     1,    33,    55,    34,    34,    34,    34,    35,     1,
-      55,     1,    55,    35,    35,     4,     4,     1,    55,     1,
-      55,    35,    35
+      25,    25,    35,    58,     1,    33,    56,    57,    33,    52,
+      56,    35,    34,    34,     1,    34,    58,    58,    58,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    58,
+      58,    58,    58,    58,    58,    51,    58,    58,    35,    33,
+      35,     1,    33,    56,    34,    34,    34,    34,    35,     1,
+      56,     1,    56,    35,    35,     4,     4,     1,    56,     1,
+      56,    35,    35
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    42,    43,    43,    43,    43,    43,    43,    44,    45,
-      45,    46,    46,    46,    46,    47,    48,    49,    49,    50,
-      50,    51,    51,    52,    52,    53,    53,    53,    53,    53,
-      54,    54,    55,    55,    55,    55,    55,    55,    55,    55,
-      55,    55,    55,    55,    55,    55,    55,    56,    56,    56,
-      56,    57,    57,    57,    57,    57,    57,    57,    57,    57,
-      57,    57,    57,    57,    57,    57,    57,    57,    57,    57,
-      57,    57,    57,    57,    57,    57,    57,    57,    57,    57,
-      57
+       0,    43,    44,    44,    44,    44,    44,    44,    45,    46,
+      46,    47,    47,    47,    47,    48,    49,    50,    50,    51,
+      51,    52,    52,    53,    53,    54,    54,    54,    54,    54,
+      55,    55,    56,    56,    56,    56,    56,    56,    56,    56,
+      56,    56,    56,    56,    56,    56,    56,    57,    57,    57,
+      57,    58,    58,    58,    58,    58,    58,    58,    58,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    58,
+      58
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1446,55 +1449,55 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* functions_and_declarations: function_defenition  */
-#line 49 "uccompiler.y"
+#line 50 "uccompiler.y"
                                                                     { (yyval.node) = program = newnode(Program, NULL); 
                                                                       addchild((yyval.node), (yyvsp[0].node));
                                                                     }
-#line 1454 "y.tab.c"
+#line 1457 "y.tab.c"
     break;
 
   case 3: /* functions_and_declarations: function_declaration  */
-#line 52 "uccompiler.y"
+#line 53 "uccompiler.y"
                                                                     { (yyval.node) = program = newnode(Program, NULL); 
                                                                       addchild((yyval.node), (yyvsp[0].node));
                                                                     }
-#line 1462 "y.tab.c"
+#line 1465 "y.tab.c"
     break;
 
   case 4: /* functions_and_declarations: declaration  */
-#line 55 "uccompiler.y"
+#line 56 "uccompiler.y"
                                                                     { (yyval.node) = program = newnode(Program, NULL); 
                                                                       addchild((yyval.node), (yyvsp[0].node));
                                                                     }
-#line 1470 "y.tab.c"
+#line 1473 "y.tab.c"
     break;
 
   case 5: /* functions_and_declarations: functions_and_declarations function_defenition  */
-#line 58 "uccompiler.y"
+#line 59 "uccompiler.y"
                                                                     { addchild((yyvsp[-1].node), (yyvsp[0].node));
                                                                       (yyval.node) = (yyvsp[-1].node);
                                                                     }
-#line 1478 "y.tab.c"
+#line 1481 "y.tab.c"
     break;
 
   case 6: /* functions_and_declarations: functions_and_declarations function_declaration  */
-#line 61 "uccompiler.y"
+#line 62 "uccompiler.y"
                                                                     { addchild((yyvsp[-1].node), (yyvsp[0].node));
                                                                       (yyval.node) = (yyvsp[-1].node);
                                                                     }
-#line 1486 "y.tab.c"
+#line 1489 "y.tab.c"
     break;
 
   case 7: /* functions_and_declarations: functions_and_declarations declaration  */
-#line 64 "uccompiler.y"
+#line 65 "uccompiler.y"
                                                                     { addchild((yyvsp[-1].node), (yyvsp[0].node));
                                                                       (yyval.node) = (yyvsp[-1].node);
                                                                     }
-#line 1494 "y.tab.c"
+#line 1497 "y.tab.c"
     break;
 
   case 8: /* function_defenition: typespec function_declarator function_body  */
-#line 70 "uccompiler.y"
+#line 71 "uccompiler.y"
                                                                     { (yyval.node) = (yyvsp[-1].node); 
                                                                       (yyval.node)->category = FuncDefinition;
                                                                       // Insere typespec no inicio
@@ -1505,37 +1508,37 @@ yyreduce:
                                                                       
                                                                       addchild((yyval.node), (yyvsp[0].node));
                                                                     }
-#line 1509 "y.tab.c"
+#line 1512 "y.tab.c"
     break;
 
   case 9: /* function_body: LBRACE declarations_and_statements RBRACE  */
-#line 83 "uccompiler.y"
+#line 84 "uccompiler.y"
                                                              { (yyval.node) = (yyvsp[-1].node);}
-#line 1515 "y.tab.c"
+#line 1518 "y.tab.c"
     break;
 
   case 10: /* function_body: LBRACE RBRACE  */
-#line 84 "uccompiler.y"
+#line 85 "uccompiler.y"
                                                              { (yyval.node) = newnode(FuncBody, NULL); }
-#line 1521 "y.tab.c"
+#line 1524 "y.tab.c"
     break;
 
   case 11: /* declarations_and_statements: declaration  */
-#line 88 "uccompiler.y"
+#line 89 "uccompiler.y"
                                                              { (yyval.node) = (yyvsp[0].node); }
-#line 1527 "y.tab.c"
+#line 1530 "y.tab.c"
     break;
 
   case 12: /* declarations_and_statements: statement  */
-#line 89 "uccompiler.y"
+#line 90 "uccompiler.y"
                                                              { (yyval.node) = newnode(FuncBody, NULL);
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1535 "y.tab.c"
+#line 1538 "y.tab.c"
     break;
 
   case 13: /* declarations_and_statements: declarations_and_statements declaration  */
-#line 92 "uccompiler.y"
+#line 93 "uccompiler.y"
                                                              { struct node_list *aux = (yyval.node)->children; 
                                                                while (aux->next != NULL) {
                                                                 aux = aux->next;
@@ -1544,19 +1547,19 @@ yyreduce:
                                                                free((yyvsp[0].node)->children);
                                                                free((yyvsp[0].node));
                                                              }
-#line 1548 "y.tab.c"
+#line 1551 "y.tab.c"
     break;
 
   case 14: /* declarations_and_statements: declarations_and_statements statement  */
-#line 100 "uccompiler.y"
+#line 101 "uccompiler.y"
                                                              { (yyval.node) = (yyvsp[-1].node);
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1556 "y.tab.c"
+#line 1559 "y.tab.c"
     break;
 
   case 15: /* function_declaration: typespec function_declarator SEMI  */
-#line 106 "uccompiler.y"
+#line 107 "uccompiler.y"
                                                              { (yyval.node) = (yyvsp[-1].node);
                                                                (yyval.node)->category = FuncDeclaration;
                                                                // Insere typespec no inicio
@@ -1565,55 +1568,56 @@ yyreduce:
                                                                temp->next = (yyval.node)->children->next;
                                                                (yyval.node)->children->next = temp;
                                                              }
-#line 1569 "y.tab.c"
+#line 1572 "y.tab.c"
     break;
 
   case 16: /* function_declarator: IDENTIFIER LPAR parameter_list RPAR  */
-#line 117 "uccompiler.y"
+#line 118 "uccompiler.y"
                                                              { (yyval.node) = newnode(Null, NULL);
                                                                addchild((yyval.node), newnode(Identifier, (yyvsp[-3].token)));
                                                                addchild((yyval.node), (yyvsp[-1].node));
                                                              }
-#line 1578 "y.tab.c"
+#line 1581 "y.tab.c"
     break;
 
   case 17: /* parameter_list: parameter_declaration  */
-#line 124 "uccompiler.y"
+#line 125 "uccompiler.y"
                                                              { (yyval.node) = newnode(ParamList, NULL); 
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1586 "y.tab.c"
+#line 1589 "y.tab.c"
     break;
 
   case 18: /* parameter_list: parameter_list COMMA parameter_declaration  */
-#line 127 "uccompiler.y"
+#line 128 "uccompiler.y"
                                                              { addchild((yyvsp[-2].node), (yyvsp[0].node)); 
                                                                (yyval.node) = (yyvsp[-2].node);
                                                              }
-#line 1594 "y.tab.c"
+#line 1597 "y.tab.c"
     break;
 
   case 19: /* parameter_declaration: typespec IDENTIFIER  */
-#line 132 "uccompiler.y"
+#line 133 "uccompiler.y"
                                                              { (yyval.node) = newnode(ParamDeclaration, NULL); 
                                                                addchild((yyval.node), (yyvsp[-1].node));
                                                                addchild((yyval.node), newnode(Identifier, (yyvsp[0].token)));
                                                              }
-#line 1603 "y.tab.c"
+#line 1606 "y.tab.c"
     break;
 
   case 20: /* parameter_declaration: typespec  */
-#line 136 "uccompiler.y"
+#line 137 "uccompiler.y"
                                                              { (yyval.node) = newnode(ParamDeclaration, NULL); 
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1611 "y.tab.c"
+#line 1614 "y.tab.c"
     break;
 
   case 21: /* declaration: typespec declarator_repetition SEMI  */
-#line 141 "uccompiler.y"
+#line 142 "uccompiler.y"
                                                              {
                                                                 struct node_list *aux = (yyvsp[-1].node)->children->next;                                         // Aponta para o primeiro filho do node FuncBody
+
                                                                 while(aux != NULL){                                                                 // Percorre os filhos dele
                                                                     struct node_list* temp = (struct node_list*)malloc(sizeof(struct node_list));   // Cria um novo node_list
                                                                     temp->node = (yyvsp[-2].node);                                                                // Que guarda o TypeSpec
@@ -1624,193 +1628,193 @@ yyreduce:
                                                                 }
                                                                 (yyval.node) = (yyvsp[-1].node);                                                                            // Passa para $$ o FuncBody
                                                              }
-#line 1628 "y.tab.c"
+#line 1632 "y.tab.c"
     break;
 
   case 22: /* declaration: error SEMI  */
-#line 153 "uccompiler.y"
+#line 155 "uccompiler.y"
                                                              {;}
-#line 1634 "y.tab.c"
+#line 1638 "y.tab.c"
     break;
 
   case 23: /* declarator_repetition: declarator  */
-#line 156 "uccompiler.y"
+#line 158 "uccompiler.y"
                                                              {             
                                                                (yyval.node) = newnode(FuncBody, NULL);
                                                                addchild((yyval.node), (yyvsp[0].node));            
                                                              }
-#line 1643 "y.tab.c"
+#line 1647 "y.tab.c"
     break;
 
   case 24: /* declarator_repetition: declarator_repetition COMMA declarator  */
-#line 160 "uccompiler.y"
+#line 162 "uccompiler.y"
                                                              { addchild((yyvsp[-2].node), (yyvsp[0].node)); 
                                                                (yyval.node) = (yyvsp[-2].node);
                                                              }
-#line 1651 "y.tab.c"
+#line 1655 "y.tab.c"
     break;
 
   case 25: /* typespec: CHAR  */
-#line 165 "uccompiler.y"
+#line 167 "uccompiler.y"
                                                              { (yyval.node) = newnode(Char, NULL); }
-#line 1657 "y.tab.c"
+#line 1661 "y.tab.c"
     break;
 
   case 26: /* typespec: INT  */
-#line 166 "uccompiler.y"
+#line 168 "uccompiler.y"
                                                              { (yyval.node) = newnode(Int, NULL); }
-#line 1663 "y.tab.c"
+#line 1667 "y.tab.c"
     break;
 
   case 27: /* typespec: VOID  */
-#line 167 "uccompiler.y"
+#line 169 "uccompiler.y"
                                                              { (yyval.node) = newnode(Void, NULL); }
-#line 1669 "y.tab.c"
+#line 1673 "y.tab.c"
     break;
 
   case 28: /* typespec: SHORT  */
-#line 168 "uccompiler.y"
+#line 170 "uccompiler.y"
                                                              { (yyval.node) = newnode(Short, NULL); }
-#line 1675 "y.tab.c"
+#line 1679 "y.tab.c"
     break;
 
   case 29: /* typespec: DOUBLE  */
-#line 169 "uccompiler.y"
+#line 171 "uccompiler.y"
                                                              { (yyval.node) = newnode(Double, NULL); }
-#line 1681 "y.tab.c"
+#line 1685 "y.tab.c"
     break;
 
   case 30: /* declarator: IDENTIFIER ASSIGN expression  */
-#line 172 "uccompiler.y"
-                                                             { printf("DEBUGGG: %s\n", category_m[(yyvsp[0].node)->category]);
-                                                                (yyval.node) = newnode(Declaration, NULL);                 // Declaration
-                                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-2].token)));          //   /      \   
-                                                               addchild((yyval.node), (yyvsp[0].node));                            // ID           EXP
+#line 174 "uccompiler.y"
+                                                             {  (yyval.node) = newnode(Declaration, NULL);      
+                                                                addchild((yyval.node), newnode(Identifier, (yyvsp[-2].token)));
+                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1691 "y.tab.c"
+#line 1694 "y.tab.c"
     break;
 
   case 31: /* declarator: IDENTIFIER  */
-#line 177 "uccompiler.y"
-                                                             { (yyval.node) = newnode(Declaration, NULL);             // Declaration
+#line 178 "uccompiler.y"
+                                                             { 
+                                                               (yyval.node) = newnode(Declaration, NULL);             // Declaration
                                                                addchild((yyval.node), newnode(Identifier, (yyvsp[0].token)));       //   | ID               
                                                              }
-#line 1699 "y.tab.c"
+#line 1703 "y.tab.c"
     break;
 
   case 32: /* statement: expression SEMI  */
-#line 182 "uccompiler.y"
+#line 184 "uccompiler.y"
                                                              { (yyval.node) = (yyvsp[-1].node); }
-#line 1705 "y.tab.c"
+#line 1709 "y.tab.c"
     break;
 
   case 33: /* statement: SEMI  */
-#line 183 "uccompiler.y"
+#line 185 "uccompiler.y"
                                                              { (yyval.node) = newnode(Null, NULL); }
-#line 1711 "y.tab.c"
+#line 1715 "y.tab.c"
     break;
 
   case 34: /* statement: LBRACE statement_repetition RBRACE  */
-#line 184 "uccompiler.y"
+#line 186 "uccompiler.y"
                                                              { (yyval.node) = (yyvsp[-1].node); }
-#line 1717 "y.tab.c"
+#line 1721 "y.tab.c"
     break;
 
   case 35: /* statement: LBRACE RBRACE  */
-#line 185 "uccompiler.y"
+#line 187 "uccompiler.y"
                                                              { (yyval.node) = newnode(Null, NULL); }
-#line 1723 "y.tab.c"
+#line 1727 "y.tab.c"
     break;
 
   case 36: /* statement: IF LPAR expression RPAR statement  */
-#line 186 "uccompiler.y"
+#line 188 "uccompiler.y"
                                                              { (yyval.node) = newnode(If, NULL);
                                                                addchild((yyval.node), (yyvsp[-2].node));
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                                addchild((yyval.node), newnode(Null, NULL));
                                                              }
-#line 1733 "y.tab.c"
+#line 1737 "y.tab.c"
     break;
 
   case 37: /* statement: IF LPAR expression RPAR statement ELSE statement  */
-#line 191 "uccompiler.y"
+#line 193 "uccompiler.y"
                                                              { (yyval.node) = newnode(If, NULL);
                                                                addchild((yyval.node), (yyvsp[-4].node));
                                                                addchild((yyval.node), (yyvsp[-2].node));
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1743 "y.tab.c"
+#line 1747 "y.tab.c"
     break;
 
   case 38: /* statement: WHILE LPAR expression RPAR statement  */
-#line 196 "uccompiler.y"
+#line 198 "uccompiler.y"
                                                              { (yyval.node) = newnode(While, NULL);
                                                                addchild((yyval.node), (yyvsp[-2].node));
                                                                addchild((yyval.node), (yyvsp[0].node));
                                                              }
-#line 1752 "y.tab.c"
+#line 1756 "y.tab.c"
     break;
 
   case 39: /* statement: RETURN expression SEMI  */
-#line 200 "uccompiler.y"
+#line 202 "uccompiler.y"
                                                              { (yyval.node) = newnode(Return, NULL);
                                                                addchild((yyval.node), (yyvsp[-1].node));
                                                              }
-#line 1760 "y.tab.c"
+#line 1764 "y.tab.c"
     break;
 
   case 40: /* statement: RETURN SEMI  */
-#line 203 "uccompiler.y"
+#line 205 "uccompiler.y"
                                                              { (yyval.node) = newnode(Return, NULL);
                                                                addchild((yyval.node), newnode(Null, NULL));
                                                              }
-#line 1768 "y.tab.c"
+#line 1772 "y.tab.c"
     break;
 
   case 41: /* statement: LBRACE error RBRACE  */
-#line 206 "uccompiler.y"
+#line 208 "uccompiler.y"
                                                              {;}
-#line 1774 "y.tab.c"
+#line 1778 "y.tab.c"
     break;
 
   case 42: /* statement: IF LPAR expression RPAR error SEMI  */
-#line 209 "uccompiler.y"
+#line 211 "uccompiler.y"
                                                               {;}
-#line 1780 "y.tab.c"
+#line 1784 "y.tab.c"
     break;
 
   case 43: /* statement: IF LPAR expression RPAR error SEMI ELSE statement  */
-#line 210 "uccompiler.y"
+#line 212 "uccompiler.y"
                                                               {;}
-#line 1786 "y.tab.c"
+#line 1790 "y.tab.c"
     break;
 
   case 44: /* statement: IF LPAR expression RPAR statement ELSE error SEMI  */
-#line 211 "uccompiler.y"
+#line 213 "uccompiler.y"
                                                               {;}
-#line 1792 "y.tab.c"
+#line 1796 "y.tab.c"
     break;
 
   case 45: /* statement: IF LPAR expression RPAR error SEMI ELSE error SEMI  */
-#line 212 "uccompiler.y"
+#line 214 "uccompiler.y"
                                                               {;}
-#line 1798 "y.tab.c"
+#line 1802 "y.tab.c"
     break;
 
   case 46: /* statement: WHILE LPAR expression RPAR error SEMI  */
-#line 213 "uccompiler.y"
+#line 215 "uccompiler.y"
                                                               {;}
-#line 1804 "y.tab.c"
+#line 1808 "y.tab.c"
     break;
 
   case 47: /* statement_repetition: statement  */
-#line 216 "uccompiler.y"
+#line 218 "uccompiler.y"
                                             { (yyval.node) = (yyvsp[0].node); }
-#line 1810 "y.tab.c"
+#line 1814 "y.tab.c"
     break;
 
   case 48: /* statement_repetition: statement_repetition statement  */
-#line 217 "uccompiler.y"
+#line 219 "uccompiler.y"
                                             { if ((yyvsp[-1].node)->category == StatList)  {
                                                 addchild((yyvsp[-1].node), (yyvsp[0].node));
                                                 (yyval.node) = (yyvsp[-1].node);
@@ -1820,268 +1824,268 @@ yyreduce:
                                                 addchild((yyval.node), (yyvsp[0].node));
                                               }
                                             }
-#line 1824 "y.tab.c"
+#line 1828 "y.tab.c"
     break;
 
   case 49: /* statement_repetition: statement_repetition error SEMI  */
-#line 227 "uccompiler.y"
+#line 229 "uccompiler.y"
                                             {;}
-#line 1830 "y.tab.c"
+#line 1834 "y.tab.c"
     break;
 
   case 50: /* statement_repetition: error SEMI  */
-#line 228 "uccompiler.y"
+#line 230 "uccompiler.y"
                                             {;}
-#line 1836 "y.tab.c"
+#line 1840 "y.tab.c"
     break;
 
   case 51: /* expression: expression ASSIGN expression  */
-#line 231 "uccompiler.y"
+#line 233 "uccompiler.y"
                                             { (yyval.node) = newnode(Store, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1845 "y.tab.c"
+#line 1849 "y.tab.c"
     break;
 
   case 52: /* expression: expression COMMA expression  */
-#line 235 "uccompiler.y"
+#line 237 "uccompiler.y"
                                             { (yyval.node) = newnode(Comma, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1854 "y.tab.c"
+#line 1858 "y.tab.c"
     break;
 
   case 53: /* expression: expression PLUS expression  */
-#line 240 "uccompiler.y"
+#line 242 "uccompiler.y"
                                             { (yyval.node) = newnode(Add, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1863 "y.tab.c"
+#line 1867 "y.tab.c"
     break;
 
   case 54: /* expression: expression MINUS expression  */
-#line 244 "uccompiler.y"
+#line 246 "uccompiler.y"
                                             { (yyval.node) = newnode(Sub, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1872 "y.tab.c"
+#line 1876 "y.tab.c"
     break;
 
   case 55: /* expression: expression MUL expression  */
-#line 248 "uccompiler.y"
+#line 250 "uccompiler.y"
                                             { (yyval.node) = newnode(Mul, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1881 "y.tab.c"
+#line 1885 "y.tab.c"
     break;
 
   case 56: /* expression: expression DIV expression  */
-#line 252 "uccompiler.y"
+#line 254 "uccompiler.y"
                                             { (yyval.node) = newnode(Div, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1890 "y.tab.c"
+#line 1894 "y.tab.c"
     break;
 
   case 57: /* expression: expression MOD expression  */
-#line 256 "uccompiler.y"
+#line 258 "uccompiler.y"
                                             { (yyval.node) = newnode(Mod, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1899 "y.tab.c"
+#line 1903 "y.tab.c"
     break;
 
   case 58: /* expression: expression OR expression  */
-#line 261 "uccompiler.y"
+#line 263 "uccompiler.y"
                                             { (yyval.node) = newnode(Or, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1908 "y.tab.c"
+#line 1912 "y.tab.c"
     break;
 
   case 59: /* expression: expression AND expression  */
-#line 265 "uccompiler.y"
+#line 267 "uccompiler.y"
                                             { (yyval.node) = newnode(And, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1917 "y.tab.c"
+#line 1921 "y.tab.c"
     break;
 
   case 60: /* expression: expression BITWISEAND expression  */
-#line 269 "uccompiler.y"
+#line 271 "uccompiler.y"
                                             { (yyval.node) = newnode(BitWiseAnd, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1926 "y.tab.c"
+#line 1930 "y.tab.c"
     break;
 
   case 61: /* expression: expression BITWISEOR expression  */
-#line 273 "uccompiler.y"
+#line 275 "uccompiler.y"
                                             { (yyval.node) = newnode(BitWiseOr, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1935 "y.tab.c"
+#line 1939 "y.tab.c"
     break;
 
   case 62: /* expression: expression BITWISEXOR expression  */
-#line 277 "uccompiler.y"
+#line 279 "uccompiler.y"
                                             { (yyval.node) = newnode(BitWiseXor, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1944 "y.tab.c"
+#line 1948 "y.tab.c"
     break;
 
   case 63: /* expression: expression EQ expression  */
-#line 282 "uccompiler.y"
+#line 284 "uccompiler.y"
                                             { (yyval.node) = newnode(Eq, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1953 "y.tab.c"
+#line 1957 "y.tab.c"
     break;
 
   case 64: /* expression: expression NE expression  */
-#line 286 "uccompiler.y"
+#line 288 "uccompiler.y"
                                             { (yyval.node) = newnode(Ne, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1962 "y.tab.c"
+#line 1966 "y.tab.c"
     break;
 
   case 65: /* expression: expression LE expression  */
-#line 290 "uccompiler.y"
+#line 292 "uccompiler.y"
                                             { (yyval.node) = newnode(Le, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1971 "y.tab.c"
+#line 1975 "y.tab.c"
     break;
 
   case 66: /* expression: expression GE expression  */
-#line 294 "uccompiler.y"
+#line 296 "uccompiler.y"
                                             { (yyval.node) = newnode(Ge, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1980 "y.tab.c"
+#line 1984 "y.tab.c"
     break;
 
   case 67: /* expression: expression LT expression  */
-#line 298 "uccompiler.y"
+#line 300 "uccompiler.y"
                                             { (yyval.node) = newnode(Lt, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1989 "y.tab.c"
+#line 1993 "y.tab.c"
     break;
 
   case 68: /* expression: expression GT expression  */
-#line 302 "uccompiler.y"
+#line 304 "uccompiler.y"
                                             { (yyval.node) = newnode(Gt, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 1998 "y.tab.c"
+#line 2002 "y.tab.c"
     break;
 
   case 69: /* expression: PLUS expression  */
-#line 307 "uccompiler.y"
+#line 309 "uccompiler.y"
                                             { (yyval.node) = newnode(Plus, NULL);
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 2006 "y.tab.c"
+#line 2010 "y.tab.c"
     break;
 
   case 70: /* expression: MINUS expression  */
-#line 310 "uccompiler.y"
+#line 312 "uccompiler.y"
                                             { (yyval.node) = newnode(Minus, NULL);
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                             }
-#line 2014 "y.tab.c"
+#line 2018 "y.tab.c"
     break;
 
   case 71: /* expression: NOT expression  */
-#line 313 "uccompiler.y"
+#line 315 "uccompiler.y"
                                             { (yyval.node) = newnode(Not, NULL);
                                               addchild((yyval.node), (yyvsp[0].node));  
                                             }
-#line 2022 "y.tab.c"
+#line 2026 "y.tab.c"
     break;
 
   case 72: /* expression: IDENTIFIER LPAR expression RPAR  */
-#line 317 "uccompiler.y"
+#line 319 "uccompiler.y"
                                             { (yyval.node) = newnode(Call, NULL); 
                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-3].token)));
                                               addchild((yyval.node), (yyvsp[-1].node)); 
                                             }
-#line 2031 "y.tab.c"
+#line 2035 "y.tab.c"
     break;
 
   case 73: /* expression: IDENTIFIER LPAR RPAR  */
-#line 321 "uccompiler.y"
+#line 323 "uccompiler.y"
                                             { (yyval.node) = newnode(Call, NULL); 
                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-2].token)));
                                             }
-#line 2039 "y.tab.c"
+#line 2043 "y.tab.c"
     break;
 
   case 74: /* expression: IDENTIFIER  */
-#line 325 "uccompiler.y"
+#line 327 "uccompiler.y"
                                             { (yyval.node) = newnode(Identifier, (yyvsp[0].token)); }
-#line 2045 "y.tab.c"
+#line 2049 "y.tab.c"
     break;
 
   case 75: /* expression: NATURAL  */
-#line 326 "uccompiler.y"
+#line 328 "uccompiler.y"
                                             { (yyval.node) = newnode(Natural, (yyvsp[0].token)); }
-#line 2051 "y.tab.c"
+#line 2055 "y.tab.c"
     break;
 
   case 76: /* expression: CHRLIT  */
-#line 327 "uccompiler.y"
+#line 329 "uccompiler.y"
                                             { (yyval.node) = newnode(ChrLit, (yyvsp[0].token)); }
-#line 2057 "y.tab.c"
+#line 2061 "y.tab.c"
     break;
 
   case 77: /* expression: DECIMAL  */
-#line 328 "uccompiler.y"
+#line 330 "uccompiler.y"
                                             { (yyval.node) = newnode(Decimal, (yyvsp[0].token)); }
-#line 2063 "y.tab.c"
+#line 2067 "y.tab.c"
     break;
 
   case 78: /* expression: LPAR expression RPAR  */
-#line 329 "uccompiler.y"
+#line 331 "uccompiler.y"
                                             { (yyval.node) = (yyvsp[-1].node); }
-#line 2069 "y.tab.c"
+#line 2073 "y.tab.c"
     break;
 
   case 79: /* expression: IDENTIFIER LPAR error RPAR  */
-#line 331 "uccompiler.y"
+#line 333 "uccompiler.y"
                                             { (yyval.node) = newnode(Error, NULL); }
-#line 2075 "y.tab.c"
+#line 2079 "y.tab.c"
     break;
 
   case 80: /* expression: LPAR error RPAR  */
-#line 332 "uccompiler.y"
+#line 334 "uccompiler.y"
                                             { (yyval.node) = newnode(Error, NULL); }
-#line 2081 "y.tab.c"
+#line 2085 "y.tab.c"
     break;
 
 
-#line 2085 "y.tab.c"
+#line 2089 "y.tab.c"
 
       default: break;
     }
@@ -2274,7 +2278,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 336 "uccompiler.y"
+#line 338 "uccompiler.y"
 
 
 
