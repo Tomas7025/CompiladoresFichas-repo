@@ -88,16 +88,26 @@ function_defenition: typespec function_declarator function_body     { $$ = $2;
     ;
 
 
-function_body: LBRACE declarations_and_statements RBRACE     { $$ = $2;}
+function_body: LBRACE declarations_and_statements RBRACE     { if($2 != NULL)
+                                                                $$ = $2;
+                                                               else
+                                                                $$ = newnode(FuncBody, NULL);
+                                                             }
     | LBRACE RBRACE                                          { $$ = newnode(FuncBody, NULL); }
     ;
 
 
 declarations_and_statements: declaration                     { $$ = $1; }
-    | statement                                              { $$ = newnode(FuncBody, NULL);
-                                                               addchild($$, $1);
+    | statement                                              { if ($1 != NULL) {
+                                                                $$ = newnode(FuncBody, NULL);
+                                                                addchild($$, $1);
+                                                               } else
+                                                                $$ = NULL;
                                                              }
-    | declarations_and_statements declaration                { struct node_list *aux = $$->children; 
+    | declarations_and_statements declaration                { 
+                                                               if($1 == NULL)
+                                                                $$ = newnode(FuncBody, NULL);
+                                                               struct node_list *aux = $$->children; 
                                                                while (aux->next != NULL) {
                                                                 aux = aux->next;
                                                                }
@@ -105,8 +115,16 @@ declarations_and_statements: declaration                     { $$ = $1; }
                                                                free($2->children);
                                                                free($2);
                                                              }
-    | declarations_and_statements statement                  { $$ = $1;
-                                                               addchild($$, $2);
+    | declarations_and_statements statement                  { if($1 != NULL){
+                                                                $$ = $1;
+                                                                if($2 != NULL) addchild($$, $2);
+                                                               } else {
+                                                                if ($2 != NULL) {
+                                                                  $$ = newnode(FuncBody, NULL);
+                                                                  addchild($$, $2);
+                                                                } else
+                                                                  $$ = NULL;
+                                                               }
                                                              }
     ;
 
@@ -189,26 +207,39 @@ declarator: IDENTIFIER ASSIGN expression                     {  $$ = newnode(Dec
     ;
 
 statement: expression SEMI                                   { $$ = $1; }
-    | SEMI                                                   { $$ = NULL; }
+    | SEMI                                                    { $$ = NULL; }
     | LBRACE statement_repetition RBRACE                     { $$ = $2; }
-    | LBRACE RBRACE                                          { $$ = NULL; }
+    | LBRACE RBRACE                                           { $$ = NULL; }
     | IF LPAR expression RPAR statement %prec LOGIC          { $$ = newnode(If, NULL);
                                                                addchild($$, $3);
-                                                               if ($5) addchild($$, $5);
-                                                               else addchild($$, newnode(Null, NULL));
+                                                               
+                                                               if ($5 == NULL) 
+                                                                 addchild($$, newnode(Null, NULL));
+                                                                else
+                                                                 addchild($$, $5);
+                                                               
                                                                addchild($$, newnode(Null, NULL));
                                                              }
     | IF LPAR expression RPAR statement ELSE statement       { $$ = newnode(If, NULL);
                                                                addchild($$, $3);
-                                                               if ($5) addchild($$, $5);
-                                                               else addchild($$, newnode(Null, NULL));
-                                                               if ($7) addchild($$, $7);
-                                                               else addchild($$, newnode(Null, NULL));
+                                                               
+                                                               if ($5 == NULL) 
+                                                                 addchild($$, newnode(Null, NULL));
+                                                                else
+                                                                 addchild($$, $5);
+                                                               
+                                                               if ($7 == NULL) 
+                                                                 addchild($$, newnode(Null, NULL));
+                                                                else
+                                                                 addchild($$, $7);
+
                                                              }
     | WHILE LPAR expression RPAR statement                   { $$ = newnode(While, NULL);
                                                                addchild($$, $3);
-                                                               if ($5) addchild($$, $5);
-                                                               else addchild($$, newnode(Null, NULL));
+                                                               if ($5 == NULL) 
+                                                                 addchild($$, newnode(Null, NULL));
+                                                                else
+                                                                 addchild($$, $5);
                                                              }
     | RETURN expression SEMI                                 { $$ = newnode(Return, NULL);
                                                                addchild($$, $2);
@@ -227,27 +258,20 @@ statement: expression SEMI                                   { $$ = $1; }
     ;
 
 statement_repetition: statement             { $$ = $1; }
-    | statement_repetition statement        { 
-                                                if ($1 && $2) {
-                                                  if ($1->category == StatList) {
-                                                    addchild($1, $2);
-                                                    $$ = $1;
-                                                  }
-                                                  else {
-                                                    $$ = newnode(StatList, NULL);
-                                                    addchild($$, $1);
-                                                    addchild($$, $2);
-                                                  }
+    | statement_repetition statement        { if($2 != NULL){
+                                                if ($1 != NULL && $1->category == StatList)  {
+                                                  addchild($1, $2);
+                                                  $$ = $1;
+                                                } else if ($1 != NULL) {
+                                                  $$ = newnode(StatList, NULL);
+                                                  addchild($$, $1);
+                                                  addchild($$, $2);
+                                                } else {
+                                                  $$ = $2;
                                                 }
-      
-                                                // if ($1->category == StatList)  {
-                                                // addchild($1, $2);
-                                                // $$ = $1;
-                                                // } else {
-                                                //   $$ = newnode(StatList, NULL);
-                                                //   addchild($$, $1);
-                                                //   addchild($$, $2);
-                                                // }
+                                              } else {
+                                                $$ = $1;
+                                              }
                                             }
 
     | statement_repetition error SEMI       {;}

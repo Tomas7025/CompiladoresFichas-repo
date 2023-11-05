@@ -2075,8 +2075,15 @@ int main(int argc, char *argv[]) {
     if (argc >= 2 && strcmp(argv[1], "-l") == 0) {
         feedback = 1;
     }
+    
+    
+
     yyparse();
-    show(program, 0);
+
+    if (argc >= 2 && strcmp(argv[1], "-t") == 0) {
+        if (errors == 0) show(program, 0);
+    }
+
     // yylex();    /* run the lexical analysis automaton */
     return 0;
 }
