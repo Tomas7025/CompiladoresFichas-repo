@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -f uccompiler lex.yy.c y.tab.c y.tab.h y.output
-yacc -dv  uccompiler.y
+yacc -dv -Wcounterexamples uccompiler.y
 lex uccompiler.l
 cc -g y.tab.c lex.yy.c ast.c -o  uccompiler
 if [[ $# -eq 1 ]]; then

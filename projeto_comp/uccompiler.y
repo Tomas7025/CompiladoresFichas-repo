@@ -22,12 +22,13 @@ extern char *category_m[];
 // tratar dos reservads
 %token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI RESERVED
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
-%type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression
+%type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression expression_repetition
 
 %nonassoc LOGIC
 %nonassoc ELSE
 
 %left COMMA
+%left ARGS
 %right ASSIGN
 %left OR
 %left AND
@@ -52,8 +53,9 @@ functions_and_declarations: function_defenition                     { $$ = progr
     | function_declaration                                          { $$ = program = newnode(Program, NULL); 
                                                                       addchild($$, $1);
                                                                     }
-    | declaration                                                   { $$ = program = newnode(Program, NULL); 
-                                                                      addchild($$, $1);
+    | declaration                                                   { $$ = $1; 
+                                                                      $$->category = Program;
+                                                                      program = $$;
                                                                     }
     | functions_and_declarations function_defenition                { addchild($1, $2);
                                                                       $$ = $1;
@@ -61,8 +63,14 @@ functions_and_declarations: function_defenition                     { $$ = progr
     | functions_and_declarations function_declaration               { addchild($1, $2);
                                                                       $$ = $1;
                                                                     }
-    | functions_and_declarations declaration                        { addchild($1, $2);
-                                                                      $$ = $1;
+    | functions_and_declarations declaration                        { 
+                                                                      struct node_list *aux = $1->children->next;   //Aponta para o 1o de $1
+                                                                      while(aux->next) { aux = aux->next; }         //Avança aux para apontar para o ultimo elemento
+                                                                      aux->next = $2->children->next;               //Liga ao 1o de funcBody
+                                                                      free($2->children);
+                                                                      free($2);
+                                                                      // addchild($1, $2);
+                                                                      // $$ = $1;
                                                                     }
     ;
 
@@ -87,7 +95,7 @@ function_body: LBRACE declarations_and_statements RBRACE     { $$ = $2;}
 
 declarations_and_statements: declaration                     { $$ = $1; }
     | statement                                              { $$ = newnode(FuncBody, NULL);
-                                                               addchild($$, $1);
+                                                               if ($1->category != Null) addchild($$, $1);
                                                              }
     | declarations_and_statements declaration                { struct node_list *aux = $$->children; 
                                                                while (aux->next != NULL) {
@@ -98,7 +106,7 @@ declarations_and_statements: declaration                     { $$ = $1; }
                                                                free($2);
                                                              }
     | declarations_and_statements statement                  { $$ = $1;
-                                                               addchild($$, $2);
+                                                               if ($1->category != Null) addchild($$, $2);
                                                              }
     ;
 
@@ -236,6 +244,7 @@ expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);
     | expression COMMA expression           { $$ = newnode(Comma, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              // printf("->COMMA<-\n");
                                             }
 
     | expression PLUS expression            { $$ = newnode(Add, NULL);
@@ -315,10 +324,13 @@ expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);
                                               addchild($$, $2);  
                                             }
 
-    | IDENTIFIER LPAR expression RPAR       { $$ = newnode(Call, NULL); 
-                                              addchild($$, newnode(Identifier, $1));
-                                              addchild($$, $3); 
-                                            }
+    | IDENTIFIER LPAR expression_repetition RPAR       { $$ = $3;
+                                                         struct node_list *temp = (struct node_list *) malloc(sizeof(struct node_list));
+                                                         temp->node = newnode(Identifier, $1);
+                                                         temp->next = $3->children->next;
+                                                         $3->children->next = temp;
+                                                        //  printf("->CALL<-\n");
+                                                       }
     | IDENTIFIER LPAR RPAR                  { $$ = newnode(Call, NULL); 
                                               addchild($$, newnode(Identifier, $1));
                                             }
@@ -333,6 +345,13 @@ expression: expression ASSIGN expression    { $$ = newnode(Store, NULL);
     | LPAR error RPAR                       { $$ = newnode(Error, NULL); }
     ;
 
+expression_repetition: expression %prec ARGS                  { $$ = newnode(Call, NULL);
+                                                                addchild($$, $1);
+                                                              }
+  | expression_repetition COMMA expression                    { $$ = $1;
+                                                                addchild($$, $3);
+                                                              }
+  ;
 
 %%
 
