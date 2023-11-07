@@ -161,17 +161,9 @@ int main(int argc, char *argv[]) {
         if (errors == 0) show(program, 0);
     }
 
-    // struct node_list *cursor = gc->next;
-    // // if (gc->next->node->category) printf("DEBUG\n");
-    // int c = 0;
-    // while (cursor) {
-    //     printf("%s(%s) -> ", category_m[cursor->node->category], cursor->node->token);
-    //     cursor = cursor->next;
-    //     c++;
-    // }
-    // printf("\nNr de elementos: %d\n", c);
-
     // yylex();    /* run the lexical analysis automaton */
+    
+    clear();
     return 0;
 }
 int yywrap() {  /* called on EOF, return 1 to terminate */

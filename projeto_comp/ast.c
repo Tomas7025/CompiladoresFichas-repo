@@ -50,18 +50,26 @@ void show(struct node *node, int depth){
   }
 }
 
-void clear(struct node *node) {
-  if (node == NULL) return;
-  struct node_list *cursor = node->children->next;   // 1o elemento de node
+void clear() {
+  struct node_list *cursor = gc;
+  struct node_list *sub_aux, *sub_cursor;
   struct node_list *aux;
   while (cursor) {
-    clear(cursor->node);            // Chama clear para os seus filhos
-    aux = cursor->next;             // Guarda o seguinte
-    free(cursor);                   // Liberta o atual
-    cursor = aux;                   // cursor avança
+    
+    if (cursor->node) {                           // Caso o node do cursor nao seja NULL
+      sub_cursor = cursor->node->children;        // Apaga a sua lista children
+      while (sub_cursor) {
+        sub_aux = sub_cursor->next;
+        free(sub_cursor);
+        sub_cursor = sub_aux;
+      }
+    }
+    aux = cursor->next;
+
+    free(cursor->node);
+    free(cursor);
+    cursor = aux;
   }
-  free(node->children);
-  free(node);
 }
 
 void add_gc(struct node *node) {
@@ -69,6 +77,6 @@ void add_gc(struct node *node) {
   while (cursor->next) cursor = cursor->next;                                       // avanca para o final do gc
   struct node_list *temp = (struct node_list *)malloc(sizeof(struct node_list));    // alloc no novo node de node_list
   temp->node = node;                                                                // node desse novo passa a ser node
-  temp->next = NULL;           
-  cursor->next = temp;                                                     // o proximo é NULL
+  temp->next = NULL;                                                                // o proximo é NULL
+  cursor->next = temp;                                                              
 }
