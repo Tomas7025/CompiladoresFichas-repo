@@ -1,0 +1,1 @@
+func (integer a, integer a, integer c) = 1
