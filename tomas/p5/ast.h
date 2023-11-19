@@ -14,6 +14,7 @@ struct node {
     char *token;
     enum type type;
     struct node_list *children;
+    int token_line, token_column;
 };
 
 struct node_list {

@@ -19,6 +19,7 @@ void addchild(struct node *parent, struct node *child) {
     struct node_list *new = malloc(sizeof(struct node_list));
     new->node = child;
     new->next = NULL;
+    new->node->type = no_type;
     struct node_list *children = parent->children;
     while(children->next != NULL)
         children = children->next;
@@ -43,9 +44,9 @@ void show(struct node *node, int depth) {
     for(i = 0; i < depth; i++)
         printf("__");
     if(node->token == NULL)
-        printf("%s\n", category_name[node->category]);
+        (node->type != no_type ? printf("%s{%s}\n", category_name[node->category], type_name(node->type)) : printf("%s\n", category_name[node->category]));
     else
-        printf("%s(%s)\n", category_name[node->category], node->token);
+        (node->type != no_type ? printf("%s(%s) {%s}\n", category_name[node->category], node->token, type_name(node->type)) : printf("%s(%s)\n", category_name[node->category], node->token));
     struct node_list *child = node->children;
     while((child = child->next) != NULL)
         show(child->node, depth+1);
