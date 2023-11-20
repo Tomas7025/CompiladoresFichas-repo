@@ -1,0 +1,4 @@
+funcao (integer ola, double adeus) = 10 + 10
+
+oliveirinhaDaSerra (integer la) = funcao (12, 10)
+
