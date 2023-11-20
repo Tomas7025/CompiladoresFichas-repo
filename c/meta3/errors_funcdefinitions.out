@@ -1,0 +1,95 @@
+Line 3, column 6: Conflicting types (got void(void), expected int)
+Line 11, column 5: Symbol soma already defined
+Line 15, column 6: Symbol soma already defined
+Line 19, column 5: Symbol soma already defined
+Unexpected error: Parameter symbol required
+Unexpected error: Parameter symbol required
+Unexpected error: Parameter symbol required
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+no_function	int
+soma	int(int,int)
+no_name	void(int,int,int)
+
+===== Function soma Symbol Table =====
+return	int
+i	int	param
+j	int	param
+
+===== Function no_name Symbol Table =====
+return	void
+
+Program
+..Declaration
+....Int
+....Identifier(no_function)
+..FuncDefinition
+....Void
+....Identifier(no_function)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDefinition
+....Int
+....Identifier(soma)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(i)
+......ParamDeclaration
+........Int
+........Identifier(j)
+....FuncBody
+......Return
+........Add - int
+..........Identifier(i) - int
+..........Identifier(j) - int
+..FuncDefinition
+....Int
+....Identifier(soma)
+....ParamList
+......ParamDeclaration
+........Char
+........Identifier(j)
+....FuncBody
+..FuncDefinition
+....Char
+....Identifier(soma)
+....ParamList
+......ParamDeclaration
+........Char
+........Identifier(i)
+......ParamDeclaration
+........Char
+........Identifier(j)
+....FuncBody
+..FuncDefinition
+....Int
+....Identifier(soma)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(i)
+......ParamDeclaration
+........Int
+........Identifier(j)
+....FuncBody
+......Return
+........Add
+..........Identifier(i)
+..........Identifier(j)
+..FuncDefinition
+....Void
+....Identifier(no_name)
+....ParamList
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Int
+....FuncBody
+......Return
+........Null

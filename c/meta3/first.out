@@ -1,0 +1,36 @@
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+main	int(void)
+
+===== Function main Symbol Table =====
+return	int
+i	char
+
+Program
+..FuncDefinition
+....Int
+....Identifier(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Char
+........Identifier(i)
+........ChrLit('A') - int
+......While
+........Le - int
+..........Identifier(i) - char
+..........ChrLit('Z') - int
+........StatList
+..........Call - int
+............Identifier(putchar) - int(int)
+............Identifier(i) - char
+..........Store - char
+............Identifier(i) - char
+............Add - int
+..............Identifier(i) - char
+..............Natural(1) - int
+......Return
+........Natural(0) - int

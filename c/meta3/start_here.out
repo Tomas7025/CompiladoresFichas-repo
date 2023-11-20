@@ -1,0 +1,58 @@
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+a	int
+b	int
+c	double
+d	char
+e	char
+f	short
+g	short(int,double,char,short)
+
+===== Function g Symbol Table =====
+return	short
+h	int	param
+i	double	param
+j	char	param
+k	short	param
+l	int
+
+Program
+..Declaration
+....Int
+....Identifier(a)
+..Declaration
+....Int
+....Identifier(b)
+..Declaration
+....Double
+....Identifier(c)
+..Declaration
+....Char
+....Identifier(d)
+..Declaration
+....Char
+....Identifier(e)
+..Declaration
+....Short
+....Identifier(f)
+..FuncDefinition
+....Short
+....Identifier(g)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(h)
+......ParamDeclaration
+........Double
+........Identifier(i)
+......ParamDeclaration
+........Char
+........Identifier(j)
+......ParamDeclaration
+........Short
+........Identifier(k)
+....FuncBody
+......Declaration
+........Int
+........Identifier(l)
