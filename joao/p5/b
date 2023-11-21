@@ -1,0 +1,6 @@
+#!/bin/bash
+rm -f petit lex.yy.c y.tab.c y.tab.h y.output
+yacc -d -v -t -g --report=all petit.y
+lex petit.l
+cc -g y.tab.c lex.yy.c ast.c semantics.c -o  petit -Wall -Wno-unused-function
+./petit
