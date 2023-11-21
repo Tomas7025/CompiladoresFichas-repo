@@ -1,0 +1,1347 @@
+Line 3, column 33: Invalid use of void type in declaration
+Line 5, column 6: Invalid use of void type in declaration
+Line 7, column 13: Unknown symbol as
+Line 7, column 17: Unknown symbol aasd
+Line 7, column 15: Operator - cannot be applied to types undef, undef
+Line 7, column 23: Operator + cannot be applied to types undef, int
+Line 7, column 11: Operator - cannot be applied to types int, undef
+Line 7, column 6: Invalid use of void type in declaration
+Line 7, column 31: Invalid use of void type in declaration
+Line 8, column 10: Invalid use of void type in declaration
+Line 15, column 20: Unknown symbol c
+Line 15, column 21: Operator >= cannot be applied to types undef, int
+Line 15, column 26: Unknown symbol d
+Line 15, column 27: Operator ^ cannot be applied to types undef, int
+Line 15, column 31: Unknown symbol x
+Line 15, column 32: Operator | cannot be applied to types undef, int
+Line 15, column 36: Unknown symbol x
+Line 15, column 37: Operator & cannot be applied to types undef, int
+Line 17, column 5: Unknown symbol c
+Line 17, column 10: Unknown symbol c
+Line 17, column 9: Operator - cannot be applied to type undef
+Line 17, column 7: Operator = cannot be applied to types undef, undef
+Line 18, column 5: Unknown symbol c
+Line 18, column 10: Unknown symbol c
+Line 18, column 9: Operator - cannot be applied to type undef
+Line 18, column 13: Unknown symbol d
+Line 18, column 12: Operator - cannot be applied to type undef
+Line 18, column 11: Operator % cannot be applied to types undef, undef
+Line 18, column 7: Operator = cannot be applied to types undef, int
+Line 23, column 11: Unknown symbol c
+Line 23, column 12: Operator = cannot be applied to types undef, int
+Line 23, column 15: Unknown symbol d
+Line 23, column 16: Operator = cannot be applied to types undef, int
+Line 25, column 3: Unknown symbol e
+Line 25, column 4: Operator = cannot be applied to types undef, int
+Line 30, column 3: Unknown symbol f
+Line 30, column 4: Operator = cannot be applied to types undef, int
+Line 42, column 3: Unknown symbol x
+Line 42, column 4: Operator = cannot be applied to types undef, int
+Line 42, column 7: Unknown symbol y
+Line 42, column 8: Operator = cannot be applied to types undef, int
+Line 46, column 5: Unknown symbol c
+Line 46, column 5: Conflicting types (got undef, expected int)
+Line 50, column 5: Unknown symbol d
+Line 50, column 5: Conflicting types (got undef, expected int)
+Line 51, column 11: Unknown symbol c
+Line 51, column 12: Operator = cannot be applied to types undef, int
+Line 56, column 8: Unknown symbol i
+Line 56, column 10: Unknown symbol i
+Line 56, column 9: Operator + cannot be applied to types undef, undef
+Line 68, column 9: Unknown symbol num
+Line 68, column 13: Operator == cannot be applied to types undef, int
+Line 76, column 8: Wrong number of arguments to function bola (got 2, required 0)
+Line 80, column 12: Wrong number of arguments to function factorial (got 2, required 1)
+Line 83, column 2: Unknown symbol func1
+Line 83, column 2: Wrong number of arguments to function func1 (got 3, required 0)
+Line 85, column 2: Unknown symbol func2
+Line 85, column 2: Wrong number of arguments to function func2 (got 2, required 0)
+Line 88, column 3: Unknown symbol statement1
+Line 88, column 14: Operator = cannot be applied to types undef, int
+Line 90, column 3: Unknown symbol statement2
+Line 90, column 14: Operator = cannot be applied to types undef, int
+Line 94, column 3: Unknown symbol statement1
+Line 94, column 14: Operator = cannot be applied to types undef, int
+Line 98, column 3: Unknown symbol statement2
+Line 98, column 14: Operator = cannot be applied to types undef, int
+Line 104, column 3: Unknown symbol statement2
+Line 104, column 14: Operator = cannot be applied to types undef, int
+Line 114, column 3: Unknown symbol statement1
+Line 114, column 14: Operator = cannot be applied to types undef, int
+Line 115, column 3: Unknown symbol statement2
+Line 115, column 14: Operator = cannot be applied to types undef, int
+Line 116, column 3: Unknown symbol statement3
+Line 116, column 14: Operator = cannot be applied to types undef, int
+Line 120, column 3: Unknown symbol statement1
+Line 120, column 14: Operator = cannot be applied to types undef, int
+Line 122, column 3: Unknown symbol statement1
+Line 122, column 14: Operator = cannot be applied to types undef, int
+Line 122, column 19: Unknown symbol statement2
+Line 122, column 30: Operator = cannot be applied to types undef, int
+Line 123, column 10: Unknown symbol ctoi
+Line 123, column 10: Wrong number of arguments to function ctoi (got 1, required 0)
+Line 126, column 6: Wrong number of arguments to function tail_recursive_fac (got 1, required 2)
+Line 130, column 2: Conflicting types (got void, expected int)
+Line 139, column 9: Unknown symbol o
+Line 139, column 12: Unknown symbol e
+Line 141, column 16: Unknown symbol abcd
+Line 141, column 16: Conflicting types (got undef, expected int)
+Line 149, column 6: Wrong number of arguments to function chama (got 1, required 0)
+Line 156, column 10: Symbol a already defined
+Line 163, column 16: Unknown symbol r
+Line 163, column 15: Operator = cannot be applied to types char, undef
+Line 174, column 18: Unknown symbol e
+Line 174, column 19: Operator == cannot be applied to types undef, int
+Line 201, column 9: Unknown symbol weird_char
+Line 201, column 9: Wrong number of arguments to function weird_char (got 2, required 0)
+Line 201, column 26: Operator < cannot be applied to types undef, char
+Line 276, column 8: Conflicting types (got double(int), expected double(double))
+Line 277, column 5: Conflicting types (got int(int), expected double(double))
+Line 280, column 10: Conflicting types (got short, expected double)
+Line 287, column 12: Symbol d already defined
+Line 288, column 16: Symbol a already defined
+Line 289, column 11: Symbol b already defined
+Line 289, column 13: Symbol a already defined
+Line 302, column 9: Unknown symbol infinite_putchar
+Line 302, column 9: Wrong number of arguments to function infinite_putchar (got 1, required 0)
+Line 303, column 12: Unknown symbol infinite_putchar
+Line 303, column 12: Wrong number of arguments to function infinite_putchar (got 1, required 0)
+Line 309, column 10: Symbol d already defined
+Line 312, column 6: Symbol a already defined
+Line 312, column 10: Symbol b already defined
+Line 312, column 14: Symbol c already defined
+Line 314, column 8: Symbol d already defined
+Line 316, column 7: Symbol c already defined
+Line 319, column 15: Symbol a already defined
+Line 320, column 10: Symbol c already defined
+Line 322, column 5: Unknown symbol function
+Line 322, column 5: Wrong number of arguments to function function (got 1, required 0)
+Line 322, column 19: Unknown symbol function
+Line 322, column 19: Wrong number of arguments to function function (got 1, required 0)
+Line 322, column 17: Operator + cannot be applied to types undef, undef
+Line 324, column 15: Unknown symbol function
+Line 324, column 15: Wrong number of arguments to function function (got 1, required 0)
+Line 324, column 13: Operator < cannot be applied to types int, undef
+Line 326, column 11: Unknown symbol nao_existe
+Line 326, column 9: Operator % cannot be applied to types double, undef
+Line 336, column 9: Operator ^ cannot be applied to types double, int
+Line 344, column 7: Operator = cannot be applied to types int, double
+Line 345, column 15: Unknown symbol e
+Line 345, column 15: Conflicting types (got undef, expected double)
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+main	int(void)
+a	int
+p	double
+bs	double
+test	double
+abcde	int(int,int,int)
+okokok	int(void)
+new	void(void)
+factorial	int(int)
+recursive_factorial	int(int)
+tail_recursive_fac	int(int,int)
+soma	void(int,char)
+subt	void(int,char,double)
+b	int
+d	int
+c	int
+t	double
+chama	int(void)
+uauu	int(void)
+ctoi	int(char)
+block	char(char,char)
+check_your_priorities	int(int,int,int)
+not_block	char(char,char)
+x	int
+y	int
+z	int
+check_your_decimal	double(double,double)
+main_0	int(void)
+i	int
+j	int
+k	int
+ch0	char
+ch1	char
+ch2	char
+pow	double(double)
+c1	char
+c2	char
+s	short
+f1	char(void)
+blah	int(void)
+df	double(double,double)
+
+===== Function main Symbol Table =====
+return	int
+i	int
+
+===== Function abcde Symbol Table =====
+return	int
+a	int	param
+b	int	param
+i	int	param
+
+===== Function okokok Symbol Table =====
+return	int
+i	int
+
+===== Function factorial Symbol Table =====
+return	int
+number	int	param
+answer	int
+
+===== Function recursive_factorial Symbol Table =====
+return	int
+number	int	param
+
+===== Function tail_recursive_fac Symbol Table =====
+return	int
+number	int	param
+k	int	param
+bola	int
+i	int
+
+===== Function chama Symbol Table =====
+return	int
+
+===== Function uauu Symbol Table =====
+return	int
+a	char
+b	int
+
+===== Function ctoi Symbol Table =====
+return	int
+c	char	param
+
+===== Function block Symbol Table =====
+return	char
+a	char	param
+b	char	param
+
+===== Function check_your_priorities Symbol Table =====
+return	int
+a	int	param
+b	int	param
+d	int	param
+
+===== Function not_block Symbol Table =====
+return	char
+a	char	param
+b	char	param
+
+===== Function check_your_decimal Symbol Table =====
+return	double
+a	double	param
+b	double	param
+PI	double
+
+===== Function main_0 Symbol Table =====
+return	int
+
+===== Function f1 Symbol Table =====
+return	char
+s	short
+i	int
+d	double
+e	double
+a	int
+b	double
+
+===== Function df Symbol Table =====
+return	double
+d	double	param
+dd	double	param
+ch0	int
+calc	int
+ch1	char
+a	char
+b	short
+c	int
+x	double
+
+Program
+..FuncDeclaration
+....Int
+....Identifier(main)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Void
+....Identifier(chara)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(integer)
+......ParamDeclaration
+........Double
+......ParamDeclaration
+........Void
+........Identifier(a)
+......ParamDeclaration
+........Double
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Char
+..Declaration
+....Int
+....Identifier(a)
+....Natural(2) - int
+..Declaration
+....Void
+....Identifier(as)
+....Add - int
+......Natural(2) - int
+......Natural(2) - int
+..Declaration
+....Double
+....Identifier(p)
+....Sub - int
+......Sub - int
+........Sub - int
+..........Natural(2) - int
+..........Natural(2) - int
+........Natural(2) - int
+......Mul - int
+........Mul - int
+..........Natural(2) - int
+..........Natural(2) - int
+........Natural(2) - int
+..Declaration
+....Double
+....Identifier(bs)
+....Add - int
+......Natural(2) - int
+......Natural(2) - int
+..Declaration
+....Double
+....Identifier(test)
+..Declaration
+....Void
+....Identifier(a)
+....Sub - undef
+......Natural(2) - int
+......Add - undef
+........Sub - undef
+..........Identifier(as) - undef
+..........Identifier(aasd) - undef
+........Mul - int
+..........Natural(2) - int
+..........Natural(2) - int
+..Declaration
+....Void
+....Identifier(b)
+..FuncDeclaration
+....Int
+....Identifier(test)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(a)
+......ParamDeclaration
+........Int
+..FuncDefinition
+....Int
+....Identifier(abcde)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Int
+........Identifier(b)
+......ParamDeclaration
+........Int
+........Identifier(i)
+....FuncBody
+......Return
+........Identifier(b) - int
+......While
+........Eq - int
+..........Identifier(i) - int
+..........Natural(0) - int
+........If
+..........Or - int
+............Store - int
+..............Identifier(i) - int
+..............And - int
+................Natural(123) - int
+................And - int
+..................Lt - int
+....................Identifier(i) - int
+....................Natural(2) - int
+..................BitWiseAnd - int
+....................Identifier(i) - int
+....................Natural(1) - int
+............BitWiseOr - int
+..............Identifier(i) - int
+..............Natural(1) - int
+..........Store - int
+............Identifier(i) - int
+............Natural(0123) - int
+..........If
+............Or - int
+..............Eq - int
+................Identifier(a) - int
+................Natural(2) - int
+..............And - int
+................Le - int
+..................Identifier(b) - int
+..................Natural(2) - int
+................Or - int
+..................And - int
+....................Ge - int
+......................Identifier(c) - undef
+......................Natural(3) - int
+....................BitWiseXor - int
+......................Identifier(d) - undef
+......................Natural(0) - int
+..................And - int
+....................BitWiseOr - int
+......................Identifier(x) - undef
+......................Natural(1) - int
+....................BitWiseAnd - int
+......................Identifier(x) - undef
+......................Natural(0) - int
+............StatList
+..............Store - int
+................Identifier(b) - int
+................Not - int
+..................Identifier(b) - int
+..............Store - undef
+................Identifier(c) - undef
+................Minus - undef
+..................Identifier(c) - undef
+..............Store - undef
+................Identifier(c) - undef
+................Mod - int
+..................Minus - undef
+....................Identifier(c) - undef
+..................Minus - undef
+....................Identifier(d) - undef
+............Null
+......StatList
+........Store - int
+..........Identifier(a) - int
+..........Natural(1) - int
+........Store - int
+..........Identifier(b) - int
+..........Natural(2) - int
+......StatList
+........Store - int
+..........Identifier(a) - int
+..........Natural(1) - int
+........Store - int
+..........Identifier(b) - int
+..........Natural(2) - int
+........Store - undef
+..........Identifier(c) - undef
+..........Natural(3) - int
+........Store - undef
+..........Identifier(d) - undef
+..........Natural(4) - int
+......Store - undef
+........Identifier(e) - undef
+........Natural(4) - int
+......Store - undef
+........Identifier(f) - undef
+........Natural(5) - int
+......If
+........Identifier(a) - int
+........Null
+........StatList
+..........Store - int
+............Identifier(a) - int
+............Natural(1) - int
+..........Store - int
+............Identifier(b) - int
+............Natural(2) - int
+......If
+........Identifier(b) - int
+........Null
+........StatList
+..........Store - undef
+............Identifier(x) - undef
+............Natural(1) - int
+..........Store - undef
+............Identifier(y) - undef
+............Natural(2) - int
+......If
+........Identifier(c) - undef
+........Null
+........Null
+......If
+........Identifier(d) - undef
+........StatList
+..........Store - int
+............Identifier(a) - int
+............Natural(1) - int
+..........Store - int
+............Identifier(b) - int
+............Natural(2) - int
+..........Store - undef
+............Identifier(c) - undef
+............Natural(3) - int
+........Null
+..FuncDefinition
+....Int
+....Identifier(okokok)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Identifier(i)
+........Add - undef
+..........Identifier(i) - undef
+..........Identifier(i) - undef
+..FuncDeclaration
+....Void
+....Identifier(new)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Identifier(factorial)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(number)
+....FuncBody
+......Declaration
+........Int
+........Identifier(answer)
+........Natural(1) - int
+......While
+........Ne - int
+..........Identifier(number) - int
+..........Natural(0) - int
+........StatList
+..........Store - int
+............Identifier(answer) - int
+............Mul - int
+..............Identifier(answer) - int
+..............Identifier(number) - int
+..........Store - int
+............Identifier(number) - int
+............Sub - int
+..............Identifier(number) - int
+..............Natural(1) - int
+......Return
+........Identifier(answer) - int
+..FuncDefinition
+....Int
+....Identifier(recursive_factorial)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(number)
+....FuncBody
+......If
+........Eq - int
+..........Identifier(num) - undef
+..........Natural(0) - int
+........Return
+..........Natural(1) - int
+........Null
+......Return
+........Mul - int
+..........Identifier(number) - int
+..........Call - int
+............Identifier(recursive_factorial) - int(int)
+............Identifier(number) - int
+..FuncDefinition
+....Int
+....Identifier(tail_recursive_fac)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(number)
+......ParamDeclaration
+........Int
+........Identifier(k)
+....FuncBody
+......Declaration
+........Int
+........Identifier(bola)
+......Declaration
+........Int
+........Identifier(i)
+........Call - int
+..........Identifier(bola) - int
+..........Natural(2) - int
+..........Natural(3) - int
+......If
+........Eq - int
+..........Identifier(number) - int
+..........Natural(0) - int
+........Return
+..........Natural(1) - int
+........Null
+......Return
+........Call - int
+..........Identifier(factorial) - int(int)
+..........Sub - int
+............Identifier(number) - int
+............Natural(1) - int
+..........Mul - int
+............Identifier(k) - int
+............Identifier(number) - int
+..FuncDefinition
+....Int
+....Identifier(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Call - undef
+........Identifier(func1) - undef
+........Natural(1) - int
+........Natural(2) - int
+........Natural(3) - int
+......Call - undef
+........Identifier(func2) - undef
+........Comma - int
+..........Natural(1) - int
+..........Natural(2) - int
+........Natural(3) - int
+......If
+........Identifier(a) - int
+........Store - undef
+..........Identifier(statement1) - undef
+..........Natural(1) - int
+........Store - undef
+..........Identifier(statement2) - undef
+..........Natural(2) - int
+......If
+........Identifier(a) - int
+........Store - undef
+..........Identifier(statement1) - undef
+..........Natural(1) - int
+........Null
+......If
+........Identifier(a) - int
+........Null
+........Store - undef
+..........Identifier(statement2) - undef
+..........Natural(2) - int
+......If
+........Identifier(a) - int
+........Null
+........Null
+......While
+........Identifier(a) - int
+........Store - undef
+..........Identifier(statement2) - undef
+..........Natural(2) - int
+......While
+........Identifier(a) - int
+........Null
+......While
+........Identifier(a) - int
+........Null
+......While
+........Identifier(a) - int
+........StatList
+..........Store - undef
+............Identifier(statement1) - undef
+............Natural(1) - int
+..........Store - undef
+............Identifier(statement2) - undef
+............Natural(2) - int
+..........Store - undef
+............Identifier(statement3) - undef
+............Natural(3) - int
+......Store - undef
+........Identifier(statement1) - undef
+........Natural(1) - int
+......StatList
+........Store - undef
+..........Identifier(statement1) - undef
+..........Natural(1) - int
+........Store - undef
+..........Identifier(statement2) - undef
+..........Natural(2) - int
+......Declaration
+........Int
+........Identifier(i)
+........Call - undef
+..........Identifier(ctoi) - undef
+..........Call - int
+............Identifier(getchar) - int(void)
+......Call - int
+........Identifier(recursive_factorial) - int(int)
+........Identifier(i) - int
+......Call - int
+........Identifier(tail_recursive_fac) - int(int,int)
+........Identifier(i) - int
+......Call - int
+........Identifier(factorial) - int(int)
+........Identifier(i) - int
+......Return
+........Natural(0) - int
+......Return
+........Null
+..FuncDeclaration
+....Void
+....Identifier(soma)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Char
+........Identifier(b)
+..FuncDeclaration
+....Void
+....Identifier(subt)
+....ParamList
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Char
+......ParamDeclaration
+........Double
+..Declaration
+....Int
+....Identifier(a)
+....Natural(3) - int
+..Declaration
+....Int
+....Identifier(b)
+....Natural(5) - int
+..Declaration
+....Int
+....Identifier(d)
+....Natural(3) - int
+..Declaration
+....Int
+....Identifier(c)
+....Natural(5) - int
+..Declaration
+....Double
+....Identifier(t)
+....Natural(3) - int
+..FuncDefinition
+....Int
+....Identifier(chama)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......If
+........Eq - int
+..........Identifier(o) - undef
+..........Identifier(e) - undef
+........StatList
+..........While
+............Identifier(abcd) - undef
+............Null
+..........Return
+............Identifier(a) - int
+........Null
+......Return
+........Identifier(c) - int
+......Call - int
+........Identifier(chama) - int(void)
+........Natural(4) - int
+......Return
+........Identifier(b) - int
+..FuncDefinition
+....Int
+....Identifier(uauu)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Char
+........Identifier(a)
+........Sub - int
+..........Add - int
+............Minus - int
+..............Natural(4) - int
+............Natural(3) - int
+..........Minus - int
+............Natural(3) - int
+......Declaration
+........Int
+........Identifier(b)
+........Sub - int
+..........Add - int
+............Identifier(a) - char
+............Natural(4) - int
+..........Minus - char
+............Identifier(a) - char
+......Declaration
+........Char
+........Identifier(a)
+........Natural(5) - int
+......Store - char
+........Identifier(a) - char
+........Natural(5) - int
+......Eq - int
+........Identifier(a) - char
+........Natural(5) - int
+......Lt - int
+........Identifier(a) - char
+........Natural(5) - int
+......While
+........Not - int
+..........Identifier(a) - char
+........If
+..........Natural(2) - int
+..........Store - char
+............Identifier(a) - char
+............Add - int
+..............Natural(3) - int
+..............Natural(3) - int
+..........Store - char
+............Identifier(a) - char
+............Identifier(r) - undef
+......While
+........Or - int
+..........And - int
+............Eq - int
+..............Identifier(a) - char
+..............Natural(3) - int
+............Lt - int
+..............Identifier(b) - int
+..............Identifier(a) - char
+..........Lt - int
+............Identifier(a) - char
+............Natural(3) - int
+........StatList
+..........Store - char
+............Identifier(a) - char
+............Identifier(b) - int
+..........Store - int
+............Identifier(b) - int
+............Natural(3) - int
+..........While
+............Natural(1) - int
+............Store - char
+..............Identifier(a) - char
+..............Natural(0) - int
+..........Store - int
+............Identifier(c) - int
+............Natural(5) - int
+......If
+........And - int
+..........Eq - int
+............Identifier(a) - char
+............Natural(3) - int
+..........BitWiseAnd - int
+............Eq - int
+..............Identifier(e) - undef
+..............Natural(3) - int
+............Natural(5) - int
+........Return
+..........Identifier(b) - int
+........Null
+......Return
+........Identifier(a) - char
+..FuncDefinition
+....Int
+....Identifier(ctoi)
+....ParamList
+......ParamDeclaration
+........Char
+........Identifier(c)
+....FuncBody
+......If
+........And - int
+..........Ge - int
+............Identifier(c) - char
+............ChrLit('0') - int
+..........Le - int
+............Identifier(c) - char
+............ChrLit('9') - int
+........Return
+..........Sub - int
+............Identifier(c) - char
+............ChrLit('0') - int
+........Null
+..FuncDefinition
+....Char
+....Identifier(block)
+....ParamList
+......ParamDeclaration
+........Char
+........Identifier(a)
+......ParamDeclaration
+........Char
+........Identifier(b)
+....FuncBody
+......If
+........Lt - int
+..........Identifier(a) - char
+..........Identifier(b) - char
+........StatList
+..........Store - char
+............Identifier(a) - char
+............Sub - int
+..............Identifier(a) - char
+..............Natural(1) - int
+..........Return
+............Identifier(a) - char
+........StatList
+..........Store - char
+............Identifier(b) - char
+............Sub - int
+..............Identifier(b) - char
+..............Natural(1) - int
+..........Return
+............Identifier(b) - char
+..FuncDefinition
+....Int
+....Identifier(check_your_priorities)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Int
+........Identifier(b)
+......ParamDeclaration
+........Int
+........Identifier(d)
+....FuncBody
+......Return
+........Add - int
+..........Add - int
+............Identifier(a) - int
+............Add - int
+..............Mul - int
+................Mul - int
+..................Identifier(b) - int
+..................Add - int
+....................Div - int
+......................Minus - int
+........................Identifier(d) - int
+......................Identifier(c) - int
+....................Natural(3) - int
+................Identifier(d) - int
+..............Identifier(c) - int
+..........Identifier(d) - int
+..FuncDefinition
+....Char
+....Identifier(not_block)
+....ParamList
+......ParamDeclaration
+........Char
+........Identifier(a)
+......ParamDeclaration
+........Char
+........Identifier(b)
+....FuncBody
+......If
+........Lt - int
+..........Call - undef
+............Identifier(weird_char) - undef
+............Identifier(a) - char
+............Identifier(b) - char
+..........Identifier(b) - char
+........Return
+..........Identifier(a) - char
+........Return
+..........Identifier(b) - char
+..Declaration
+....Int
+....Identifier(x)
+..Declaration
+....Int
+....Identifier(y)
+..Declaration
+....Int
+....Identifier(z)
+..FuncDefinition
+....Double
+....Identifier(check_your_decimal)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(a)
+......ParamDeclaration
+........Double
+........Identifier(b)
+....FuncBody
+......Declaration
+........Double
+........Identifier(PI)
+........Decimal(3.14) - double
+......Return
+........Sub - double
+..........Identifier(a) - double
+..........Mul - double
+............Identifier(b) - double
+............Identifier(PI) - double
+..FuncDefinition
+....Int
+....Identifier(main_0)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......While
+........Identifier(a) - int
+........Return
+..........Minus - int
+............Natural(1) - int
+......If
+........Eq - int
+..........Identifier(a) - int
+..........Natural(2) - int
+........Null
+........Null
+......If
+........Eq - int
+..........Identifier(a) - int
+..........Natural(2) - int
+........Return
+..........Identifier(a) - int
+........Return
+..........Natural(5) - int
+......While
+........Eq - int
+..........Identifier(b) - int
+..........Natural(3) - int
+........StatList
+..........If
+............Eq - int
+..............Identifier(a) - int
+..............Natural(2) - int
+............Return
+..............Identifier(a) - int
+............Null
+..........StatList
+............If
+..............Eq - int
+................Identifier(a) - int
+................Natural(2) - int
+..............Return
+................Identifier(a) - int
+..............Null
+............If
+..............Eq - int
+................Identifier(a) - int
+................Natural(2) - int
+..............Return
+................Identifier(a) - int
+..............Return
+................Natural(5) - int
+............If
+..............Eq - int
+................Identifier(a) - int
+................Natural(2) - int
+..............Return
+................Identifier(a) - int
+..............Null
+............If
+..............Eq - int
+................Identifier(a) - int
+................Natural(2) - int
+..............Return
+................Identifier(a) - int
+..............Return
+................Natural(5) - int
+............If
+..............Eq - int
+................Identifier(a) - int
+................Natural(2) - int
+..............Return
+................Identifier(a) - int
+..............Return
+................Natural(5) - int
+..........Return
+............Natural(90) - int
+..Declaration
+....Int
+....Identifier(i)
+....Natural(0) - int
+..Declaration
+....Int
+....Identifier(j)
+....Natural(2) - int
+..Declaration
+....Int
+....Identifier(k)
+..Declaration
+....Char
+....Identifier(ch0)
+..Declaration
+....Char
+....Identifier(ch1)
+....Natural(0) - int
+..Declaration
+....Char
+....Identifier(ch2)
+....ChrLit('0') - int
+..FuncDeclaration
+....Double
+....Identifier(pow)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(i)
+..FuncDeclaration
+....Double
+....Identifier(pow)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(i)
+..FuncDeclaration
+....Double
+....Identifier(pow)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(i)
+..FuncDefinition
+....Int
+....Identifier(pow)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(i)
+....FuncBody
+..Declaration
+....Char
+....Identifier(c1)
+..Declaration
+....Char
+....Identifier(c2)
+..Declaration
+....Short
+....Identifier(s)
+..Declaration
+....Short
+....Identifier(t)
+..Declaration
+....Int
+....Identifier(i)
+..Declaration
+....Int
+....Identifier(j)
+..FuncDefinition
+....Char
+....Identifier(f1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Short
+........Identifier(s)
+......Declaration
+........Int
+........Identifier(i)
+......Declaration
+........Double
+........Identifier(d)
+......Declaration
+........Double
+........Identifier(d)
+......Declaration
+........Double
+........Identifier(e)
+......Declaration
+........Int
+........Identifier(a)
+......Declaration
+........Int
+........Identifier(a)
+......Declaration
+........Double
+........Identifier(b)
+......Declaration
+........Double
+........Identifier(b)
+......Declaration
+........Double
+........Identifier(a)
+......Return
+........Identifier(c1) - char
+..Declaration
+....Char
+....Identifier(a)
+..Declaration
+....Char
+....Identifier(a)
+....ChrLit('a') - int
+..Declaration
+....Char
+....Identifier(b)
+..FuncDeclaration
+....Int
+....Identifier(blah)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Double
+....Identifier(df)
+....ParamList
+......ParamDeclaration
+........Double
+......ParamDeclaration
+........Double
+..FuncDefinition
+....Double
+....Identifier(df)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(d)
+......ParamDeclaration
+........Double
+........Identifier(dd)
+....FuncBody
+......Declaration
+........Int
+........Identifier(ch0)
+........Natural(20) - int
+......Declaration
+........Int
+........Identifier(calc)
+......Declaration
+........Char
+........Identifier(ch1)
+......If
+........Store - int
+..........Identifier(ch0) - int
+..........Or - int
+............Natural(3) - int
+............Eq - int
+..............Identifier(ch0) - int
+..............Natural(3) - int
+........Call - undef
+..........Identifier(infinite_putchar) - undef
+..........Identifier(ch0) - int
+........Call - undef
+..........Identifier(infinite_putchar) - undef
+..........Store - int
+............Identifier(ch0) - int
+............Add - int
+..............Identifier(ch0) - int
+..............Natural(10) - int
+......Store - char
+........Identifier(ch2) - char
+........Call - int
+..........Identifier(getchar) - int(void)
+......Store - char
+........Identifier(ch1) - char
+........Call - int
+..........Identifier(getchar) - int(void)
+......Declaration
+........Char
+........Identifier(a)
+........ChrLit('a') - int
+......Declaration
+........Short
+........Identifier(b)
+........Natural(2) - int
+......Declaration
+........Int
+........Identifier(c)
+........Natural(3) - int
+......Declaration
+........Double
+........Identifier(d)
+........Decimal(3.0) - double
+......Declaration
+........Double
+........Identifier(x)
+........Decimal(1.5) - double
+......Declaration
+........Int
+........Identifier(a)
+........Natural(1) - int
+......Declaration
+........Int
+........Identifier(b)
+........Natural(2) - int
+......Declaration
+........Int
+........Identifier(c)
+........Natural(3) - int
+......Declaration
+........Short
+........Identifier(d)
+........Natural(4) - int
+......Declaration
+........Char
+........Identifier(c)
+........ChrLit('a') - int
+......Store - char
+........Identifier(a) - char
+........Add - int
+..........Mul - int
+............Minus - int
+..............Natural(1) - int
+............Natural(3) - int
+..........Div - int
+............Natural(2) - int
+............Natural(4) - int
+......Declaration
+........Short
+........Identifier(a)
+......Declaration
+........Char
+........Identifier(c)
+......Add - undef
+........Call - undef
+..........Identifier(function) - undef
+..........Natural(1) - int
+........Call - undef
+..........Identifier(function) - undef
+..........Natural(1) - int
+......Mul - int
+........Natural(10) - int
+........Lt - int
+..........Natural(5) - int
+..........Call - undef
+............Identifier(function) - undef
+............Natural(1) - int
+......Mod - int
+........Decimal(5.5) - double
+........Call - undef
+..........Identifier(nao_existe) - undef
+......Div - double
+........Decimal(5.5) - double
+........Decimal(5.5) - double
+......Ge - int
+........Decimal(5.5) - double
+........Natural(5) - int
+......Ne - int
+........Decimal(5.5) - double
+........Identifier(a) - char
+......Eq - int
+........Natural(5) - int
+........Identifier(a) - char
+......BitWiseXor - int
+........Decimal(5.5) - double
+........Identifier(c) - int
+......And - int
+........Identifier(a) - char
+........Identifier(c) - int
+......Add - int
+........Identifier(c) - int
+........Identifier(c) - int
+......Store - int
+........Identifier(c) - int
+........Natural(5) - int
+......Store - int
+........Identifier(c) - int
+........Decimal(5.5) - double
+......Return
+........Call - double
+..........Identifier(df) - double(double,double)
+..........Identifier(d) - double
+..........Identifier(e) - undef

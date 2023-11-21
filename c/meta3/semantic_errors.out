@@ -1,0 +1,156 @@
+Line 1, column 16: Invalid use of void type in declaration
+Line 7, column 7: Conflicting types (got double, expected short)
+Line 8, column 5: Lvalue required
+Line 9, column 5: Operator - cannot be applied to type void
+Line 10, column 14: Operator && cannot be applied to types int, double
+Line 13, column 6: Symbol f already defined
+Line 15, column 12: Unknown symbol y
+Line 18, column 5: Wrong number of arguments to function s (got 2, required 1)
+Line 19, column 9: Conflicting types (got void, expected int)
+Line 19, column 19: Wrong number of arguments to function dbl (got 1, required 2)
+Line 20, column 10: Unknown symbol und3f
+Line 20, column 7: Operator >= cannot be applied to types double, undef
+Line 20, column 18: Unknown symbol und3f
+Line 20, column 16: Operator | cannot be applied to types int, undef
+Line 20, column 27: Unknown symbol und3f
+Line 20, column 35: Unknown symbol und3f
+Line 20, column 33: Operator % cannot be applied to types undef, undef
+Line 21, column 5: Unknown symbol und3f
+Line 21, column 13: Unknown symbol und3f
+Line 21, column 11: Operator + cannot be applied to types undef, undef
+Line 22, column 14: Operator + cannot be applied to types void, int
+Line 22, column 7: Operator = cannot be applied to types double, undef
+Line 23, column 8: Conflicting types (got double, expected int)
+Line 27, column 12: Conflicting types (got double, expected void)
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+s	void(int)
+d	double
+f	int(short)
+x	double
+dbl	double(int,double)
+ret	void(void)
+
+===== Function f Symbol Table =====
+return	int
+i	short	param
+
+===== Function dbl Symbol Table =====
+return	double
+i	int	param
+d	double	param
+
+===== Function ret Symbol Table =====
+return	void
+
+Program
+..FuncDeclaration
+....Void
+....Identifier(r)
+....ParamList
+......ParamDeclaration
+........Double
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Void
+....Identifier(s)
+....ParamList
+......ParamDeclaration
+........Int
+..Declaration
+....Double
+....Identifier(d)
+..FuncDefinition
+....Int
+....Identifier(f)
+....ParamList
+......ParamDeclaration
+........Short
+........Identifier(i)
+....FuncBody
+......Call - int
+........Identifier(f) - int(short)
+........Identifier(d) - double
+......Store - int
+........Natural(1) - int
+........Natural(2) - int
+......Minus - void
+........Call - void
+..........Identifier(s) - void(int)
+..........Natural(1) - int
+......Store - double
+........Identifier(d) - double
+........And - int
+..........Call - int
+............Identifier(f) - int(short)
+............Natural(1) - int
+..........Identifier(d) - double
+..FuncDefinition
+....Void
+....Identifier(f)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..Declaration
+....Double
+....Identifier(x)
+....Identifier(y) - undef
+..FuncDefinition
+....Double
+....Identifier(dbl)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(i)
+......ParamDeclaration
+........Double
+........Identifier(d)
+....FuncBody
+......Call - void
+........Identifier(s) - void(int)
+........Identifier(i) - int
+........Identifier(d) - double
+......Call - double
+........Identifier(dbl) - double(int,double)
+........Call - void
+..........Identifier(s) - void(int)
+..........Identifier(i) - int
+........Identifier(d) - double
+......Call - double
+........Identifier(dbl) - double(int,double)
+........Identifier(i) - int
+......And - int
+........BitWiseOr - int
+..........Ge - int
+............Identifier(d) - double
+............Identifier(und3f) - undef
+..........Identifier(und3f) - undef
+........Mod - int
+..........Identifier(und3f) - undef
+..........Identifier(und3f) - undef
+......Add - undef
+........Identifier(und3f) - undef
+........Identifier(und3f) - undef
+......Store - double
+........Identifier(x) - double
+........Add - undef
+..........Call - void
+............Identifier(s) - void(int)
+............Identifier(i) - int
+..........Natural(1) - int
+......If
+........Identifier(x) - double
+........Null
+........Null
+..FuncDefinition
+....Void
+....Identifier(ret)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........Identifier(d) - double
