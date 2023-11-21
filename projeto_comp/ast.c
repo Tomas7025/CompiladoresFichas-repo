@@ -14,7 +14,7 @@ struct node *newnode(enum category category, char *token) {
     new->children = malloc(sizeof(struct node_list));
     new->children->node = NULL;
     new->children->next = NULL;
-
+    new->type = no_type;
     add_gc(new);
 
     return new;
@@ -80,3 +80,13 @@ void add_gc(struct node *node) {
   temp->next = NULL;                                                                // o proximo é NULL
   cursor->next = temp;                                                              
 }
+
+// get a pointer to a specific child, numbered 0, 1, 2, ...
+struct node *getchild(struct node *parent, int position) {
+    struct node_list *children = parent->children;
+    while((children = children->next) != NULL)
+        if(position-- == 0)
+            return children->node;
+    return NULL;
+}
+
