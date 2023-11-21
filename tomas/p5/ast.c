@@ -44,9 +44,9 @@ void show(struct node *node, int depth) {
     for(i = 0; i < depth; i++)
         printf("__");
     if(node->token == NULL)
-        (node->type != no_type ? printf("%s{%s}\n", category_name[node->category], type_name(node->type)) : printf("%s\n", category_name[node->category]));
+        (node->type != no_type ? printf("%s - %s\n", category_name[node->category], type_name(node->type)) : printf("%s\n", category_name[node->category]));
     else
-        (node->type != no_type ? printf("%s(%s) {%s}\n", category_name[node->category], node->token, type_name(node->type)) : printf("%s(%s)\n", category_name[node->category], node->token));
+        (node->type != no_type ? printf("%s(%s) - %s\n", category_name[node->category], node->token, type_name(node->type)) : printf("%s(%s)\n", category_name[node->category], node->token));
     struct node_list *child = node->children;
     while((child = child->next) != NULL)
         show(child->node, depth+1);
