@@ -22,7 +22,7 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, e
         if(symbol->next == NULL) {
             symbol->next = new;    /* insert new symbol at the tail of the list */
             break;
-        } else if(strcmp(symbol->next->identifier, identifier) == 0 && symbol->next->node->category == node->category) {
+        } else if(strcmp(symbol->next->identifier, identifier) == 0 && (symbol->next->node->category == node->category)) {
             free(new);
             return NULL;           /* return NULL if symbol is already inserted */
         }
@@ -43,9 +43,16 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
 // look up a symbol by its identifier
 struct symbol_list *search_symbol_categ(struct symbol_list *table, char *identifier, enum category category) {
     struct symbol_list *symbol;
-    for(symbol = table->next; symbol != NULL; symbol = symbol->next)
-        if(strcmp(symbol->identifier, identifier) == 0 && symbol->node->category == category)
-            return symbol;
+    for(symbol = table->next; symbol != NULL; symbol = symbol->next) {
+        if ((category == FuncDeclaration || category == FuncDefinition) && (symbol->node->category == FuncDeclaration || symbol->node->category == FuncDefinition)) {
+            if (strcmp(symbol->identifier, identifier) == 0)
+                return symbol;
+        }
+        else if (category == Declaration && symbol->node->category == Declaration) {
+            if (strcmp(symbol->identifier, identifier) == 0)
+                return symbol;
+        }
+    }
     return NULL;
 }
 
@@ -68,10 +75,23 @@ int check_program(struct node *program) {
     global_scope->type = Void;
     global_scope->node = NULL;
     global_scope->next = NULL;
-    
+
+    struct symbol_list *found;
     struct node_list *aux = program->children;
     while ((aux = aux->next) != NULL) {
-        
+        switch (aux->node->category) {
+            case (FuncDeclaration):
+                if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
+
+                    //! if (found->node->category == FuncDefinition) 
+                    //! ERRO
+                }
+                else {
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node->category);
+                }
+
+                break;
+        }
     }
     return semantic_errors;
 }
