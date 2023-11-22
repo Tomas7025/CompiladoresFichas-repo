@@ -16,6 +16,7 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, e
     new->type = type;
     new->node = node;
     new->next = NULL;
+    new->scope = NULL;
     struct symbol_list *symbol = table;
     while(symbol != NULL) {
         if(symbol->next == NULL) {
@@ -39,13 +40,14 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
     return NULL;
 }
 
-int countchildren(struct node *node) {
-    int i = 0;
-    while(getchild(node, i) != NULL)
-        i++;
-    return i;
+// look up a symbol by its identifier
+struct symbol_list *search_symbol_categ(struct symbol_list *table, char *identifier, enum category category) {
+    struct symbol_list *symbol;
+    for(symbol = table->next; symbol != NULL; symbol = symbol->next)
+        if(strcmp(symbol->identifier, identifier) == 0 && symbol->node->category == category)
+            return symbol;
+    return NULL;
 }
-
 
 int check_void_in_list (struct node_list *list) {
     int void_found = 0;
@@ -67,49 +69,9 @@ int check_program(struct node *program) {
     global_scope->node = NULL;
     global_scope->next = NULL;
     
-    scope_stack = (struct symbol_list **) malloc(sizeof(struct symbol_list *));
-    scope_stack[0] = global_scope;
-    
     struct node_list *aux = program->children;
     while ((aux = aux->next) != NULL) {
-        in
+        
     }
     return semantic_errors;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// =============================== deprecated =============================== //
-
-int count_number_of_params(struct node *node) {
-    int n_params = 0;
-    struct node_list *aux = getchild(node, 2)->children;
-    while ((aux = aux->next) != NULL) {
-        n_params++;
-    }
-    return n_params;
 }

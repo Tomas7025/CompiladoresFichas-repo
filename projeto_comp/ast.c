@@ -89,3 +89,11 @@ struct node *getchild(struct node *parent, int position) {
             return children->node;
     return NULL;
 }
+
+// count the children of a node
+int countchildren(struct node *node) {
+    int i = 0;
+    while(getchild(node, i) != NULL)
+        i++;
+    return i;
+}

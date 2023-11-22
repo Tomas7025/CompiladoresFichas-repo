@@ -10,6 +10,7 @@ struct symbol_list {
 	enum type type;
 	struct node *node;
 	struct symbol_list *next;
+	struct symbol_list *scope;
 };
 
 void show_symbol_table();
