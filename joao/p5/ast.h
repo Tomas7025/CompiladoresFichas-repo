@@ -14,6 +14,7 @@ struct node {
     char *token;
     enum type type;
     struct node_list *children;
+    int token_line, token_column;
 };
 
 struct node_list {
@@ -25,5 +26,6 @@ struct node *newnode(enum category category, char *token);
 void addchild(struct node *parent, struct node *child);
 struct node *getchild(struct node *parent, int position);
 void show(struct node *root, int depth);
+int countchildren(struct node *node);
 
 #endif

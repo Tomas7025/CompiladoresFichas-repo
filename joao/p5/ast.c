@@ -50,3 +50,10 @@ void show(struct node *node, int depth) {
     while((child = child->next) != NULL)
         show(child->node, depth+1);
 }
+
+int countchildren(struct node *node) {
+    int i = 0;
+    while(getchild(node, i) != NULL)
+        i++;
+    return i;
+}
