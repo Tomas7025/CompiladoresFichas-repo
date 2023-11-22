@@ -20,6 +20,12 @@ extern char *category_m[];
     struct node *node;
 }
 
+%locations
+%{
+#define LOCATE(node, line, column) { node->token_line = line; node->token_column = column; }
+%}
+
+
 // tratar dos reservads
 %token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI RESERVED
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
@@ -158,6 +164,8 @@ function_declarator: IDENTIFIER LPAR parameter_list RPAR    { if (errors > 0) { 
                                                               $$ = newnode(Null, NULL);
                                                               addchild($$, newnode(Identifier, $1));
                                                               addchild($$, $3);
+
+                                                              LOCATE($$, @1.first_line, @1.first_column);
                                                             }
     ;
 
@@ -175,6 +183,8 @@ parameter_declaration: typespec IDENTIFIER                  { if (errors > 0) { 
                                                               $$ = newnode(ParamDeclaration, NULL); 
                                                               addchild($$, $1);
                                                               addchild($$, newnode(Identifier, $2));
+
+                                                              LOCATE($$, @2.first_line, @2.first_column);
                                                             }
     | typespec                                              { if (errors > 0) { break; }
                                                               $$ = newnode(ParamDeclaration, NULL); 
@@ -193,7 +203,7 @@ declaration: typespec declarator_repetition SEMI            { if (errors > 0) { 
                                                               }
                                                               $$ = $2;                                                                            // Passa para $$ o FuncBody
                                                             }
-    | error SEMI                                            {;}
+    | error SEMI                                            { }
     
 declarator_repetition: declarator                           { if (errors > 0) { break; }            
                                                               $$ = newnode(FuncBody, NULL);
@@ -209,7 +219,9 @@ typespec: CHAR                                              { if (errors > 0) { 
     | INT                                                   { if (errors > 0) { break; }
                                                               $$ = newnode(Int, NULL); }   //printf("transformou em typespec\n")
     | VOID                                                  { if (errors > 0) { break; }
-                                                              $$ = newnode(Void, NULL); }
+                                                              $$ = newnode(Void, NULL); 
+                                                              LOCATE($$, @1.first_line, @1.first_column);
+                                                            }
     | SHORT                                                 { if (errors > 0) { break; }
                                                               $$ = newnode(Short, NULL); }
     | DOUBLE                                                { if (errors > 0) { break; }
@@ -219,10 +231,14 @@ declarator: IDENTIFIER ASSIGN expression                    { if (errors > 0) { 
                                                               $$ = newnode(Declaration, NULL);      
                                                               addchild($$, newnode(Identifier, $1));
                                                               addchild($$, $3);
+
+                                                              LOCATE($$, @1.first_line, @1.first_column);
                                                             }
     | IDENTIFIER                                            { if (errors > 0) { break; }
                                                               $$ = newnode(Declaration, NULL);             // Declaration
-                                                              addchild($$, newnode(Identifier, $1));       //   | ID               
+                                                              addchild($$, newnode(Identifier, $1));       //   | ID    
+
+                                                              LOCATE($$, @1.first_line, @1.first_column);           
                                                             } 
     ;
 
@@ -240,6 +256,7 @@ statement: expression SEMI                                   { if (errors > 0) {
                                                                  addchild($$, $5);
                                                                
                                                                addchild($$, newnode(Null, NULL));
+                                                               LOCATE($$, @1.first_line, @1.first_column);
                                                              }
     | IF LPAR expression RPAR statement ELSE statement       { if (errors > 0) { break; }
                                                                $$ = newnode(If, NULL);
@@ -255,6 +272,7 @@ statement: expression SEMI                                   { if (errors > 0) {
                                                                 else
                                                                  addchild($$, $7);
 
+                                                              LOCATE($$, @1.first_line, @1.first_column);
                                                              }
     | WHILE LPAR expression RPAR statement                   { if (errors > 0) { break; }
                                                                $$ = newnode(While, NULL);
@@ -263,6 +281,7 @@ statement: expression SEMI                                   { if (errors > 0) {
                                                                  addchild($$, newnode(Null, NULL));
                                                                 else
                                                                  addchild($$, $5);
+                                                                LOCATE($$, @1.first_line, @1.first_column);
                                                              }
     | RETURN expression SEMI                                 { if (errors > 0) { break; }
                                                                $$ = newnode(Return, NULL);
@@ -272,14 +291,14 @@ statement: expression SEMI                                   { if (errors > 0) {
                                                                $$ = newnode(Return, NULL);
                                                                addchild($$, newnode(Null, NULL));
                                                              }
-    | LBRACE error RBRACE                                    {;}
+    | LBRACE error RBRACE                                    { }
 
     
-    | IF LPAR expression RPAR error SEMI %prec LOGIC          {;}
-    | IF LPAR expression RPAR error SEMI ELSE statement       {;}
-    | IF LPAR expression RPAR statement ELSE error SEMI       {;}
-    | IF LPAR expression RPAR error SEMI ELSE error SEMI      {;}
-    | WHILE LPAR expression RPAR error SEMI                   {;}
+    | IF LPAR expression RPAR error SEMI %prec LOGIC          { }
+    | IF LPAR expression RPAR error SEMI ELSE statement       { }
+    | IF LPAR expression RPAR statement ELSE error SEMI       { }
+    | IF LPAR expression RPAR error SEMI ELSE error SEMI      { }
+    | WHILE LPAR expression RPAR error SEMI                   { }
     ;
 
 statement_repetition: statement             { if (errors > 0) { break; } $$ = $1; }
@@ -300,119 +319,139 @@ statement_repetition: statement             { if (errors > 0) { break; } $$ = $1
                                               }
                                             }
 
-    | statement_repetition error SEMI       { if (errors > 0) { break; }
-                                              $$ = newnode(Error, NULL); 
-                                              if ($1) addchild($$, $1);
-                                            }
-    | error SEMI                            { ; }
+    | statement_repetition error SEMI       { }
+    | error SEMI                            { }
     ;
 
 expression: expression ASSIGN expression    { if (errors > 0) { break; }
-                                          $$ = newnode(Store, NULL);
+                                              $$ = newnode(Store, NULL);
                                               addchild($$, $1); 
-                                              addchild($$, $3); 
+                                              addchild($$, $3);
+
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression COMMA expression           { if (errors > 0) { break; }
                                               $$ = newnode(Comma, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
                                               // printf("->COMMA<-\n");
+                                              LOCATE($$, @2.first_line, @2.first_column);
+
                                             }
 
     | expression PLUS expression            { if (errors > 0) { break; }
                                               $$ = newnode(Add, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression MINUS expression           { if (errors > 0) { break; }
                                               $$ = newnode(Sub, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression MUL expression             { if (errors > 0) { break; }
                                               $$ = newnode(Mul, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression DIV expression             { if (errors > 0) { break; }
                                               $$ = newnode(Div, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression MOD expression             { if (errors > 0) { break; }
                                               $$ = newnode(Mod, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     
     | expression OR expression              { if (errors > 0) { break; }
                                               $$ = newnode(Or, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression AND expression             { if (errors > 0) { break; }
                                               $$ = newnode(And, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression BITWISEAND expression      { if (errors > 0) { break; }
                                               $$ = newnode(BitWiseAnd, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression BITWISEOR expression       { if (errors > 0) { break; }
                                               $$ = newnode(BitWiseOr, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression BITWISEXOR expression      { if (errors > 0) { break; }
                                               $$ = newnode(BitWiseXor, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     
     | expression EQ expression              { if (errors > 0) { break; }
                                               $$ = newnode(Eq, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression NE expression              { if (errors > 0) { break; } 
                                               $$ = newnode(Ne, NULL);
                                               addchild($$, $1); 
-                                              addchild($$, $3); 
+                                              addchild($$, $3);
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression LE expression              { if (errors > 0) { break; } 
                                               $$ = newnode(Le, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression GE expression              { if (errors > 0) { break; } 
                                               $$ = newnode(Ge, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression LT expression              { if (errors > 0) { break; } 
                                               $$ = newnode(Lt, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     | expression GT expression              { if (errors > 0) { break; } 
                                               $$ = newnode(Gt, NULL);
                                               addchild($$, $1); 
                                               addchild($$, $3); 
+                                              LOCATE($$, @2.first_line, @2.first_column);
                                             }
     
     | PLUS expression %prec POLARITY        { if (errors > 0) { break; } 
                                               $$ = newnode(Plus, NULL);
                                               addchild($$, $2); 
+                                              LOCATE($$, @1.first_line, @1.first_column);
                                             }
     | MINUS expression %prec POLARITY       { if (errors > 0) { break; } 
                                               $$ = newnode(Minus, NULL);
-                                              addchild($$, $2); 
+                                              addchild($$, $2);
+                                              LOCATE($$, @1.first_line, @1.first_column); 
                                             }
     | NOT expression                        { if (errors > 0) { break; } 
                                               $$ = newnode(Not, NULL);
                                               addchild($$, $2);  
+                                              LOCATE($$, @1.first_line, @1.first_column);
                                             }
 
     | IDENTIFIER LPAR expression_repetition RPAR       { if (errors > 0) { break; }
@@ -421,15 +460,21 @@ expression: expression ASSIGN expression    { if (errors > 0) { break; }
                                                          temp->node = newnode(Identifier, $1);
                                                          temp->next = $3->children->next;
                                                          $3->children->next = temp;
-                                                        //  printf("->CALL<-\n");
+
+                                                         LOCATE($$, @1.first_line, @1.first_column);
                                                        }
     | IDENTIFIER LPAR RPAR                  { if (errors > 0) { break; }
                                               $$ = newnode(Call, NULL); 
                                               addchild($$, newnode(Identifier, $1));
+
+                                              LOCATE($$, @1.first_line, @1.first_column);
                                             }
 
     | IDENTIFIER                            { if (errors > 0) { break; }
-                                              $$ = newnode(Identifier, $1); }
+                                              $$ = newnode(Identifier, $1); 
+
+                                              LOCATE($$, @1.first_line, @1.first_column);
+                                            }
     | NATURAL                               { if (errors > 0) { break; }
                                               $$ = newnode(Natural, $1); }
     | CHRLIT                                { if (errors > 0) { break; }

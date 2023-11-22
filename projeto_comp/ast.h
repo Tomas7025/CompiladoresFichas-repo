@@ -13,6 +13,7 @@ struct node {
     char *token;
     struct node_list *children;
     enum type type;
+    int token_line, token_column;
 };
 
 struct node_list {
@@ -26,5 +27,9 @@ void show(struct node *node, int depth);
 void clear();
 void add_gc(struct node *node);
 struct node *getchild(struct node *parent, int position);
+
+int countchildren(struct node *node);
+
+
 
 #endif

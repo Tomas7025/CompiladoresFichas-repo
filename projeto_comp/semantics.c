@@ -9,18 +9,6 @@ int semantic_errors = 0;
 struct symbol_list* global_scope;
 struct symbol_list** scope_stack;
 
-int checl_sym(struct node *tst, struct symbol_list *table) {
-    int result = 0;
-    while ((table = table->next) != NULL) {
-        if (strcmp(table->identifier, tst->token) == 0 && table->node->category == tst->category) {
-            result = 1;
-            break;
-        }
-    }
-    
-    return result;
-}
-
 // insert a new symbol in the list, unless it is already there
 struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, enum type type, struct node *node) {
     struct symbol_list *new = (struct symbol_list *) malloc(sizeof(struct symbol_list));
@@ -33,7 +21,8 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, e
         if(symbol->next == NULL) {
             symbol->next = new;    /* insert new symbol at the tail of the list */
             break;
-        } else if( == 0) {
+        } else if(strcmp(symbol->next->identifier, identifier) == 0 && symbol->next->node->category == node->category) {
+            free(new);
             return NULL;           /* return NULL if symbol is already inserted */
         }
         symbol = symbol->next;
@@ -50,14 +39,13 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
     return NULL;
 }
 
-int count_number_of_params(struct node *node) {
-    int n_params = 0;
-    struct node_list *aux = getchild(node, 2)->children;
-    while ((aux = aux->next) != NULL) {
-        n_params++;
-    }
-    return n_params;
+int countchildren(struct node *node) {
+    int i = 0;
+    while(getchild(node, i) != NULL)
+        i++;
+    return i;
 }
+
 
 int check_void_in_list (struct node_list *list) {
     int void_found = 0;
@@ -84,7 +72,44 @@ int check_program(struct node *program) {
     
     struct node_list *aux = program->children;
     while ((aux = aux->next) != NULL) {
-        if 
+        in
     }
     return semantic_errors;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================== deprecated =============================== //
+
+int count_number_of_params(struct node *node) {
+    int n_params = 0;
+    struct node_list *aux = getchild(node, 2)->children;
+    while ((aux = aux->next) != NULL) {
+        n_params++;
+    }
+    return n_params;
 }
