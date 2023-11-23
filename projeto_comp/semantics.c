@@ -77,6 +77,25 @@ int check_program(struct node *program) {
     global_scope->type = Void;
     global_scope->node = NULL;
     global_scope->next = NULL;
+    
+    struct node* put = newnode(FuncDeclaration, "putchar");
+    addchild(put, newnode(Int, NULL));
+    addchild(put, newnode(Identifier, "putchar"));
+    addchild(put, newnode(ParamList, NULL));
+    addchild(getchild(put, 2), newnode(ParamDeclaration, NULL));
+    addchild(getchild(getchild(put, 2), 0), newnode(Int, NULL));
+
+    insert_symbol(global_scope, "putchar", integer_type, put);
+
+    put = newnode(FuncDeclaration, "getchar");
+    addchild(put, newnode(Int, NULL));
+    addchild(put, newnode(Identifier, "putchar"));
+    addchild(put, newnode(ParamList, NULL));
+    addchild(getchild(put, 2), newnode(ParamDeclaration, NULL));
+    addchild(getchild(getchild(put, 2), 0), newnode(Void, NULL));
+
+    insert_symbol(global_scope, "getchar", integer_type, put);
+
 
     struct symbol_list *found;
     struct node_list *aux = program->children;
@@ -96,11 +115,12 @@ int check_program(struct node *program) {
             case (FuncDefinition):
                 if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
                     if(found->node->category != FuncDefinition) {
+                        found->node = aux->node;
                         // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
                         found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
-                        found->scope->identifier = strdup(getchild(aux->node, 1)->token);
+                        found->scope->identifier = NULL;
                         found->scope->type = no_type;
-                        found->scope->node = aux->node;
+                        found->scope->node = NULL;
                         found->scope->next = NULL;
 
                         if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
@@ -113,6 +133,7 @@ int check_program(struct node *program) {
                         //? check_func passar o scope da funcDeclaration
                         check_function(aux->node, found->scope);
                     } else {
+                        printf("-------------ERRRO----------------\n");
                         //! ERRO
                     }
                 }
@@ -158,14 +179,12 @@ int check_program(struct node *program) {
     //        }
     //    }
     //}
-    show_symbol_table();
-
+    
     return semantic_errors;
 }
 
 
 int check_function(struct node *node, struct symbol_list *scope) {
-    printf("check_function\n");
     struct symbol_list *found;
     struct node_list *aux = getchild(node, 3)->children;
     while ((aux = aux->next) != NULL) {
@@ -190,16 +209,16 @@ void show_symbol_table() {
         switch (symbol->node->category)
         {
         case Declaration:
-            printf("%s\t%s\n", symbol->identifier, category_m[getchild(symbol->node, 0)->category]);
+            printf("%s\t%s\n", symbol->identifier, map_typ(getchild(symbol->node, 0)->category));
             break;
         
         default:
-            printf("%s\t%s(", symbol->identifier, category_m[getchild(symbol->node, 0)->category]);
+            printf("%s\t%s(", symbol->identifier, map_typ(getchild(symbol->node, 0)->category));
             struct node_list *aux = getchild(symbol->node, 2)->children;
             while ((aux = aux->next) != NULL) {
-                printf("%s", category_m[getchild(aux->node, 0)->category]);
+                printf("%s", map_typ(getchild(aux->node, 0)->category));
                 if (aux->next != NULL) {
-                    printf(", ");
+                    printf(",");
                 }
             }
             printf(")\n");
@@ -211,13 +230,13 @@ void show_symbol_table() {
     while ((symbol = symbol->next) != NULL) {
         if (symbol->node->category == FuncDefinition) {
             printf("===== Function %s Symbol Table =====\n", symbol->identifier);
-            printf("return\t%s\n", category_m[getchild(symbol->node, 0)->category]);
+            printf("return\t%s\n", map_typ(getchild(symbol->node, 0)->category));
             struct symbol_list *symbol2 = symbol->scope;
             while ((symbol2 = symbol2->next) != NULL){
                 if (symbol2->node->category == Declaration)
-                    printf("%s\t%s\n", symbol2->identifier, category_m[getchild(symbol2->node, 0)->category]);
+                    printf("%s\t%s\n", symbol2->identifier, map_typ(getchild(symbol2->node, 0)->category));
                 else
-                    printf("%s\t%s\tparam\n", symbol2->identifier, category_m[getchild(symbol2->node, 0)->category]);
+                    printf("%s\t%s\tparam\n", symbol2->identifier, map_typ(getchild(symbol2->node, 0)->category));
             }
             printf("\n");
         }

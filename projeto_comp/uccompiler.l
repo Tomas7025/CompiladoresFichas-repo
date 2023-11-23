@@ -160,9 +160,9 @@ int main(int argc, char *argv[]) {
 
     if (argc >= 2 && strcmp(argv[1], "-t") == 0) {
         if (errors == 0){
-            show(program, 0);
             check_program(program);
-            
+            show_symbol_table();
+            show(program, 0);
         }
     }
 

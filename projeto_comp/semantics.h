@@ -4,6 +4,7 @@
 #include "ast.h"
 
 int check_program(struct node *program);
+#define map_typ(x) (x == Int ? "int" : (x == Double ? "double" : (x == Short ? "short" : (x == Char ? "char" : "void"))))
 
 struct symbol_list {
 	char *identifier;
