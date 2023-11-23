@@ -9,7 +9,7 @@ int semantic_errors = 0;
 struct symbol_list* global_scope;
 struct symbol_list** scope_stack;
 
-int check_function(struct node *node, struct symbol_list *scope);
+int check_function(struct node *node, struct symbol_list *scope, int flag);
 
 // insert a new symbol in the list, unless it is already there
 struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, enum type type, struct node *node) {
@@ -131,7 +131,7 @@ int check_program(struct node *program) {
                         }
 
                         //? check_func passar o scope da funcDeclaration
-                        check_function(aux->node, found->scope);
+                        check_function(aux->node, found->scope, 0);
                     } else {
                         printf("-------------ERRRO----------------\n");
                         //! ERRO
@@ -153,7 +153,7 @@ int check_program(struct node *program) {
                     }
 
                     //? check_func passar o scope da funcDeclaration
-                    check_function(aux->node, found->scope);
+                    check_function(aux->node, found->scope, 0);
                 }
                 break;
             case (Declaration):
@@ -184,9 +184,15 @@ int check_program(struct node *program) {
 }
 
 
-int check_function(struct node *node, struct symbol_list *scope) {
+int check_function(struct node *node, struct symbol_list *scope, int flag) {
     struct symbol_list *found;
-    struct node_list *aux = getchild(node, 3)->children;
+    struct node_list *aux;
+    
+    if (flag == 0)
+        aux = getchild(node, 3)->children;
+    else
+        aux = node->children;
+
     while ((aux = aux->next) != NULL) {
         switch (aux->node->category) {
             case Declaration:
@@ -196,6 +202,21 @@ int check_function(struct node *node, struct symbol_list *scope) {
                 else {
                     insert_symbol(scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
                 }
+                break;
+            case If:
+                printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
+                break;
+            case While:
+                printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
+                break;
+            case Return:
+                printf("return %d %d\n", aux->node->token_line, aux->node->token_column);
+                break;
+            case StatList:
+                check_function(aux->node, scope, 1);
+                break;
+            default:
+                printf("expr %d %d\n", aux->node->token_line, aux->node->token_column);
                 break;
         }
     }
@@ -240,7 +261,6 @@ void show_symbol_table() {
             }
             printf("\n");
         }
-        
     }
     
 }

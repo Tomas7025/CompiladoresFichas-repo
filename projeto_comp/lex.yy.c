@@ -596,6 +596,8 @@ char *yytext;
     { \
         previus_l_number = line_number; \
         previus_c_number = colum_number; \
+        yylloc.first_line = previus_l_number; \
+        yylloc.first_column = previus_c_number; \
         for(int i = 0; yytext[i] != 0; i++) { \
             if (yytext[i] == '\n') { \
                 line_number++; \
@@ -687,8 +689,8 @@ char *yytext;
 
                      
 
-#line 691 "lex.yy.c"
-#line 692 "lex.yy.c"
+#line 693 "lex.yy.c"
+#line 694 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -906,10 +908,10 @@ YY_DECL
 		}
 
 	{
-#line 116 "uccompiler.l"
+#line 118 "uccompiler.l"
 
 
-#line 913 "lex.yy.c"
+#line 915 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -968,100 +970,100 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 118 "uccompiler.l"
+#line 120 "uccompiler.l"
 { if (feedback) printf("RESERVED(%s)\n", yytext); return RESERVED; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 119 "uccompiler.l"
+#line 121 "uccompiler.l"
 { if (feedback) { UPPER_CASE(yytext); printf("%s\n", yytext); } return yacc_tkn[map_tk() / 2];}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 121 "uccompiler.l"
+#line 123 "uccompiler.l"
 { if (feedback) printf("IDENTIFIER(%s)\n", yytext); PASS_TOKEN(); return IDENTIFIER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 122 "uccompiler.l"
+#line 124 "uccompiler.l"
 { if (feedback) printf("NATURAL(%s)\n", yytext); PASS_TOKEN(); return NATURAL; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 123 "uccompiler.l"
+#line 125 "uccompiler.l"
 { if (feedback) printf("DECIMAL(%s)\n", yytext); PASS_TOKEN(); return DECIMAL; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 124 "uccompiler.l"
+#line 126 "uccompiler.l"
 { if (feedback) printf("CHRLIT(%s)\n", yytext); PASS_TOKEN(); return CHRLIT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 126 "uccompiler.l"
+#line 128 "uccompiler.l"
 { printf("Line %d, column %d: invalid char constant (%s)\n", previus_l_number, previus_c_number, yytext); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 127 "uccompiler.l"
+#line 129 "uccompiler.l"
 { printf("Line %d, column %d: unterminated char constant\n", previus_l_number, previus_c_number); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 129 "uccompiler.l"
+#line 131 "uccompiler.l"
 { BEGIN COMMENT; aux = previus_l_number; aux2 = previus_c_number; }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 130 "uccompiler.l"
+#line 132 "uccompiler.l"
 { ; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 131 "uccompiler.l"
+#line 133 "uccompiler.l"
 { BEGIN INITIAL; }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 132 "uccompiler.l"
+#line 134 "uccompiler.l"
 { printf("Line %d, column %d: unterminated comment\n", aux, aux2); BEGIN INITIAL; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 134 "uccompiler.l"
+#line 136 "uccompiler.l"
 { if (feedback) printf("%s\n", map_tokens[map_tk()]); return yacc_tkn[map_tk() / 2]; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 135 "uccompiler.l"
+#line 137 "uccompiler.l"
 { if (feedback) printf("%s\n", map_tokens[map_tk()]); return yacc_tkn[map_tk() / 2]; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 136 "uccompiler.l"
+#line 138 "uccompiler.l"
 { ; }
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 137 "uccompiler.l"
+#line 139 "uccompiler.l"
 { ; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 138 "uccompiler.l"
+#line 140 "uccompiler.l"
 { previus_l_number = line_number; previus_c_number = colum_number; return 0; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 139 "uccompiler.l"
+#line 141 "uccompiler.l"
 { printf("Line %d, column %d: unrecognized character (%c)\n", previus_l_number, previus_c_number, yytext[0]); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 141 "uccompiler.l"
+#line 143 "uccompiler.l"
 ECHO;
 	YY_BREAK
-#line 1065 "lex.yy.c"
+#line 1067 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2064,7 +2066,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 141 "uccompiler.l"
+#line 143 "uccompiler.l"
 
 
 void yyerror(char *error) {

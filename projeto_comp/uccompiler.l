@@ -21,6 +21,8 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
     { \
         previus_l_number = line_number; \
         previus_c_number = colum_number; \
+        yylloc.first_line = previus_l_number; \
+        yylloc.first_column = previus_c_number; \
         for(int i = 0; yytext[i] != 0; i++) { \
             if (yytext[i] == '\n') { \
                 line_number++; \

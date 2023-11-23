@@ -20,12 +20,6 @@ extern char *category_m[];
     struct node *node;
 }
 
-%locations
-%{
-#define LOCATE(node, line, column) { node->token_line = line; node->token_column = column; }
-%}
-
-
 %token CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS RBRACE RPAR SEMI RESERVED
 %token<token> IDENTIFIER NATURAL DECIMAL CHRLIT
 %type<node> functions_and_declarations function_defenition function_body declarations_and_statements function_declaration function_declarator parameter_list parameter_declaration declaration declarator_repetition typespec declarator statement statement_repetition expression expression_repetition
@@ -48,6 +42,14 @@ extern char *category_m[];
 %right NOT
 
 %nonassoc POLARITY
+
+%locations
+%{
+    #define LOCATE(node, line, column) { \
+        node->token_line = line; \
+        node->token_column = column; \
+    }
+%}
 
 /* START grammar rules section -- BNF grammar */
 
@@ -285,10 +287,12 @@ statement: expression SEMI                                   { if (errors > 0) {
     | RETURN expression SEMI                                 { if (errors > 0) { break; }
                                                                $$ = newnode(Return, NULL);
                                                                addchild($$, $2);
+                                                               LOCATE($$, @1.first_line, @1.first_column);
                                                              }
     | RETURN SEMI                                            { if (errors > 0) { break; }
                                                                $$ = newnode(Return, NULL);
                                                                addchild($$, newnode(Null, NULL));
+                                                               LOCATE($$, @1.first_line, @1.first_column);
                                                              }
     | LBRACE error RBRACE                                    { }
 
