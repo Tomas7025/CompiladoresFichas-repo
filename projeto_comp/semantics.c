@@ -10,6 +10,27 @@ struct symbol_list* global_scope;
 struct symbol_list** scope_stack;
 
 int check_function(struct node *node, struct symbol_list *scope, int flag);
+int check_expression(struct node *node, struct symbol_list *scope);
+
+
+//map category into enum types
+enum type map_typ(enum category category) {
+    switch (category) {
+        case Int:
+            return integer_type;
+        case Short:
+            return short_type;
+        case Void:
+            return no_type;
+        case Double:
+            return double_type;
+        case Char:
+            return char_type;
+        default:
+            return undefined_type;
+    }
+}
+
 
 // insert a new symbol in the list, unless it is already there
 struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, enum type type, struct node *node) {
@@ -167,18 +188,6 @@ int check_program(struct node *program) {
         }
     }
     
-    //struct symbol_list *symbol = global_scope;
-    //while ((symbol = symbol->next) != NULL)
-    //{
-    //    printf("Symbol: %s %d\n", symbol->identifier, symbol->node->category);
-    //    if (symbol->scope != NULL){
-    //        struct symbol_list *symbol2 = symbol->scope;
-    //        while ((symbol2 = symbol2->next) != NULL)
-    //        {
-    //            printf("\tSCOPE %s: %s %d\n", symbol->identifier, symbol2->identifier, symbol2->node->category);
-    //        }
-    //    }
-    //}
     
     return semantic_errors;
 }
@@ -222,6 +231,131 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
     }
     return 0;
 }
+
+
+int check_expression(struct node *node, struct symbol_list *scope){
+    switch (node->category) {
+        case Store:
+            break;
+    
+        case Comma:
+            break;
+        
+        case  Add:
+            break;
+        
+        case Sub:
+            break;
+    
+        case Mul:
+            break;
+        
+        case Div:
+            break;
+        
+        case Mod:
+            break;
+    
+        case Or:
+            break;
+    
+        case And:
+            break;
+    
+        case BitWiseAnd:
+            break;
+    
+        case BitWiseOr:
+            break;
+    
+        case BitWiseXor:
+            break;
+    
+        case Eq:
+            break;
+    
+        case Ne:
+            break;
+    
+        case Le:
+            break;
+    
+        case Ge:
+            break;
+    
+        case Lt:
+            break;
+    
+        case Gt:
+            break;   
+    
+        case Plus:
+            break;
+    
+        case Minus:
+            break;
+        
+        case Not:
+            break;
+    
+        case Call:
+            struct symbol_list *found = search_symbol_categ(scope, node->token, FuncDeclaration);
+            if (found != NULL)
+                found = search_symbol_categ(global_scope, node->token, FuncDeclaration);
+            
+            if(found != NULL) {
+                struct node_list *aux = node->children;
+                struct symbol_list *aux2 = found->scope;
+                while ((aux = aux->next) != NULL && (aux2 = aux2->next) != NULL) {
+                    if (aux->node->type != aux2->type) {
+                        //! ERRO
+                    }
+                }
+
+                node->type = found->type;
+            }
+            else {
+                //! ERRO
+            }
+
+            break;
+    
+        case Identifier:
+            struct symbol_list *found = search_symbol_categ(scope, node->token, Declaration);
+            if (found != NULL)
+                node->type = found->type;
+            else if ((found = search_symbol_categ(global_scope, node->token, Declaration)) != NULL)
+                node->type = found->type;
+            else {
+                node->type = undefined_type;
+                // ! teste 
+                printf("Line %d, column %d: Unknown symbol %s\n", node->token_line, node->token_column, node->token);
+                semantic_errors++;
+            }
+
+            break;
+    
+        case Natural:
+            node->type = integer_type;
+            break;
+    
+        case ChrLit:
+            node->type = char_type;
+            break;
+    
+        case Decimal:
+            node->type = double_type;
+            break;
+
+        case Short:
+            node->type = short_type;
+            break;
+
+        default:
+            break;
+    }
+}
+
 
 void show_symbol_table() {
     struct symbol_list *symbol = global_scope;
