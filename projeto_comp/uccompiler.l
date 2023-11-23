@@ -95,6 +95,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
     //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #include "y.tab.h"
     #include "ast.h"
+    #include "semantics.h"
 
     int yyparse(void);
     void yyerror(char *);
@@ -158,7 +159,11 @@ int main(int argc, char *argv[]) {
     yyparse();
 
     if (argc >= 2 && strcmp(argv[1], "-t") == 0) {
-        if (errors == 0) show(program, 0);
+        if (errors == 0){
+            show(program, 0);
+            check_program(program);
+            
+        }
     }
 
     // yylex();    /* run the lexical analysis automaton */

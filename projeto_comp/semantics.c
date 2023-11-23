@@ -9,6 +9,8 @@ int semantic_errors = 0;
 struct symbol_list* global_scope;
 struct symbol_list** scope_stack;
 
+int check_function(struct node *node, struct symbol_list *scope);
+
 // insert a new symbol in the list, unless it is already there
 struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, enum type type, struct node *node) {
     struct symbol_list *new = (struct symbol_list *) malloc(sizeof(struct symbol_list));
@@ -87,11 +89,139 @@ int check_program(struct node *program) {
                     //! ERRO
                 }
                 else {
-                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node->category);
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
                 }
 
                 break;
+            case (FuncDefinition):
+                if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
+                    if(found->node->category != FuncDefinition) {
+                        // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
+                        found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
+                        found->scope->identifier = strdup(getchild(aux->node, 1)->token);
+                        found->scope->type = no_type;
+                        found->scope->node = aux->node;
+                        found->scope->next = NULL;
+
+                        if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
+                            struct node_list *aux2 = getchild(aux->node, 2)->children;
+                            while ((aux2 = aux2->next) != NULL){
+                                insert_symbol(found->scope, getchild(aux2->node, 1)->token, aux2->node->type, aux2->node);
+                            }
+                        }
+
+                        //? check_func passar o scope da funcDeclaration
+                        check_function(aux->node, found->scope);
+                    } else {
+                        //! ERRO
+                    }
+                }
+                else {
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                    found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category);
+                    found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
+                    found->scope->identifier = strdup(getchild(aux->node, 1)->token);
+                    found->scope->node = aux->node;
+                    found->scope->next = NULL;
+
+                    if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
+                        struct node_list *aux2 = getchild(aux->node, 2)->children;
+                        while ((aux2 = aux2->next) != NULL){
+                            insert_symbol(found->scope, getchild(aux2->node, 1)->token, aux2->node->type, aux2->node);
+                        }
+                    }
+
+                    //? check_func passar o scope da funcDeclaration
+                    check_function(aux->node, found->scope);
+                }
+                break;
+            case (Declaration):
+                if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
+                    //! ERRO
+                }
+                else {
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                }
+                break;
         }
     }
+    
+    //struct symbol_list *symbol = global_scope;
+    //while ((symbol = symbol->next) != NULL)
+    //{
+    //    printf("Symbol: %s %d\n", symbol->identifier, symbol->node->category);
+    //    if (symbol->scope != NULL){
+    //        struct symbol_list *symbol2 = symbol->scope;
+    //        while ((symbol2 = symbol2->next) != NULL)
+    //        {
+    //            printf("\tSCOPE %s: %s %d\n", symbol->identifier, symbol2->identifier, symbol2->node->category);
+    //        }
+    //    }
+    //}
+    show_symbol_table();
+
     return semantic_errors;
+}
+
+
+int check_function(struct node *node, struct symbol_list *scope) {
+    printf("check_function\n");
+    struct symbol_list *found;
+    struct node_list *aux = getchild(node, 3)->children;
+    while ((aux = aux->next) != NULL) {
+        switch (aux->node->category) {
+            case Declaration:
+                if ((found = search_symbol(scope, getchild(aux->node, 1)->token)) != NULL) {
+                    //! ERRO
+                }
+                else {
+                    insert_symbol(scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                }
+                break;
+        }
+    }
+    return 0;
+}
+
+void show_symbol_table() {
+    struct symbol_list *symbol = global_scope;
+    printf("===== Global Symbol Table =====\n");
+    while ((symbol = symbol->next) != NULL){
+        switch (symbol->node->category)
+        {
+        case Declaration:
+            printf("%s\t%s\n", symbol->identifier, category_m[getchild(symbol->node, 0)->category]);
+            break;
+        
+        default:
+            printf("%s\t%s(", symbol->identifier, category_m[getchild(symbol->node, 0)->category]);
+            struct node_list *aux = getchild(symbol->node, 2)->children;
+            while ((aux = aux->next) != NULL) {
+                printf("%s", category_m[getchild(aux->node, 0)->category]);
+                if (aux->next != NULL) {
+                    printf(", ");
+                }
+            }
+            printf(")\n");
+            break;
+        }
+    }
+    printf("\n");
+    symbol = global_scope;
+    while ((symbol = symbol->next) != NULL) {
+        if (symbol->node->category == FuncDefinition) {
+            printf("===== Function %s Symbol Table =====\n", symbol->identifier);
+            printf("return\t%s\n", category_m[getchild(symbol->node, 0)->category]);
+            struct symbol_list *symbol2 = symbol->scope;
+            while ((symbol2 = symbol2->next) != NULL){
+                if (symbol2->node->category == Declaration)
+                    printf("%s\t%s\n", symbol2->identifier, category_m[getchild(symbol2->node, 0)->category]);
+                else
+                    printf("%s\t%s\tparam\n", symbol2->identifier, category_m[getchild(symbol2->node, 0)->category]);
+            }
+            printf("\n");
+        }
+        
+    }
+    
 }

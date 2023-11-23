@@ -14,5 +14,6 @@ struct symbol_list {
 };
 
 void show_symbol_table();
+extern char *category_m[];
 
 #endif
