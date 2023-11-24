@@ -14,7 +14,7 @@ int check_expression(struct node *node, struct symbol_list *scope);
 
 
 //map category into enum types
-enum type map_typ(enum category category) {
+enum type map_cat_typ(enum category category) {
     switch (category) {
         case Int:
             return integer_type;
@@ -214,6 +214,7 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
                 break;
             case If:
                 printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
+
                 break;
             case While:
                 printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
@@ -234,72 +235,94 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
 
 
 int check_expression(struct node *node, struct symbol_list *scope){
+    struct symbol_list *found;
     switch (node->category) {
         case Store:
+            node->type = getchild(node, 0)->type;
             break;
     
         case Comma:
+            node->type = no_type;
             break;
         
-        case  Add:
+        case Add:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
         
         case Sub:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Mul:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
         
         case Div:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
         
         case Mod:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Or:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case And:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case BitWiseAnd:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case BitWiseOr:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case BitWiseXor:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Eq:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Ne:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Le:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Ge:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Lt:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;
     
         case Gt:
+            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
             break;   
     
         case Plus:
+            node->type = getchild(node, 1)->type;
             break;
     
         case Minus:
+            node->type = getchild(node, 1)->type;
             break;
         
         case Not:
+            node->type = getchild(node, 1)->type;
             break;
     
         case Call:
-            struct symbol_list *found = search_symbol_categ(scope, node->token, FuncDeclaration);
+            found = search_symbol_categ(scope, node->token, FuncDeclaration);
             if (found != NULL)
                 found = search_symbol_categ(global_scope, node->token, FuncDeclaration);
             
