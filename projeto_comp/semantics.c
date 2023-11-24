@@ -209,12 +209,16 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
                     //! ERRO
                 }
                 else {
-                    insert_symbol(scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                    insert_symbol(scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                 }
                 break;
             case If:
                 printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
-
+                check_expression(getchild(aux->node, 0), scope);
+                if (getchild(aux->node, 1) != NULL || getchild(aux->node, 1)->category != Null)
+                    check_function(getchild(aux->node, 1), scope, 1);
+                if (getchild(aux->node, 2) != NULL || getchild(aux->node, 2)->category != Null)                        
+                    check_function(getchild(aux->node, 2), scope, 1);
                 break;
             case While:
                 printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
@@ -227,6 +231,7 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
                 break;
             default:
                 printf("expr %d %d\n", aux->node->token_line, aux->node->token_column);
+                check_expression(aux->node, scope);
                 break;
         }
     }
@@ -236,89 +241,130 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
 
 int check_expression(struct node *node, struct symbol_list *scope){
     struct symbol_list *found;
+    printf("---;\n");
     switch (node->category) {
         case Store:
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type;
             break;
     
         case Comma:
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
             node->type = no_type;
             break;
         
         case Add:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
         
         case Sub:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Mul:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
         
         case Div:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
         
         case Mod:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Or:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case And:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case BitWiseAnd:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case BitWiseOr:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case BitWiseXor:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Eq:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            printf("eq %s %s\n", type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Ne:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Le:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Ge:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Lt:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Gt:
-            node->type = getchild(node, 0)->type > getchild(node, 2)->type ? getchild(node, 0)->type : getchild(node, 2)->type;
+            check_expression(getchild(node, 0), scope);
+            check_expression(getchild(node, 1), scope);
+            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;   
     
         case Plus:
-            node->type = getchild(node, 1)->type;
+            check_expression(getchild(node, 0), scope);
+            node->type = getchild(node, 0)->type;
             break;
     
         case Minus:
-            node->type = getchild(node, 1)->type;
+            check_expression(getchild(node, 0), scope);
+            node->type = getchild(node, 0)->type;
             break;
         
         case Not:
-            node->type = getchild(node, 1)->type;
+            check_expression(getchild(node, 0), scope);
+            node->type = getchild(node, 0)->type;
             break;
     
         case Call:

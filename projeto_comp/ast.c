@@ -39,9 +39,14 @@ void show(struct node *node, int depth){
     printf("..");
   }
   if(!node->token){
-    printf("%s\n", category_m[node->category]);
+    printf("%s", category_m[node->category]);
   } else {    
-    printf("%s(%s)\n", category_m[node->category], node->token);
+    printf("%s(%s)", category_m[node->category], node->token);
+  }
+  if (node->type != no_type) {
+    printf(" - %s\n", type_name(node->type));
+  } else {
+    printf("\n");
   }
   struct node_list *child = node->children;
   while(child != NULL){
