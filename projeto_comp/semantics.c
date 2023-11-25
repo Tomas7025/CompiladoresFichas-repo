@@ -75,6 +75,9 @@ struct symbol_list *search_symbol_categ(struct symbol_list *table, char *identif
             if (strcmp(symbol->identifier, identifier) == 0)
                 return symbol;
         }
+        else if (category == ParamDeclaration && symbol->node->category == ParamDeclaration)
+            if (strcmp(symbol->identifier, identifier) == 0)
+                return symbol;
     }
     return NULL;
 }
@@ -430,6 +433,9 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 node->type = found->type;
             else if ((found = search_symbol_categ(global_scope, node->token, Declaration)) != NULL)
                 node->type = found->type;
+            else if ((found = search_symbol_categ(scope, node->token, ParamDeclaration)) != NULL)
+                node->type = found->type;
+            
             else {
                 node->type = undefined_type;
                 // ! teste 
@@ -444,7 +450,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             break;
     
         case ChrLit:
-            node->type = char_type; // integer_type // char_type
+            node->type = integer_type; // integer_type // char_type
             break;
     
         case Decimal:

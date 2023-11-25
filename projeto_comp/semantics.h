@@ -16,5 +16,6 @@ struct symbol_list {
 
 void show_symbol_table();
 extern char *category_m[];
+enum type map_cat_typ(enum category category);
 
 #endif

@@ -15,7 +15,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
 %{
     #include <string.h>
-    int feedback = 0;
+    int feedback = 0;ç
 
     #define YY_USER_ACTION \
     { \
@@ -167,6 +167,7 @@ int main(int argc, char *argv[]) {
             show(program, 0);
         }
     }
+    
 
     // yylex();    /* run the lexical analysis automaton */
     
