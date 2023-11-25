@@ -222,12 +222,18 @@ int check_function(struct node *node, struct symbol_list *scope, int is_stat_lis
                 break;
             case While:
                 printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
+                check_expression(getchild(aux->node, 0), scope);
+                if (getchild(aux->node, 1) != NULL && getchild(aux->node, 1)->category != Null)
+                    check_function(getchild(aux->node, 1), scope, 1);
                 break;
             case Return:
                 printf("return %d %d\n", aux->node->token_line, aux->node->token_column);
+                if (getchild(aux->node, 0)->category != Null)
+                    check_expression(getchild(aux->node, 0), scope);
                 break;
             case StatList:
-                check_function(aux->node, scope, 1);
+                if (aux->node != NULL)
+                    check_function(aux->node, scope, 1);
                 break;
             default:
                 printf("expr %d %d\n", aux->node->token_line, aux->node->token_column);
@@ -244,6 +250,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
     printf("---;\n");
     switch (node->category) {
         case Store:
+            // ??? Verificar se sao do mm tipo for some reason
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type;
@@ -252,34 +259,39 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Comma:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = no_type;
+            node->type = getchild(node, 1)->type;
             break;
         
         case Add:
+            //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
         
         case Sub:
+            //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
     
         case Mul:
+            //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
         
         case Div:
+            //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
             break;
         
         case Mod:
+            //TODO: Checkar se é void || undef || double
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
@@ -374,14 +386,26 @@ int check_expression(struct node *node, struct symbol_list *scope){
             
             if(found != NULL) {
                 //TODO: corrigir node->children
-                struct node_list *aux = node->children;
-                struct symbol_list *aux2 = found->scope;
-                //TODO: checkar numero de parametros
-                while ((aux = aux->next) != NULL && (aux2 = aux2->next) != NULL) {
-                    if (aux->node->type != aux2->type) {
-                        //! ERRO
-                    }
+                struct node_list *call_arg = node->children->next;
+                struct node_list *param = getchild(call_arg->node, 2)->children;
+
+                int arg_c = countchildren(call_arg);
+                int param_c = countchildren(param);
+
+                // Verifica se o numero de argumentos é igual ao numero de parametros
+                if (arg_c != param_c) {
+                    printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
+                    node->type = undefined_type;
+                    semantic_errors++;
+                    break;
                 }
+                
+                // //TODO: checkar numero de parametros
+                // while ((aux = aux->next) != NULL && (aux2 = aux2->next) != NULL) {
+                //     if (aux->node->type != aux2->type) {
+                //         //! ERRO
+                //     }
+                // }
 
                 node->type = found->type;
             }
