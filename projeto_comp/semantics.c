@@ -9,7 +9,7 @@ int semantic_errors = 0;
 struct symbol_list* global_scope;
 struct symbol_list** scope_stack;
 
-int check_function(struct node *node, struct symbol_list *scope, int flag);
+int check_function(struct node *node, struct symbol_list *scope, int is_stat_list);
 int check_expression(struct node *node, struct symbol_list *scope);
 
 
@@ -23,7 +23,7 @@ enum type map_cat_typ(enum category category) {
         case Void:
             return no_type;
         case Double:
-            return double_type;
+            return double_type; 
         case Char:
             return char_type;
         default:
@@ -125,19 +125,19 @@ int check_program(struct node *program) {
             case (FuncDeclaration):
                 if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
 
-                    //! if (found->node->category == FuncDefinition) 
+                    //! if (found->node->category == FuncDefinition) && ...
                     //! ERRO
                 }
                 else {
-                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                 }
 
                 break;
             case (FuncDefinition):
                 if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
                     if(found->node->category != FuncDefinition) {
-                        found->node = aux->node;
                         // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
+                        found->node = aux->node;
                         found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
                         found->scope->identifier = NULL;
                         found->scope->type = no_type;
@@ -147,7 +147,7 @@ int check_program(struct node *program) {
                         if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
                             struct node_list *aux2 = getchild(aux->node, 2)->children;
                             while ((aux2 = aux2->next) != NULL){
-                                insert_symbol(found->scope, getchild(aux2->node, 1)->token, aux2->node->type, aux2->node);
+                                insert_symbol(found->scope, getchild(aux2->node, 1)->token, map_cat_typ(getchild(aux2->node, 0)->category), aux2->node);
                             }
                         }
 
@@ -169,7 +169,7 @@ int check_program(struct node *program) {
                     if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
                         struct node_list *aux2 = getchild(aux->node, 2)->children;
                         while ((aux2 = aux2->next) != NULL){
-                            insert_symbol(found->scope, getchild(aux2->node, 1)->token, aux2->node->type, aux2->node);
+                            insert_symbol(found->scope, getchild(aux2->node, 1)->token, map_cat_typ(getchild(aux2->node, 0)->category), aux2->node);
                         }
                     }
 
@@ -182,7 +182,7 @@ int check_program(struct node *program) {
                     //! ERRO
                 }
                 else {
-                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                 }
                 break;
         }
@@ -193,11 +193,11 @@ int check_program(struct node *program) {
 }
 
 
-int check_function(struct node *node, struct symbol_list *scope, int flag) {
+int check_function(struct node *node, struct symbol_list *scope, int is_stat_list) {
     struct symbol_list *found;
     struct node_list *aux;
     
-    if (flag == 0)
+    if (is_stat_list == 0)
         aux = getchild(node, 3)->children;
     else
         aux = node->children;
@@ -215,9 +215,9 @@ int check_function(struct node *node, struct symbol_list *scope, int flag) {
             case If:
                 printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
                 check_expression(getchild(aux->node, 0), scope);
-                if (getchild(aux->node, 1) != NULL || getchild(aux->node, 1)->category != Null)
+                if (getchild(aux->node, 1) != NULL && getchild(aux->node, 1)->category != Null)
                     check_function(getchild(aux->node, 1), scope, 1);
-                if (getchild(aux->node, 2) != NULL || getchild(aux->node, 2)->category != Null)                        
+                if (getchild(aux->node, 2) != NULL && getchild(aux->node, 2)->category != Null)
                     check_function(getchild(aux->node, 2), scope, 1);
                 break;
             case While:
@@ -373,8 +373,10 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 found = search_symbol_categ(global_scope, node->token, FuncDeclaration);
             
             if(found != NULL) {
+                //TODO: corrigir node->children
                 struct node_list *aux = node->children;
                 struct symbol_list *aux2 = found->scope;
+                //TODO: checkar numero de parametros
                 while ((aux = aux->next) != NULL && (aux2 = aux2->next) != NULL) {
                     if (aux->node->type != aux2->type) {
                         //! ERRO
