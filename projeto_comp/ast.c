@@ -49,9 +49,25 @@ void show(struct node *node, int depth){
     printf("\n");
   }
   struct node_list *child = node->children;
-  while(child != NULL){
-    show(child->node, depth + 1);
+
+  if (node->category == Call) {
+    struct node_list *args_cursor = child->next;
+
+    for(int i = 0; i < depth + 1; i++){
+      printf("..");
+    }
+    printf("%s(%s) - %s(", category_m[child->next->node->category], child->next->node->token, type_name(child->next->node->type));
+    while ((args_cursor = args_cursor->next) != NULL) {
+      printf("%s", type_name(args_cursor->node->type));
+      if (args_cursor->next != NULL)
+        printf(",");
+    }
+    printf(")\n");
     child = child->next;
+  }
+
+  while((child = child->next) != NULL){
+    show(child->node, depth + 1);
   }
 }
 

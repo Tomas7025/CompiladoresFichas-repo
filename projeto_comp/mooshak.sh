@@ -6,3 +6,6 @@ cc -g y.tab.c lex.yy.c ast.c semantics.c -o  uccompiler
 if [[ $# -eq 1 ]]; then
 ./uccompiler -t < ../c/meta3/$1.uc | diff -ya ../c/meta3/$1.out -
 fi
+if [[ $# -eq 2 ]]; then
+./uccompiler -t < ../c/meta3/$1.c | diff -ya ../c/meta3/$1.out -
+fi

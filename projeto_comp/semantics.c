@@ -159,7 +159,7 @@ int check_program(struct node *program) {
                     }
                 }
                 else {
-                    insert_symbol(global_scope, getchild(aux->node, 1)->token, aux->node->type, aux->node);
+                    insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                     found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category);
                     found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
                     found->scope->identifier = strdup(getchild(aux->node, 1)->token);
@@ -183,6 +183,8 @@ int check_program(struct node *program) {
                 }
                 else {
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
+                    if (countchildren(aux->node) == 3)
+                        check_expression(getchild(aux->node, 2), global_scope);
                 }
                 break;
         }
@@ -210,10 +212,12 @@ int check_function(struct node *node, struct symbol_list *scope, int is_stat_lis
                 }
                 else {
                     insert_symbol(scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
+                    if (countchildren(aux->node) == 3)
+                        check_expression(getchild(aux->node, 2), scope);
                 }
                 break;
             case If:
-                printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
+                // DEBUG: printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
                 check_expression(getchild(aux->node, 0), scope);
                 if (getchild(aux->node, 1) != NULL && getchild(aux->node, 1)->category != Null)
                     check_function(getchild(aux->node, 1), scope, 1);
@@ -221,22 +225,23 @@ int check_function(struct node *node, struct symbol_list *scope, int is_stat_lis
                     check_function(getchild(aux->node, 2), scope, 1);
                 break;
             case While:
-                printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
+                // DEBUG: printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
                 check_expression(getchild(aux->node, 0), scope);
                 if (getchild(aux->node, 1) != NULL && getchild(aux->node, 1)->category != Null)
                     check_function(getchild(aux->node, 1), scope, 1);
                 break;
             case Return:
-                printf("return %d %d\n", aux->node->token_line, aux->node->token_column);
-                if (getchild(aux->node, 0)->category != Null)
-                    check_expression(getchild(aux->node, 0), scope);
+                // DEBUG: printf("return %d %d\n", aux->node->token_line, aux->node->token_column);
+                if (getchild(aux->node, 0)->category != Null){
+                        check_expression(getchild(aux->node, 0), scope);
+                    }
                 break;
             case StatList:
                 if (aux->node != NULL)
                     check_function(aux->node, scope, 1);
                 break;
             default:
-                printf("expr %d %d\n", aux->node->token_line, aux->node->token_column);
+                // DEBUG: printf("expr %d %d\n", aux->node->token_line, aux->node->token_column);
                 check_expression(aux->node, scope);
                 break;
         }
@@ -247,7 +252,8 @@ int check_function(struct node *node, struct symbol_list *scope, int is_stat_lis
 
 int check_expression(struct node *node, struct symbol_list *scope){
     struct symbol_list *found;
-    printf("---;\n");
+    struct node_list *aux;
+    
     switch (node->category) {
         case Store:
             // ??? Verificar se sao do mm tipo for some reason
@@ -380,17 +386,18 @@ int check_expression(struct node *node, struct symbol_list *scope){
             break;
     
         case Call:
-            found = search_symbol_categ(scope, node->token, FuncDeclaration);
-            if (found != NULL)
-                found = search_symbol_categ(global_scope, node->token, FuncDeclaration);
+            aux = node->children->next;
+            while ((aux = aux->next) != NULL) {
+                check_expression(aux->node, scope);
+            }
+
+            found = search_symbol_categ(global_scope, getchild(node, 0)->token, FuncDeclaration);
             
             if(found != NULL) {
                 //TODO: corrigir node->children
-                struct node_list *call_arg = node->children->next;
-                struct node_list *param = getchild(call_arg->node, 2)->children;
 
-                int arg_c = countchildren(call_arg);
-                int param_c = countchildren(param);
+                int arg_c = countchildren(node)-1;
+                int param_c = countchildren(getchild(found->node, 2));
 
                 // Verifica se o numero de argumentos é igual ao numero de parametros
                 if (arg_c != param_c) {
@@ -406,10 +413,12 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 //         //! ERRO
                 //     }
                 // }
-
+                node->children->next->node->type = found->type;
                 node->type = found->type;
             }
             else {
+                node->children->next->node->type = undefined_type;
+                node->type = undefined_type;
                 //! ERRO
             }
 
@@ -427,7 +436,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 printf("Line %d, column %d: Unknown symbol %s\n", node->token_line, node->token_column, node->token);
                 semantic_errors++;
             }
-
+            // printf("DEBUG: %s, %s\n", node->token, type_name(node->type));
             break;
     
         case Natural:
@@ -435,7 +444,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             break;
     
         case ChrLit:
-            node->type = char_type;
+            node->type = char_type; // integer_type // char_type
             break;
     
         case Decimal:
@@ -450,7 +459,6 @@ int check_expression(struct node *node, struct symbol_list *scope){
             break;
     }
 }
-
 
 void show_symbol_table() {
     struct symbol_list *symbol = global_scope;
