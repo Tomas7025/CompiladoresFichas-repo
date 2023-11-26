@@ -15,7 +15,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
 %{
     #include <string.h>
-    int feedback = 0;ç
+    int feedback = 0;
 
     #define YY_USER_ACTION \
     { \
@@ -86,7 +86,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
     };
 
     int map_tk() {
-        for(int i = 0; i < sizeof(map_tokens) / sizeof(char*); i += 2) {
+        for(int i = 0; i < (int) (sizeof(map_tokens) / sizeof(char*)); i += 2) {
             if (strcmp(yytext, map_tokens[i + 1]) == 0) {
                 return i;
             }
@@ -164,7 +164,14 @@ int main(int argc, char *argv[]) {
         if (errors == 0){
             check_program(program);
             show_symbol_table();
-            show(program, 0);
+            show(program, 0, 0);
+        }
+    }
+    if (argc >= 2 && strcmp(argv[1], "-s") == 0) {
+        if (errors == 0){
+            check_program(program);
+            show_symbol_table();
+            show(program, 0, 1);
         }
     }
     

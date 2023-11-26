@@ -98,7 +98,7 @@ int check_void_in_list (struct node_list *list) {
 int check_program(struct node *program) {
     global_scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
     global_scope->identifier = strdup("global");
-    global_scope->type = Void;
+    global_scope->type = no_type;
     global_scope->node = NULL;
     global_scope->next = NULL;
     
@@ -130,6 +130,7 @@ int check_program(struct node *program) {
 
                     //! if (found->node->category == FuncDefinition) && ...
                     //! ERRO
+                    break;
                 }
                 else {
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
@@ -189,6 +190,8 @@ int check_program(struct node *program) {
                     if (countchildren(aux->node) == 3)
                         check_expression(getchild(aux->node, 2), global_scope);
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -464,6 +467,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         default:
             break;
     }
+    return semantic_errors;
 }
 
 void show_symbol_table() {

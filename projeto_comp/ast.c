@@ -1,14 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "ast.h"
 #include "semantics.h"
 
 char *category_m[] = category_map;
 extern struct node_list *gc;
 
-extern struct symbol_list *search_symbol_categ(struct symbol_list *table, char *identifier, enum category category);
 extern struct symbol_list *global_scope;
-
 
 // create a node of a given category with a given lexical symbol
 struct node *newnode(enum category category, char *token) {
@@ -37,7 +36,7 @@ void addchild(struct node *parent, struct node *child) {
 }
 
 
-void show(struct node *node, int depth){
+void show(struct node *node, int depth, int anotations){
   if (node == NULL) return;
   for(int i = 0; i < depth; i++){
     printf("..");
@@ -47,14 +46,14 @@ void show(struct node *node, int depth){
   } else {    
     printf("%s(%s)", category_m[node->category], node->token);
   }
-  if (node->type != no_type) {
+  if (node->type != no_type && anotations) {
     printf(" - %s\n", type_name(node->type));
   } else {
     printf("\n");
   }
   struct node_list *child = node->children;
 
-  if (node->category == Call) {
+  if (node->category == Call && anotations) {
     struct node_list *params_cursor = getchild(search_symbol_categ(global_scope, child->next->node->token, FuncDeclaration)->node, 2)->children;
 
     for(int i = 0; i < depth + 1; i++){
@@ -72,7 +71,7 @@ void show(struct node *node, int depth){
   }
 
   while((child = child->next) != NULL){
-    show(child->node, depth + 1);
+    show(child->node, depth + 1, anotations);
   }
 }
 
@@ -123,3 +122,4 @@ int countchildren(struct node *node) {
         i++;
     return i;
 }
+
