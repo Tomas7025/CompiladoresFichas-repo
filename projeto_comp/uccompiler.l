@@ -15,6 +15,10 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
 
 %{
     #include <string.h>
+    #include "y.tab.h"
+    #include "ast.h"
+    #include "semantics.h"
+    
     int feedback = 0;
 
     #define YY_USER_ACTION \
@@ -95,9 +99,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
     }
 
     //! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    #include "y.tab.h"
-    #include "ast.h"
-    #include "semantics.h"
+    
 
     int yyparse(void);
     void yyerror(char *);

@@ -21,7 +21,7 @@ enum type map_cat_typ(enum category category) {
         case Short:
             return short_type;
         case Void:
-            return no_type;
+            return void_type;
         case Double:
             return double_type; 
         case Char:
@@ -410,6 +410,8 @@ int check_expression(struct node *node, struct symbol_list *scope){
                     printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
                     node->type = undefined_type;
                     semantic_errors++;
+                    node->children->next->node->type = found->type;
+
                     break;
                 }
                 
