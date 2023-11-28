@@ -26,7 +26,3 @@ double dbl(int i, double d) {
 void ret(void) {
     return d;
 }
-
-1 = 2;
-
-f(1) = 3;

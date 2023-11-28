@@ -63,18 +63,32 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
 }
 
 
-int check_void_in_list (struct node_list *list) {
-    int void_found = 0;
+// int check_void_in_list (struct node_list *list) {
+//     int void_found = 0;
+//     struct node_list *aux = list;
+//     while ((aux = aux->next) != NULL) {
+//         if (getchild(aux->node, 0)->category == Void) {
+//             // printf("Line , column : Invalid use of void type in declaration\n");
+//             void_found = 1;
+//         }
+//     }
+//     return void_found;
+// }
+
+void check_void_in_list (struct node_list *list) {
+    int n_param = 0;
     struct node_list *aux = list;
     while ((aux = aux->next) != NULL) {
-        if (getchild(aux->node, 0)->category == Void) {
+        n_param++;
+        if (getchild(aux->node, 0)->category == Void && n_param > 1) {
             // printf("Line , column : Invalid use of void type in declaration\n");
+            printf("Line %d, column %d: Invalid use of void type in declaration\n", aux->node->token_line, aux->node->token_column);
             semantic_errors++;
-            void_found = 1;
+            return;
         }
     }
-    return void_found;
 }
+
 
 int check_program(struct node *program) {
     global_scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
@@ -114,6 +128,11 @@ int check_program(struct node *program) {
                     break;
                 }
                 else {
+                    check_void_in_list(getchild(aux->node, 2)->children);
+                    // if (check_void_in_list(getchild(aux->node, 2)->children) && countchildren(getchild(aux->node, 2)) > 1) {
+                    //     printf("Line %d, column %d: Invalid use of void type in declaration\n", aux->node->token_line, aux->node->token_column);
+                    //     semantic_errors++;
+                    // }
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                 }
 
@@ -371,22 +390,19 @@ int check_expression(struct node *node, struct symbol_list *scope){
             check_expression(getchild(node, 0), scope);
             if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type) {
                 printf("Line %d, column %d: Operator + cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
-                node->type = undefined_type;
                 semantic_errors++;
-            } else {
-                node->type = getchild(node, 0)->type;
             }
+            node->type = getchild(node, 0)->type;
             break;
     
         case Minus:
             check_expression(getchild(node, 0), scope);
             if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type) {
                 printf("Line %d, column %d: Operator - cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
-                node->type = undefined_type;
                 semantic_errors++;
-            } else {
-                node->type = getchild(node, 0)->type;
             }
+            node->type = getchild(node, 0)->type;
+            
             break;
         
         case Not:
