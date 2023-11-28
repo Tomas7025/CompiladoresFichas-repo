@@ -288,74 +288,74 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef || double
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Or:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case And:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case BitWiseAnd:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case BitWiseOr:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case BitWiseXor:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Eq:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
             printf("eq %s %s\n", type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Ne:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Le:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Ge:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Lt:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;
     
         case Gt:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            node->type = getchild(node, 0)->type > getchild(node, 1)->type ? getchild(node, 0)->type : getchild(node, 1)->type;
+            node->type = integer_type;
             break;   
     
         case Plus:
