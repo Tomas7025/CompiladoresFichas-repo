@@ -45,7 +45,7 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, e
         if(symbol->next == NULL) {
             symbol->next = new;    /* insert new symbol at the tail of the list */
             break;
-        } else if(strcmp(symbol->next->identifier, identifier) == 0 && (symbol->next->node->category == node->category)) {
+        } else if(strcmp(symbol->next->identifier, identifier) == 0) {
             free(new);
             return NULL;           /* return NULL if symbol is already inserted */
         }
@@ -63,24 +63,6 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
     return NULL;
 }
 
-// look up a symbol by its identifier
-struct symbol_list *search_symbol_categ(struct symbol_list *table, char *identifier, enum category category) {
-    struct symbol_list *symbol;
-    for(symbol = table->next; symbol != NULL; symbol = symbol->next) {
-        if ((category == FuncDeclaration || category == FuncDefinition) && (symbol->node->category == FuncDeclaration || symbol->node->category == FuncDefinition)) {
-            if (strcmp(symbol->identifier, identifier) == 0)
-                return symbol;
-        }
-        else if (category == Declaration && symbol->node->category == Declaration) {
-            if (strcmp(symbol->identifier, identifier) == 0)
-                return symbol;
-        }
-        else if (category == ParamDeclaration && symbol->node->category == ParamDeclaration)
-            if (strcmp(symbol->identifier, identifier) == 0)
-                return symbol;
-    }
-    return NULL;
-}
 
 int check_void_in_list (struct node_list *list) {
     int void_found = 0;
@@ -126,7 +108,7 @@ int check_program(struct node *program) {
     while ((aux = aux->next) != NULL) {
         switch (aux->node->category) {
             case (FuncDeclaration):
-                if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
+                if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
 
                     //! if (found->node->category == FuncDefinition) && ...
                     //! ERRO
@@ -138,8 +120,8 @@ int check_program(struct node *program) {
 
                 break;
             case (FuncDefinition):
-                if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
-                    if(found->node->category != FuncDefinition) {
+                if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
+                    if(found->node->category == FuncDeclaration) {
                         // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
                         found->node = aux->node;
                         found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
@@ -164,7 +146,7 @@ int check_program(struct node *program) {
                 }
                 else {
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
-                    found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category);
+                    found = search_symbol(global_scope, getchild(aux->node, 1)->token);
                     found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
                     found->scope->identifier = strdup(getchild(aux->node, 1)->token);
                     found->scope->node = aux->node;
@@ -182,7 +164,7 @@ int check_program(struct node *program) {
                 }
                 break;
             case (Declaration):
-                if ((found = search_symbol_categ(global_scope, getchild(aux->node, 1)->token, aux->node->category)) != NULL) {
+                if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
                     //! ERRO
                 }
                 else {
@@ -397,7 +379,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 check_expression(aux->node, scope);
             }
 
-            found = search_symbol_categ(global_scope, getchild(node, 0)->token, FuncDeclaration);
+            found = search_symbol(global_scope, getchild(node, 0)->token);
             
             if(found != NULL) {
                 //TODO: corrigir node->children
@@ -433,12 +415,12 @@ int check_expression(struct node *node, struct symbol_list *scope){
             break;
     
         case Identifier:
-            struct symbol_list *found = search_symbol_categ(scope, node->token, Declaration);
+            found = search_symbol(scope, node->token);
             if (found != NULL)
                 node->type = found->type;
-            else if ((found = search_symbol_categ(global_scope, node->token, Declaration)) != NULL)
+            else if ((found = search_symbol(global_scope, node->token)) != NULL)
                 node->type = found->type;
-            else if ((found = search_symbol_categ(scope, node->token, ParamDeclaration)) != NULL)
+            else if ((found = search_symbol(scope, node->token)) != NULL)
                 node->type = found->type;
             
             else {

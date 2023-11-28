@@ -3,7 +3,7 @@
 
 #include "ast.h"
 
-struct symbol_list *search_symbol_categ(struct symbol_list *table, char *identifier, enum category category);
+struct symbol_list *search_symbol(struct symbol_list *table, char *identifier);
 int check_program(struct node *program);
 #define map_typ(x) (x == Int ? "int" : (x == Double ? "double" : (x == Short ? "short" : (x == Char ? "char" : "void"))))
 
