@@ -7,7 +7,6 @@
 int semantic_errors = 0;
 
 struct symbol_list* global_scope;
-struct symbol_list** scope_stack;
 
 int check_function(struct node *node, struct symbol_list *scope, int is_stat_list);
 int check_expression(struct node *node, struct symbol_list *scope);
@@ -69,7 +68,7 @@ int check_void_in_list (struct node_list *list) {
     struct node_list *aux = list;
     while ((aux = aux->next) != NULL) {
         if (getchild(aux->node, 0)->category == Void) {
-            printf("Line , column : Invalid use of void type in declaration\n");
+            // printf("Line , column : Invalid use of void type in declaration\n");
             semantic_errors++;
             void_found = 1;
         }
@@ -140,7 +139,7 @@ int check_program(struct node *program) {
                         //? check_func passar o scope da funcDeclaration
                         check_function(aux->node, found->scope, 0);
                     } else {
-                        printf("-------------ERRRO----------------\n");
+                        // printf("-------------ERRRO----------------\n");
                         //! ERRO
                     }
                 }
@@ -324,7 +323,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Eq:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            printf("eq %s %s\n", type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
+            // printf("eq %s %s\n", type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
             node->type = integer_type;
             break;
     
@@ -370,7 +369,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         
         case Not:
             check_expression(getchild(node, 0), scope);
-            node->type = getchild(node, 0)->type;
+            node->type = integer_type;
             break;
     
         case Call:
@@ -389,10 +388,10 @@ int check_expression(struct node *node, struct symbol_list *scope){
 
                 // Verifica se o numero de argumentos é igual ao numero de parametros
                 if (arg_c != param_c) {
-                    printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
-                    node->type = undefined_type;
-                    semantic_errors++;
+                    // printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
                     node->children->next->node->type = found->type;
+                    node->type = found->type;
+                    semantic_errors++;
 
                     break;
                 }
@@ -420,13 +419,11 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 node->type = found->type;
             else if ((found = search_symbol(global_scope, node->token)) != NULL)
                 node->type = found->type;
-            else if ((found = search_symbol(scope, node->token)) != NULL)
-                node->type = found->type;
             
             else {
                 node->type = undefined_type;
                 // ! teste 
-                printf("Line %d, column %d: Unknown symbol %s\n", node->token_line, node->token_column, node->token);
+                // printf("Line %d, column %d: Unknown symbol %s\n", node->token_line, node->token_column, node->token);
                 semantic_errors++;
             }
             // printf("DEBUG: %s, %s\n", node->token, type_name(node->type));
@@ -437,7 +434,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             break;
     
         case ChrLit:
-            node->type = integer_type; // integer_type // char_type
+            node->type = integer_type; 
             break;
     
         case Decimal:
