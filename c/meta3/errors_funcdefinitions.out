@@ -1,16 +1,17 @@
-Line 3, column 6: Conflicting types (got void(void), expected int)
 Line 11, column 5: Symbol soma already defined
 Line 15, column 6: Symbol soma already defined
 Line 19, column 5: Symbol soma already defined
-Unexpected error: Parameter symbol required
-Unexpected error: Parameter symbol required
-Unexpected error: Parameter symbol required
+Line 24, column 9: Conflicting types (got int, expected void)
 ===== Global Symbol Table =====
 putchar	int(int)
 getchar	int(void)
-no_function	int
+var	int
+no_function	void(void)
 soma	int(int,int)
-no_name	void(int,int,int)
+no_name	void(void)
+
+===== Function no_function Symbol Table =====
+return	void
 
 ===== Function soma Symbol Table =====
 return	int
@@ -23,7 +24,7 @@ return	void
 Program
 ..Declaration
 ....Int
-....Identifier(no_function)
+....Identifier(var)
 ..FuncDefinition
 ....Void
 ....Identifier(no_function)
@@ -85,11 +86,7 @@ Program
 ....Identifier(no_name)
 ....ParamList
 ......ParamDeclaration
-........Int
-......ParamDeclaration
-........Int
-......ParamDeclaration
-........Int
+........Void
 ....FuncBody
 ......Return
-........Null
+........Identifier(var) - int

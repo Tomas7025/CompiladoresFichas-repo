@@ -1,4 +1,4 @@
-int no_function;
+int var;
 
 void no_function(void) {
 
@@ -20,6 +20,6 @@ int soma(int i, int j) {
 	return i + j;
 }
 
-void no_name(int, int, int) {
-	return;
+void no_name(void) {
+	return var;
 }
