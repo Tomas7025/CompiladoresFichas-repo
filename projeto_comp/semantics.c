@@ -383,18 +383,20 @@ int check_expression(struct node *node, struct symbol_list *scope){
             if(found != NULL) {
                 //TODO: corrigir node->children
 
-                int arg_c = countchildren(node)-1;
-                int param_c = countchildren(getchild(found->node, 2));
+                // !!! 
+                // int arg_c = countchildren(node)-1;
+                // int param_c = countchildren(getchild(found->node, 2));
 
+                // !!! 
                 // Verifica se o numero de argumentos é igual ao numero de parametros
-                if (arg_c != param_c) {
-                    // printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
-                    node->children->next->node->type = found->type;
-                    node->type = found->type;
-                    semantic_errors++;
+                // if (arg_c != param_c) {
+                //     printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
+                //     node->children->next->node->type = found->type;
+                //     node->type = found->type;
+                //     semantic_errors++;
 
-                    break;
-                }
+                //     break;
+                // }
                 
                 // //TODO: checkar numero de parametros
                 // while ((aux = aux->next) != NULL && (aux2 = aux2->next) != NULL) {
