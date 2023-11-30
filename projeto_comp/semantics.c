@@ -279,9 +279,20 @@ int check_function(struct node *node, struct symbol_list *scope, int is_stat_lis
 int check_expression(struct node *node, struct symbol_list *scope){
     struct symbol_list *found;
     struct node_list *aux;
+
+    struct node_list *arg_cursor;
+    struct node_list *param_cursor;
+
+    int arg_c = 0, param_c = 0;
     
     switch (node->category) {
         case Store:
+            if (getchild(node, 0)->category != Identifier) {
+                printf("Line %d, column %d: Lvalue required\n", node->token_line, node->token_column);
+                node->type = undefined_type;
+                break;
+            }
+
             // ??? Verificar se sao do mm tipo for some reason
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
@@ -435,13 +446,31 @@ int check_expression(struct node *node, struct symbol_list *scope){
             found = search_symbol(global_scope, getchild(node, 0)->token);
             
             if(found != NULL) {
+                arg_cursor = node->children->next;
+                param_cursor = getchild(found->node, 2)->children;
+
+                while ((arg_cursor = arg_cursor->next) != NULL) {
+                    if (arg_cursor->node->type != void_type)
+                        arg_c++;
+                }
+                
+                while ((param_cursor = param_cursor->next) != NULL) {
+                    if (getchild(param_cursor->node, 0)->type != void_type)
+                        param_c++;
+                }
+
+                if (arg_c != param_c) {
+                    printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
+
+                }
+
+
                 //TODO: corrigir node->children
 
                 // !!! 
                 // int arg_c = countchildren(node)-1;
                 // int param_c = countchildren(getchild(found->node, 2));
 
-                // !!! 
                 // Verifica se o numero de argumentos é igual ao numero de parametros
                 // if (arg_c != param_c) {
                 //     printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
