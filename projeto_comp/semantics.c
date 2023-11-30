@@ -104,10 +104,27 @@ int check_program(struct node *program) {
 
     struct symbol_list *found;
     struct node_list *aux = program->children;
+
+    // struct node_list *param_cursor;             // ???
+    // struct node_list *param_cursor_2;           // ???
+
     while ((aux = aux->next) != NULL) {
         switch (aux->node->category) {
-            case (FuncDeclaration):
+            case FuncDeclaration:
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
+                    // param_cursor = getchild(found->node, 2)->children;
+                    // param_cursor_2 = getchild(aux->node, 2)->children;
+
+                    // while ((param_cursor = param_cursor->next) != NULL && (param_cursor_2 = param_cursor_2->next) != NULL) {
+                    //     if (map_cat_typ(getchild(param_cursor->node, 0)->category) != map_cat_typ(getchild(param_cursor_2->node, 0)->category)) {
+                    //         // ! ??? ERRO: Conflicting types
+                    //         // Reseta os ponteiros
+                    //         param_cursor = getchild(found->node, 2)->children;
+                    //         param_cursor_2 = getchild(aux->node, 2)->children;
+                    //         printf("Line %d, column %d: Operator + cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
+                    //         break;
+                    //     }
+                    // }
 
                     //! if (found->node->category == FuncDefinition) && ...
                     //! ERRO
@@ -118,7 +135,7 @@ int check_program(struct node *program) {
                 }
 
                 break;
-            case (FuncDefinition):
+            case FuncDefinition:
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
                     if(found->node->category == FuncDeclaration) {
                         // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
@@ -139,8 +156,8 @@ int check_program(struct node *program) {
                         //? check_func passar o scope da funcDeclaration
                         check_function(aux->node, found->scope, 0);
                     } else {
-                        // printf("-------------ERRRO----------------\n");
                         //! ERRO
+                        printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
                     }
                 }
                 else {
@@ -162,9 +179,15 @@ int check_program(struct node *program) {
                     check_function(aux->node, found->scope, 0);
                 }
                 break;
-            case (Declaration):
+            case Declaration:
+                if (map_cat_typ(getchild(aux->node, 0)->category) == void_type) {
+                    printf("Line %d, column %d: Invalid use of void type in declaration\n", aux->node->token_line, aux->node->token_column);
+                    break;
+                }
+                
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
                     //! ERRO
+                    printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
                 }
                 else {
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
@@ -375,17 +398,32 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Plus:
             check_expression(getchild(node, 0), scope);
+            if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type) {
+                printf("Line %d, column %d: Operator + cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
+                semantic_errors++;
+            }
             node->type = getchild(node, 0)->type;
             break;
     
         case Minus:
             check_expression(getchild(node, 0), scope);
+            if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type) {
+                printf("Line %d, column %d: Operator - cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
+                semantic_errors++;
+            }
             node->type = getchild(node, 0)->type;
+            
             break;
         
         case Not:
             check_expression(getchild(node, 0), scope);
-            node->type = integer_type;
+            if (getchild(node, 0)->type != integer_type) {
+                printf("Line %d, column %d: Operator ! cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
+                node->type = undefined_type;
+                semantic_errors++;
+            } else {
+                node->type = integer_type;
+            }
             break;
     
         case Call:
