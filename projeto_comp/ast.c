@@ -37,6 +37,7 @@ void addchild(struct node *parent, struct node *child) {
 
 
 void show(struct node *node, int depth, int anotations){
+  struct symbol_list *found;
   if (node == NULL) return;
   for(int i = 0; i < depth; i++){
     printf("..");
@@ -53,8 +54,8 @@ void show(struct node *node, int depth, int anotations){
   }
   struct node_list *child = node->children;
 
-  if (node->category == Call && anotations) {
-    struct node_list *params_cursor = getchild(search_symbol(global_scope, child->next->node->token)->node, 2)->children;
+  if (node->category == Call && anotations && (found = search_symbol(global_scope, child->next->node->token)) != NULL) {
+    struct node_list *params_cursor = getchild(found->node, 2)->children;
 
     for(int i = 0; i < depth + 1; i++){
       printf("..");

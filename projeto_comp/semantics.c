@@ -440,8 +440,8 @@ int check_expression(struct node *node, struct symbol_list *scope){
             
             else {
                 node->type = undefined_type;
-                // ! teste 
-                // printf("Line %d, column %d: Unknown symbol %s\n", node->token_line, node->token_column, node->token);
+                // ! teste
+                printf("Line %d, column %d: Unknown symbol %s\n", node->token_line, node->token_column, node->token);
                 semantic_errors++;
             }
             // printf("DEBUG: %s, %s\n", node->token, type_name(node->type));
