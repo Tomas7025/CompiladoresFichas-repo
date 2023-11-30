@@ -8,7 +8,7 @@ int semantic_errors = 0;
 
 struct symbol_list* global_scope;
 
-int check_function(struct node *node, struct symbol_list *scope, int is_stat_list);
+int check_function(struct node *node, struct symbol_list *scope, int flag);
 int check_expression(struct node *node, struct symbol_list *scope);
 
 
@@ -177,61 +177,77 @@ int check_program(struct node *program) {
         }
     }
     
-    
     return semantic_errors;
+}
+
+int check_statement(struct node *node, struct symbol_list *scope) {
+    struct symbol_list *found;
+    switch (node->category) {
+        case Declaration:
+            if ((found = search_symbol(scope, getchild(node, 1)->token)) != NULL) {
+                //! ERRO
+            }
+            else {
+                insert_symbol(scope, getchild(node, 1)->token, map_cat_typ(getchild(node, 0)->category), node);
+                if (countchildren(node) == 3)
+                    check_expression(getchild(node, 2), scope);
+            }
+            break;
+        case If:
+            // DEBUG: printf("if %d %d\n", node->token_line, node->token_column);
+            check_expression(getchild(node, 0), scope);
+            if (getchild(node, 1) != NULL && getchild(node, 1)->category != Null) {
+                if (getchild(node, 1)->category == StatList) 
+                    check_function(getchild(node, 1), scope, 1);
+                else
+                    check_statement(getchild(node, 1), scope);
+            }
+            if (getchild(node, 2) != NULL && getchild(node, 2)->category != Null) {
+                if (getchild(node, 2)->category == StatList)
+                    check_function(getchild(node, 2), scope, 1);
+                else 
+                    check_statement(getchild(node, 2), scope);
+            }
+            break;
+        case While:
+            // DEBUG: printf("while %d %d\n", node->token_line, node->token_column);
+            check_expression(getchild(node, 0), scope);
+            if (getchild(node, 1) != NULL && getchild(node, 1)->category != Null) {
+                if (getchild(node, 1)->category == StatList)
+                    check_function(getchild(node, 1), scope, 1);
+                else 
+                    check_statement(getchild(node, 1), scope);
+            }
+            break;
+        case Return:
+            // DEBUG: printf("return %d %d\n", node->token_line, node->token_column);
+            if (getchild(node, 0)->category != Null){
+                    check_expression(getchild(node, 0), scope);
+                }
+            break;
+        case StatList:
+            if (node != NULL)
+                check_function(node, scope, 1);
+            break;
+        default:
+            // DEBUG: printf("expr %d %d\n", node->token_line, node->token_column);
+            check_expression(node, scope);
+            break;
+    }
+    return 0;
 }
 
 
 int check_function(struct node *node, struct symbol_list *scope, int is_stat_list) {
-    struct symbol_list *found;
     struct node_list *aux;
     
     if (is_stat_list == 0)
         aux = getchild(node, 3)->children;
-    else
-        aux = node->children;
+    else if (is_stat_list == 1)
+        aux = node->children;    
 
     while ((aux = aux->next) != NULL) {
-        switch (aux->node->category) {
-            case Declaration:
-                if ((found = search_symbol(scope, getchild(aux->node, 1)->token)) != NULL) {
-                    //! ERRO
-                }
-                else {
-                    insert_symbol(scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
-                    if (countchildren(aux->node) == 3)
-                        check_expression(getchild(aux->node, 2), scope);
-                }
-                break;
-            case If:
-                // DEBUG: printf("if %d %d\n", aux->node->token_line, aux->node->token_column);
-                check_expression(getchild(aux->node, 0), scope);
-                if (getchild(aux->node, 1) != NULL && getchild(aux->node, 1)->category != Null)
-                    check_function(getchild(aux->node, 1), scope, 1);
-                if (getchild(aux->node, 2) != NULL && getchild(aux->node, 2)->category != Null)
-                    check_function(getchild(aux->node, 2), scope, 1);
-                break;
-            case While:
-                // DEBUG: printf("while %d %d\n", aux->node->token_line, aux->node->token_column);
-                check_expression(getchild(aux->node, 0), scope);
-                if (getchild(aux->node, 1) != NULL && getchild(aux->node, 1)->category != Null)
-                    check_function(getchild(aux->node, 1), scope, 1);
-                break;
-            case Return:
-                // DEBUG: printf("return %d %d\n", aux->node->token_line, aux->node->token_column);
-                if (getchild(aux->node, 0)->category != Null){
-                        check_expression(getchild(aux->node, 0), scope);
-                    }
-                break;
-            case StatList:
-                if (aux->node != NULL)
-                    check_function(aux->node, scope, 1);
-                break;
-            default:
-                // DEBUG: printf("expr %d %d\n", aux->node->token_line, aux->node->token_column);
-                check_expression(aux->node, scope);
-                break;
-        }
+        check_statement(aux->node, scope);
     }
     return 0;
 }
