@@ -141,8 +141,8 @@ int check_program(struct node *program) {
                         // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
                         found->node = aux->node;
                         found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
-                        found->scope->identifier = NULL;
-                        found->scope->type = no_type;
+                        found->scope->identifier = strdup(getchild(aux->node, 1)->token);
+                        found->scope->type = map_cat_typ(getchild(aux->node, 0)->category);
                         found->scope->node = NULL;
                         found->scope->next = NULL;
 
@@ -167,6 +167,7 @@ int check_program(struct node *program) {
                     found->scope->identifier = strdup(getchild(aux->node, 1)->token);
                     found->scope->node = aux->node;
                     found->scope->next = NULL;
+                    found->scope->type = map_cat_typ(getchild(aux->node, 0)->category);
 
                     if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
                         struct node_list *aux2 = getchild(aux->node, 2)->children;
@@ -209,11 +210,17 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case Declaration:
             if ((found = search_symbol(scope, getchild(node, 1)->token)) != NULL) {
                 //! ERRO
+                printf("Line %d, column %d: Symbol %s already defined\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, getchild(node, 1)->token);
             }
             else {
-                insert_symbol(scope, getchild(node, 1)->token, map_cat_typ(getchild(node, 0)->category), node);
                 if (countchildren(node) == 3)
                     check_expression(getchild(node, 2), scope);
+                if (map_cat_typ(getchild(node, 0)->category) == void_type) {
+                    printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
+                    break;
+                }
+                insert_symbol(scope, getchild(node, 1)->token, map_cat_typ(getchild(node, 0)->category), node);
+                
             }
             break;
         case If:
@@ -245,8 +252,12 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case Return:
             // DEBUG: printf("return %d %d\n", node->token_line, node->token_column);
             if (getchild(node, 0)->category != Null){
-                    check_expression(getchild(node, 0), scope);
+                check_expression(getchild(node, 0), scope);
+                if (getchild(node, 0)->type > map_cat_typ(getchild(search_symbol(global_scope, scope->identifier)->node, 0)->category)) {
+                    printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type), type_name(scope->type));
+                    semantic_errors++;
                 }
+            }
             break;
         case StatList:
             if (node != NULL)
