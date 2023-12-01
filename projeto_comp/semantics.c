@@ -295,7 +295,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 break;
             }
 
-            if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type || getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type) {
+            if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type || getchild(node, 0)->type < getchild(node, 1)->type) {
                 printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
                 node->type = undefined_type;
                 semantic_errors++;
@@ -303,7 +303,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             } else {
                 node->type = getchild(node, 0)->type;
             }
-            // ??? Verificar se sao do mm tipo for some reason
+
             break;
     
         case Comma:
