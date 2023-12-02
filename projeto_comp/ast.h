@@ -28,6 +28,7 @@ void add_gc(struct node *node);
 struct node *getchild(struct node *parent, int position);
 
 int countchildren(struct node *node);
+void print_signature(struct node* node);
 
 
 

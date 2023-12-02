@@ -166,7 +166,7 @@ function_declarator: IDENTIFIER LPAR parameter_list RPAR    { if (errors > 0) { 
                                                               addchild($$, newnode(Identifier, $1));
                                                               addchild($$, $3);
 
-                                                              LOCATE($$, @1.first_line, @1.first_column);
+                                                              LOCATE(getchild($$, 0), @1.first_line, @1.first_column);
                                                             }
     ;
 

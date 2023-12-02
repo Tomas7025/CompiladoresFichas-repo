@@ -55,19 +55,12 @@ void show(struct node *node, int depth, int anotations){
   struct node_list *child = node->children;
 
   if (node->category == Call && anotations && (found = search_symbol(global_scope, child->next->node->token)) != NULL) {
-    struct node_list *params_cursor = getchild(found->node, 2)->children;
-
     for(int i = 0; i < depth + 1; i++){
       printf("..");
     }
-    printf("%s(%s) - %s(", category_m[child->next->node->category], child->next->node->token, type_name(child->next->node->type));
-    
-    while ((params_cursor = params_cursor->next) != NULL) {
-      printf("%s", type_name(map_cat_typ(getchild(params_cursor->node, 0)->category)));
-      if (params_cursor->next != NULL)
-        printf(",");
-    }
-    printf(")\n");
+    printf("%s(%s) - ", category_m[child->next->node->category], child->next->node->token);
+    print_signature(found->node);
+    printf("\n");
     child = child->next;
   }
 
@@ -124,3 +117,15 @@ int countchildren(struct node *node) {
     return i;
 }
 
+void print_signature(struct node* node) {
+  struct node_list *params_cursor = getchild(node, 2)->children;
+  printf("%s(", type_name(map_cat_typ(getchild(node, 0)->category)));
+
+    
+  while ((params_cursor = params_cursor->next) != NULL) {
+    printf("%s", type_name(map_cat_typ(getchild(params_cursor->node, 0)->category)));
+    if (params_cursor->next != NULL)
+      printf(",");
+  }
+  printf(")");
+}

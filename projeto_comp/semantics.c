@@ -715,7 +715,7 @@ int check_signature(struct node* original, struct node *new) {
         orig_c = countchildren(orig_cursor->node);
         new_c = countchildren(new_cursor->node);
         if (both_decs && (orig_c != new_c || (new_c == 2 && (strcmp(getchild(orig_cursor->node, 1)->token, getchild(new_cursor->node, 1)->token) != 0)))) {
-            printf("Already def...\n");              //TODO: printar erro
+            printf("Line %d, column %d: Symbol %s already defined\n", getchild(new, 1)->token_line, getchild(new, 1)->token_column, getchild(new, 1)->token);
             semantic_errors++;
             return 0;
         }
@@ -724,7 +724,11 @@ int check_signature(struct node* original, struct node *new) {
     }
 
     if (conf_flag == 0 || orig_cursor != NULL || new_cursor != NULL || getchild(original, 0)->category != getchild(new, 0)->category) {
-        printf("Conf types...\n");              //TODO: printar erro
+        printf("Line %d, column %d: Conflicting types (got ", getchild(new, 1)->token_line, getchild(new, 1)->token_column);
+        print_signature(new);
+        printf(", expected ");
+        print_signature(original);
+        printf(")\n");
         semantic_errors++;
         return 0;
     }

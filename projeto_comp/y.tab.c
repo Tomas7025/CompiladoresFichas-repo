@@ -1754,7 +1754,7 @@ yyreduce:
                                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-3].token)));
                                                               addchild((yyval.node), (yyvsp[-1].node));
 
-                                                              LOCATE((yyval.node), (yylsp[-3]).first_line, (yylsp[-3]).first_column);
+                                                              LOCATE(getchild((yyval.node), 0), (yylsp[-3]).first_line, (yylsp[-3]).first_column);
                                                             }
 #line 1760 "y.tab.c"
     break;
