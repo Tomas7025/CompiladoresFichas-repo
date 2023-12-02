@@ -63,19 +63,6 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
 }
 
 
-int check_void_in_list (struct node_list *list) {
-    int void_found = 0;
-    struct node_list *aux = list;
-    while ((aux = aux->next) != NULL) {
-        if (getchild(aux->node, 0)->category == Void) {
-            // printf("Line , column : Invalid use of void type in declaration\n");
-            //semantic_errors++;
-            void_found = 1;
-        }
-    }
-    return void_found;
-}
-
 int check_program(struct node *program) {
     global_scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
     global_scope->identifier = strdup("global");
@@ -105,9 +92,6 @@ int check_program(struct node *program) {
     struct symbol_list *found;
     struct node_list *aux = program->children;
 
-    // struct node_list *param_cursor;             // ???
-    // struct node_list *param_cursor_2;           // ???
-
     while ((aux = aux->next) != NULL) {
         switch (aux->node->category) {
             case FuncDeclaration:
@@ -118,15 +102,11 @@ int check_program(struct node *program) {
                         break;
                     }
 
-                    //TODO check_signature(found->node, aux->node);
-                    check_signature(found->node, aux->node);
-
-                    //! if (found->node->category == FuncDefinition) && ...
-                    //! ERRO
+                    valid_signature(found->node, aux->node);
                     break;
                 }
                 else {
-                    if (check_void(aux->node) == 1)
+                    if (valid_void(aux->node))
                         insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                 }
 
@@ -134,7 +114,9 @@ int check_program(struct node *program) {
             case FuncDefinition:
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
                     if(found->node->category == FuncDeclaration) {
-                        // ! falta checkar se a funcDeclation tem assinatura igual a funcDefinition
+                        // == 0 <=> houve erro
+                        if (!valid_signature(found->node, aux->node))
+                            break;
                         found->node = aux->node;
                         found->scope = (struct symbol_list *) malloc(sizeof(struct symbol_list));
                         found->scope->identifier = strdup(getchild(aux->node, 1)->token);
@@ -149,11 +131,15 @@ int check_program(struct node *program) {
                             }
                         }
 
-                        //? check_func passar o scope da funcDeclaration
+                        // check_func passar o scope da funcDeclaration
                         check_function(aux->node, found->scope, 0);
                     } else {
                         //! ERRO
-                        printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
+                        // ??? Pergunta 9
+                        // == 0 <=> houve erro
+                        if (!valid_void(aux->node))
+                            break;
+                        printf("Line %d, column %d: Symbol %s already defined\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, getchild(aux->node, 1)->token);
                     }
                 }
                 else {
@@ -172,7 +158,7 @@ int check_program(struct node *program) {
                         }
                     }
 
-                    //? check_func passar o scope da funcDeclaration
+                    // check_func passar o scope da funcDeclaration
                     check_function(aux->node, found->scope, 0);
                 }
                 break;
@@ -676,7 +662,7 @@ void show_symbol_table() {
 
 
 
-int check_void(struct node *new) {
+int valid_void(struct node *new) {
     // return:
     //     0 => Erro
     //     1 => Sucesso
@@ -696,7 +682,7 @@ int check_void(struct node *new) {
     return 1;
 }
 
-int check_signature(struct node* original, struct node *new) {
+int valid_signature(struct node* original, struct node *new) {
     // conf_f (conflit flag):
     //      -1 -> nao ha erros
 	//      0 -> conf type
@@ -707,8 +693,8 @@ int check_signature(struct node* original, struct node *new) {
     struct node_list *orig_cursor = getchild(original, 2)->children->next;
     struct node_list *new_cursor = getchild(new, 2)->children->next;
 
-    // check_void 0 <=> error, invalid void
-    if (!check_void(new))
+    // valid_void 0 <=> error, invalid void
+    if (!valid_void(new))
         return 0;
 
     for (; orig_cursor != NULL && new_cursor != NULL; orig_cursor = orig_cursor->next, new_cursor = new_cursor->next) {
