@@ -208,7 +208,9 @@ declaration: typespec declarator_repetition SEMI            { if (errors > 0) { 
     
 declarator_repetition: declarator                           { if (errors > 0) { break; }            
                                                               $$ = newnode(FuncBody, NULL);
-                                                              addchild($$, $1);            
+                                                              addchild($$, $1);
+
+
                                                             }
     | declarator_repetition COMMA declarator                { if (errors > 0) { break; }
                                                               addchild($1, $3); 
@@ -233,13 +235,13 @@ declarator: IDENTIFIER ASSIGN expression                    { if (errors > 0) { 
                                                               addchild($$, newnode(Identifier, $1));
                                                               addchild($$, $3);
 
-                                                              LOCATE($$, @1.first_line, @1.first_column);
+                                                              LOCATE(getchild($$, 0), @1.first_line, @1.first_column);
                                                             }
     | IDENTIFIER                                            { if (errors > 0) { break; }
                                                               $$ = newnode(Declaration, NULL);             // Declaration
                                                               addchild($$, newnode(Identifier, $1));       //   | ID    
 
-                                                              LOCATE($$, @1.first_line, @1.first_column);           
+                                                              LOCATE(getchild($$, 0), @1.first_line, @1.first_column);           
                                                             } 
     ;
 

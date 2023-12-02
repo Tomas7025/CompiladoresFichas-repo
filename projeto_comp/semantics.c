@@ -163,6 +163,9 @@ int check_program(struct node *program) {
                 }
                 break;
             case Declaration:
+                if (countchildren(aux->node) == 3)
+                    check_expression(getchild(aux->node, 2), global_scope);
+
                 if (getchild(aux->node, 0)->category == Void) {
                     printf("Line %d, column %d: Invalid use of void type in declaration\n", aux->node->token_line, aux->node->token_column);
                     break;
@@ -173,9 +176,13 @@ int check_program(struct node *program) {
                     printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
                 }
                 else {
+                    if (countchildren(aux->node) == 3 && (map_cat_typ(getchild(aux->node, 0)->category) < getchild(aux->node, 2)->type)) {
+                        printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(getchild(aux->node, 2)->type), type_name(map_cat_typ(getchild(aux->node, 0)->category)));
+                        semantic_errors++;
+                        break;
+                    }
+
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
-                    if (countchildren(aux->node) == 3)
-                        check_expression(getchild(aux->node, 2), global_scope);
                 }
                 break;
             default:
@@ -190,6 +197,8 @@ int check_statement(struct node *node, struct symbol_list *scope) {
     struct symbol_list *found;
     switch (node->category) {
         case Declaration:
+            if (countchildren(node) == 3)
+                check_expression(getchild(node, 2), scope);
             if (getchild(node, 0)->category == Void) {
                 printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
                 break;
@@ -200,10 +209,12 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                 printf("Line %d, column %d: Symbol %s already defined\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, getchild(node, 1)->token);
             }
             else {
-                if (countchildren(node) == 3)
-                    check_expression(getchild(node, 2), scope);
+                if (countchildren(node) == 3 && (map_cat_typ(getchild(node, 0)->category) < getchild(node, 2)->type)) {
+                    printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, type_name(getchild(node, 2)->type), type_name(map_cat_typ(getchild(node, 0)->category)));
+                    semantic_errors++;
+                    break;
+                }
                 insert_symbol(scope, getchild(node, 1)->token, map_cat_typ(getchild(node, 0)->category), node);
-                
             }
             break;
         case If:

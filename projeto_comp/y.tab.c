@@ -723,13 +723,13 @@ static const yytype_int16 yyrline[] =
 {
        0,    58,    58,    62,    66,    71,    75,    79,    92,   106,
      112,   117,   119,   126,   137,   152,   164,   174,   178,   183,
-     190,   195,   207,   209,   213,   218,   220,   222,   226,   228,
-     231,   238,   246,   247,   248,   249,   251,   262,   278,   287,
-     292,   297,   300,   301,   302,   303,   304,   307,   308,   325,
-     326,   329,   336,   345,   351,   357,   363,   369,   376,   382,
-     388,   394,   400,   407,   413,   419,   425,   431,   437,   444,
-     449,   454,   460,   469,   476,   480,   484,   488,   492,   495,
-     496,   499,   503
+     190,   195,   207,   209,   215,   220,   222,   224,   228,   230,
+     233,   240,   248,   249,   250,   251,   253,   264,   280,   289,
+     294,   299,   302,   303,   304,   305,   306,   309,   310,   327,
+     328,   331,   338,   347,   353,   359,   365,   371,   378,   384,
+     390,   396,   402,   409,   415,   421,   427,   433,   439,   446,
+     451,   456,   462,   471,   478,   482,   486,   490,   494,   497,
+     498,   501,   505
 };
 #endif
 
@@ -1825,106 +1825,108 @@ yyreduce:
 #line 209 "uccompiler.y"
                                                             { if (errors > 0) { break; }            
                                                               (yyval.node) = newnode(FuncBody, NULL);
-                                                              addchild((yyval.node), (yyvsp[0].node));            
+                                                              addchild((yyval.node), (yyvsp[0].node));
+
+
                                                             }
-#line 1831 "y.tab.c"
+#line 1833 "y.tab.c"
     break;
 
   case 24: /* declarator_repetition: declarator_repetition COMMA declarator  */
-#line 213 "uccompiler.y"
+#line 215 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               addchild((yyvsp[-2].node), (yyvsp[0].node)); 
                                                               (yyval.node) = (yyvsp[-2].node);
                                                             }
-#line 1840 "y.tab.c"
+#line 1842 "y.tab.c"
     break;
 
   case 25: /* typespec: CHAR  */
-#line 218 "uccompiler.y"
+#line 220 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Char, NULL); }
-#line 1847 "y.tab.c"
+#line 1849 "y.tab.c"
     break;
 
   case 26: /* typespec: INT  */
-#line 220 "uccompiler.y"
+#line 222 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Int, NULL); }
-#line 1854 "y.tab.c"
+#line 1856 "y.tab.c"
     break;
 
   case 27: /* typespec: VOID  */
-#line 222 "uccompiler.y"
+#line 224 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Void, NULL); 
                                                               LOCATE((yyval.node), (yylsp[0]).first_line, (yylsp[0]).first_column);
                                                             }
-#line 1863 "y.tab.c"
+#line 1865 "y.tab.c"
     break;
 
   case 28: /* typespec: SHORT  */
-#line 226 "uccompiler.y"
+#line 228 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Short, NULL); }
-#line 1870 "y.tab.c"
+#line 1872 "y.tab.c"
     break;
 
   case 29: /* typespec: DOUBLE  */
-#line 228 "uccompiler.y"
+#line 230 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Double, NULL); }
-#line 1877 "y.tab.c"
+#line 1879 "y.tab.c"
     break;
 
   case 30: /* declarator: IDENTIFIER ASSIGN expression  */
-#line 231 "uccompiler.y"
+#line 233 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Declaration, NULL);      
                                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-2].token)));
                                                               addchild((yyval.node), (yyvsp[0].node));
 
-                                                              LOCATE((yyval.node), (yylsp[-2]).first_line, (yylsp[-2]).first_column);
+                                                              LOCATE(getchild((yyval.node), 0), (yylsp[-2]).first_line, (yylsp[-2]).first_column);
                                                             }
-#line 1889 "y.tab.c"
+#line 1891 "y.tab.c"
     break;
 
   case 31: /* declarator: IDENTIFIER  */
-#line 238 "uccompiler.y"
+#line 240 "uccompiler.y"
                                                             { if (errors > 0) { break; }
                                                               (yyval.node) = newnode(Declaration, NULL);             // Declaration
                                                               addchild((yyval.node), newnode(Identifier, (yyvsp[0].token)));       //   | ID    
 
-                                                              LOCATE((yyval.node), (yylsp[0]).first_line, (yylsp[0]).first_column);           
+                                                              LOCATE(getchild((yyval.node), 0), (yylsp[0]).first_line, (yylsp[0]).first_column);           
                                                             }
-#line 1900 "y.tab.c"
+#line 1902 "y.tab.c"
     break;
 
   case 32: /* statement: expression SEMI  */
-#line 246 "uccompiler.y"
+#line 248 "uccompiler.y"
                                                              { if (errors > 0) { break; }(yyval.node) = (yyvsp[-1].node); }
-#line 1906 "y.tab.c"
+#line 1908 "y.tab.c"
     break;
 
   case 33: /* statement: SEMI  */
-#line 247 "uccompiler.y"
+#line 249 "uccompiler.y"
                                                               { if (errors > 0) { break; }(yyval.node) = NULL; }
-#line 1912 "y.tab.c"
+#line 1914 "y.tab.c"
     break;
 
   case 34: /* statement: LBRACE statement_repetition RBRACE  */
-#line 248 "uccompiler.y"
+#line 250 "uccompiler.y"
                                                              { if (errors > 0) { break; }(yyval.node) = (yyvsp[-1].node); }
-#line 1918 "y.tab.c"
+#line 1920 "y.tab.c"
     break;
 
   case 35: /* statement: LBRACE RBRACE  */
-#line 249 "uccompiler.y"
+#line 251 "uccompiler.y"
                                                               { if (errors > 0) { break; }(yyval.node) = NULL; }
-#line 1924 "y.tab.c"
+#line 1926 "y.tab.c"
     break;
 
   case 36: /* statement: IF LPAR expression RPAR statement  */
-#line 251 "uccompiler.y"
+#line 253 "uccompiler.y"
                                                              { if (errors > 0) { break; }
                                                                (yyval.node) = newnode(If, NULL);
                                                                addchild((yyval.node), (yyvsp[-2].node));
@@ -1936,11 +1938,11 @@ yyreduce:
                                                                addchild((yyval.node), newnode(Null, NULL));
                                                                LOCATE((yyval.node), (yylsp[-4]).first_line, (yylsp[-4]).first_column);
                                                              }
-#line 1940 "y.tab.c"
+#line 1942 "y.tab.c"
     break;
 
   case 37: /* statement: IF LPAR expression RPAR statement ELSE statement  */
-#line 262 "uccompiler.y"
+#line 264 "uccompiler.y"
                                                              { if (errors > 0) { break; }
                                                                (yyval.node) = newnode(If, NULL);
                                                                addchild((yyval.node), (yyvsp[-4].node));
@@ -1957,11 +1959,11 @@ yyreduce:
 
                                                               LOCATE((yyval.node), (yylsp[-6]).first_line, (yylsp[-6]).first_column);
                                                              }
-#line 1961 "y.tab.c"
+#line 1963 "y.tab.c"
     break;
 
   case 38: /* statement: WHILE LPAR expression RPAR statement  */
-#line 278 "uccompiler.y"
+#line 280 "uccompiler.y"
                                                              { if (errors > 0) { break; }
                                                                (yyval.node) = newnode(While, NULL);
                                                                addchild((yyval.node), (yyvsp[-2].node));
@@ -1971,73 +1973,73 @@ yyreduce:
                                                                  addchild((yyval.node), (yyvsp[0].node));
                                                                 LOCATE((yyval.node), (yylsp[-4]).first_line, (yylsp[-4]).first_column);
                                                              }
-#line 1975 "y.tab.c"
+#line 1977 "y.tab.c"
     break;
 
   case 39: /* statement: RETURN expression SEMI  */
-#line 287 "uccompiler.y"
+#line 289 "uccompiler.y"
                                                              { if (errors > 0) { break; }
                                                                (yyval.node) = newnode(Return, NULL);
                                                                addchild((yyval.node), (yyvsp[-1].node));
                                                                LOCATE((yyval.node), (yylsp[-2]).first_line, (yylsp[-2]).first_column);
                                                              }
-#line 1985 "y.tab.c"
+#line 1987 "y.tab.c"
     break;
 
   case 40: /* statement: RETURN SEMI  */
-#line 292 "uccompiler.y"
+#line 294 "uccompiler.y"
                                                              { if (errors > 0) { break; }
                                                                (yyval.node) = newnode(Return, NULL);
                                                                addchild((yyval.node), newnode(Null, NULL));
                                                                LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                                              }
-#line 1995 "y.tab.c"
+#line 1997 "y.tab.c"
     break;
 
   case 41: /* statement: LBRACE error RBRACE  */
-#line 297 "uccompiler.y"
+#line 299 "uccompiler.y"
                                                              { }
-#line 2001 "y.tab.c"
+#line 2003 "y.tab.c"
     break;
 
   case 42: /* statement: IF LPAR expression RPAR error SEMI  */
-#line 300 "uccompiler.y"
+#line 302 "uccompiler.y"
                                                               { }
-#line 2007 "y.tab.c"
+#line 2009 "y.tab.c"
     break;
 
   case 43: /* statement: IF LPAR expression RPAR error SEMI ELSE statement  */
-#line 301 "uccompiler.y"
+#line 303 "uccompiler.y"
                                                               { }
-#line 2013 "y.tab.c"
+#line 2015 "y.tab.c"
     break;
 
   case 44: /* statement: IF LPAR expression RPAR statement ELSE error SEMI  */
-#line 302 "uccompiler.y"
+#line 304 "uccompiler.y"
                                                               { }
-#line 2019 "y.tab.c"
+#line 2021 "y.tab.c"
     break;
 
   case 45: /* statement: IF LPAR expression RPAR error SEMI ELSE error SEMI  */
-#line 303 "uccompiler.y"
+#line 305 "uccompiler.y"
                                                               { }
-#line 2025 "y.tab.c"
+#line 2027 "y.tab.c"
     break;
 
   case 46: /* statement: WHILE LPAR expression RPAR error SEMI  */
-#line 304 "uccompiler.y"
+#line 306 "uccompiler.y"
                                                               { }
-#line 2031 "y.tab.c"
+#line 2033 "y.tab.c"
     break;
 
   case 47: /* statement_repetition: statement  */
-#line 307 "uccompiler.y"
+#line 309 "uccompiler.y"
                                             { if (errors > 0) { break; } (yyval.node) = (yyvsp[0].node); }
-#line 2037 "y.tab.c"
+#line 2039 "y.tab.c"
     break;
 
   case 48: /* statement_repetition: statement_repetition statement  */
-#line 308 "uccompiler.y"
+#line 310 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               if((yyvsp[0].node) != NULL){
                                                 if ((yyvsp[-1].node) != NULL && (yyvsp[-1].node)->category == StatList)  {
@@ -2054,23 +2056,23 @@ yyreduce:
                                                 (yyval.node) = (yyvsp[-1].node);
                                               }
                                             }
-#line 2058 "y.tab.c"
+#line 2060 "y.tab.c"
     break;
 
   case 49: /* statement_repetition: statement_repetition error SEMI  */
-#line 325 "uccompiler.y"
+#line 327 "uccompiler.y"
                                             { }
-#line 2064 "y.tab.c"
+#line 2066 "y.tab.c"
     break;
 
   case 50: /* statement_repetition: error SEMI  */
-#line 326 "uccompiler.y"
+#line 328 "uccompiler.y"
                                             { }
-#line 2070 "y.tab.c"
+#line 2072 "y.tab.c"
     break;
 
   case 51: /* expression: expression ASSIGN expression  */
-#line 329 "uccompiler.y"
+#line 331 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Store, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
@@ -2078,11 +2080,11 @@ yyreduce:
 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2082 "y.tab.c"
+#line 2084 "y.tab.c"
     break;
 
   case 52: /* expression: expression COMMA expression  */
-#line 336 "uccompiler.y"
+#line 338 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Comma, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
@@ -2091,217 +2093,217 @@ yyreduce:
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
 
                                             }
-#line 2095 "y.tab.c"
+#line 2097 "y.tab.c"
     break;
 
   case 53: /* expression: expression PLUS expression  */
-#line 345 "uccompiler.y"
+#line 347 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Add, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2106 "y.tab.c"
+#line 2108 "y.tab.c"
     break;
 
   case 54: /* expression: expression MINUS expression  */
-#line 351 "uccompiler.y"
+#line 353 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Sub, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2117 "y.tab.c"
+#line 2119 "y.tab.c"
     break;
 
   case 55: /* expression: expression MUL expression  */
-#line 357 "uccompiler.y"
+#line 359 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Mul, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2128 "y.tab.c"
+#line 2130 "y.tab.c"
     break;
 
   case 56: /* expression: expression DIV expression  */
-#line 363 "uccompiler.y"
+#line 365 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Div, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2139 "y.tab.c"
+#line 2141 "y.tab.c"
     break;
 
   case 57: /* expression: expression MOD expression  */
-#line 369 "uccompiler.y"
+#line 371 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Mod, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2150 "y.tab.c"
+#line 2152 "y.tab.c"
     break;
 
   case 58: /* expression: expression OR expression  */
-#line 376 "uccompiler.y"
+#line 378 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Or, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2161 "y.tab.c"
+#line 2163 "y.tab.c"
     break;
 
   case 59: /* expression: expression AND expression  */
-#line 382 "uccompiler.y"
+#line 384 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(And, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2172 "y.tab.c"
+#line 2174 "y.tab.c"
     break;
 
   case 60: /* expression: expression BITWISEAND expression  */
-#line 388 "uccompiler.y"
+#line 390 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(BitWiseAnd, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2183 "y.tab.c"
+#line 2185 "y.tab.c"
     break;
 
   case 61: /* expression: expression BITWISEOR expression  */
-#line 394 "uccompiler.y"
+#line 396 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(BitWiseOr, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2194 "y.tab.c"
+#line 2196 "y.tab.c"
     break;
 
   case 62: /* expression: expression BITWISEXOR expression  */
-#line 400 "uccompiler.y"
+#line 402 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(BitWiseXor, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2205 "y.tab.c"
+#line 2207 "y.tab.c"
     break;
 
   case 63: /* expression: expression EQ expression  */
-#line 407 "uccompiler.y"
+#line 409 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Eq, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2216 "y.tab.c"
+#line 2218 "y.tab.c"
     break;
 
   case 64: /* expression: expression NE expression  */
-#line 413 "uccompiler.y"
+#line 415 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Ne, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node));
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2227 "y.tab.c"
+#line 2229 "y.tab.c"
     break;
 
   case 65: /* expression: expression LE expression  */
-#line 419 "uccompiler.y"
+#line 421 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Le, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2238 "y.tab.c"
+#line 2240 "y.tab.c"
     break;
 
   case 66: /* expression: expression GE expression  */
-#line 425 "uccompiler.y"
+#line 427 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Ge, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2249 "y.tab.c"
+#line 2251 "y.tab.c"
     break;
 
   case 67: /* expression: expression LT expression  */
-#line 431 "uccompiler.y"
+#line 433 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Lt, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2260 "y.tab.c"
+#line 2262 "y.tab.c"
     break;
 
   case 68: /* expression: expression GT expression  */
-#line 437 "uccompiler.y"
+#line 439 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Gt, NULL);
                                               addchild((yyval.node), (yyvsp[-2].node)); 
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2271 "y.tab.c"
+#line 2273 "y.tab.c"
     break;
 
   case 69: /* expression: PLUS expression  */
-#line 444 "uccompiler.y"
+#line 446 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Plus, NULL);
                                               addchild((yyval.node), (yyvsp[0].node)); 
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2281 "y.tab.c"
+#line 2283 "y.tab.c"
     break;
 
   case 70: /* expression: MINUS expression  */
-#line 449 "uccompiler.y"
+#line 451 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Minus, NULL);
                                               addchild((yyval.node), (yyvsp[0].node));
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column); 
                                             }
-#line 2291 "y.tab.c"
+#line 2293 "y.tab.c"
     break;
 
   case 71: /* expression: NOT expression  */
-#line 454 "uccompiler.y"
+#line 456 "uccompiler.y"
                                             { if (errors > 0) { break; } 
                                               (yyval.node) = newnode(Not, NULL);
                                               addchild((yyval.node), (yyvsp[0].node));  
                                               LOCATE((yyval.node), (yylsp[-1]).first_line, (yylsp[-1]).first_column);
                                             }
-#line 2301 "y.tab.c"
+#line 2303 "y.tab.c"
     break;
 
   case 72: /* expression: IDENTIFIER LPAR expression_repetition RPAR  */
-#line 460 "uccompiler.y"
+#line 462 "uccompiler.y"
                                                        { if (errors > 0) { break; }
                                                          (yyval.node) = (yyvsp[-1].node);
                                                          struct node_list *temp = (struct node_list *) malloc(sizeof(struct node_list));
@@ -2311,95 +2313,95 @@ yyreduce:
 
                                                          LOCATE((yyval.node), (yylsp[-3]).first_line, (yylsp[-3]).first_column);
                                                        }
-#line 2315 "y.tab.c"
+#line 2317 "y.tab.c"
     break;
 
   case 73: /* expression: IDENTIFIER LPAR RPAR  */
-#line 469 "uccompiler.y"
+#line 471 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Call, NULL); 
                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-2].token)));
 
                                               LOCATE((yyval.node), (yylsp[-2]).first_line, (yylsp[-2]).first_column);
                                             }
-#line 2326 "y.tab.c"
+#line 2328 "y.tab.c"
     break;
 
   case 74: /* expression: IDENTIFIER  */
-#line 476 "uccompiler.y"
+#line 478 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Identifier, (yyvsp[0].token)); 
                                               LOCATE((yyval.node), (yylsp[0]).first_line, (yylsp[0]).first_column);
                                             }
-#line 2335 "y.tab.c"
+#line 2337 "y.tab.c"
     break;
 
   case 75: /* expression: NATURAL  */
-#line 480 "uccompiler.y"
+#line 482 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Natural, (yyvsp[0].token)); 
                                               LOCATE((yyval.node), (yylsp[0]).first_line, (yylsp[0]).first_column);
                                             }
-#line 2344 "y.tab.c"
+#line 2346 "y.tab.c"
     break;
 
   case 76: /* expression: CHRLIT  */
-#line 484 "uccompiler.y"
+#line 486 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(ChrLit, (yyvsp[0].token));
                                               LOCATE((yyval.node), (yylsp[0]).first_line, (yylsp[0]).first_column);
                                             }
-#line 2353 "y.tab.c"
+#line 2355 "y.tab.c"
     break;
 
   case 77: /* expression: DECIMAL  */
-#line 488 "uccompiler.y"
+#line 490 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = newnode(Decimal, (yyvsp[0].token));
                                               LOCATE((yyval.node), (yylsp[0]).first_line, (yylsp[0]).first_column);
                                             }
-#line 2362 "y.tab.c"
+#line 2364 "y.tab.c"
     break;
 
   case 78: /* expression: LPAR expression RPAR  */
-#line 492 "uccompiler.y"
+#line 494 "uccompiler.y"
                                             { if (errors > 0) { break; }
                                               (yyval.node) = (yyvsp[-1].node); }
-#line 2369 "y.tab.c"
+#line 2371 "y.tab.c"
     break;
 
   case 79: /* expression: IDENTIFIER LPAR error RPAR  */
-#line 495 "uccompiler.y"
+#line 497 "uccompiler.y"
                                             { ; }
-#line 2375 "y.tab.c"
+#line 2377 "y.tab.c"
     break;
 
   case 80: /* expression: LPAR error RPAR  */
-#line 496 "uccompiler.y"
+#line 498 "uccompiler.y"
                                             { ; }
-#line 2381 "y.tab.c"
+#line 2383 "y.tab.c"
     break;
 
   case 81: /* expression_repetition: expression  */
-#line 499 "uccompiler.y"
+#line 501 "uccompiler.y"
                                                               { if (errors > 0) { break; }
                                                                 (yyval.node) = newnode(Call, NULL);
                                                                 addchild((yyval.node), (yyvsp[0].node));
                                                               }
-#line 2390 "y.tab.c"
+#line 2392 "y.tab.c"
     break;
 
   case 82: /* expression_repetition: expression_repetition COMMA expression  */
-#line 503 "uccompiler.y"
+#line 505 "uccompiler.y"
                                                               { if (errors > 0) { break; }
                                                                 (yyval.node) = (yyvsp[-2].node);
                                                                 addchild((yyval.node), (yyvsp[0].node));
                                                               }
-#line 2399 "y.tab.c"
+#line 2401 "y.tab.c"
     break;
 
 
-#line 2403 "y.tab.c"
+#line 2405 "y.tab.c"
 
       default: break;
     }
@@ -2597,7 +2599,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 509 "uccompiler.y"
+#line 511 "uccompiler.y"
 
 
 
