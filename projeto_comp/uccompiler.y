@@ -475,15 +475,20 @@ expression: expression ASSIGN expression    { if (errors > 0) { break; }
 
     | IDENTIFIER                            { if (errors > 0) { break; }
                                               $$ = newnode(Identifier, $1); 
-
                                               LOCATE($$, @1.first_line, @1.first_column);
                                             }
     | NATURAL                               { if (errors > 0) { break; }
-                                              $$ = newnode(Natural, $1); }
+                                              $$ = newnode(Natural, $1); 
+                                              LOCATE($$, @1.first_line, @1.first_column);
+                                            }
     | CHRLIT                                { if (errors > 0) { break; }
-                                              $$ = newnode(ChrLit, $1); }
+                                              $$ = newnode(ChrLit, $1);
+                                              LOCATE($$, @1.first_line, @1.first_column);
+                                            }
     | DECIMAL                               { if (errors > 0) { break; }
-                                              $$ = newnode(Decimal, $1); }
+                                              $$ = newnode(Decimal, $1);
+                                              LOCATE($$, @1.first_line, @1.first_column);
+                                            }
     | LPAR expression RPAR                  { if (errors > 0) { break; }
                                               $$ = $2; }
 

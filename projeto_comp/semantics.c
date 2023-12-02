@@ -112,6 +112,9 @@ int check_program(struct node *program) {
         switch (aux->node->category) {
             case FuncDeclaration:
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
+
+                    //TODO check_signature(found->node, aux->node);
+
                     // param_cursor = getchild(found->node, 2)->children;
                     // param_cursor_2 = getchild(aux->node, 2)->children;
 
@@ -131,7 +134,8 @@ int check_program(struct node *program) {
                     break;
                 }
                 else {
-                    insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
+                    if (check_void(aux->node) == 1)
+                        insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
                 }
 
                 break;
@@ -253,8 +257,13 @@ int check_statement(struct node *node, struct symbol_list *scope) {
             // DEBUG: printf("return %d %d\n", node->token_line, node->token_column);
             if (getchild(node, 0)->category != Null){
                 check_expression(getchild(node, 0), scope);
-                if (getchild(node, 0)->type > map_cat_typ(getchild(search_symbol(global_scope, scope->identifier)->node, 0)->category)) {
+                if (getchild(node, 0)->type > scope->type || (getchild(node, 0)->type == void_type && scope->type != void_type)) {
                     printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type), type_name(scope->type));
+                    semantic_errors++;
+                }
+            } else {
+                if (scope->type != void_type) {
+                    printf("Line %d, column %d: Conflicting types (got void, expected %s)\n", node->token_line, node->token_column, type_name(scope->type));
                     semantic_errors++;
                 }
             }
@@ -670,4 +679,60 @@ void show_symbol_table() {
         }
     }
     
+}
+
+
+
+int check_void(struct node *new) {
+    // return:
+    //     0 => Erro
+    //     1 => Sucesso
+
+    struct node_list *new_cursor;
+
+    new_cursor = getchild(new, 2)->children;
+
+    while ((new_cursor = new_cursor->next)) {
+        if (getchild(new_cursor->node, 0)->category == Void && (new_cursor->next != NULL || new_cursor != getchild(new, 2)->children->next)) {
+            printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(new_cursor->node, 0)->token_line, getchild(new_cursor->node, 0)->token_column);
+            semantic_errors++;
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int check_signature(struct node* original, struct node *new) {
+    // conf_f (conflit flag):
+    //      -1 -> nao ha erros
+	//      0 -> conf type
+
+    int orig_c, new_c;
+    int conf_flag = -1;
+    int both_decs = (original->category == FuncDeclaration && new->category == FuncDeclaration) ? 1 : 0;
+    struct node_list *orig_cursor = getchild(original, 2)->children->next;
+    struct node_list *new_cursor = getchild(new, 2)->children->next;
+
+    // check_void 0 <=> error, invalid void
+    if (!check_void(new))
+        return 0;
+
+    for (; orig_cursor != NULL && new_cursor != NULL; orig_cursor = orig_cursor->next, new_cursor = new_cursor->next) {
+        orig_c = countchildren(orig_cursor->node);
+        new_c = countchildren(new_cursor->node);
+        if (both_decs && (orig_c != new_c || (new_c == 2 && (strcmp(getchild(orig_cursor, 1)->token, getchild(new_cursor, 1)->token) == 0)))) {
+            printf("...");              //TODO: printar erro
+            semantic_errors++;
+            return 0;
+        }
+    }
+
+    if (conf_flag == 0 || orig_cursor != NULL || new_cursor != NULL || getchild(original, 0)->category != getchild(new, 0)->category) {
+        printf("...");              //TODO: printar erro
+        semantic_errors++;
+        return 0;
+    }   
+
+    return 1;
 }
