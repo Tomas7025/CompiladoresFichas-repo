@@ -1,0 +1,36 @@
+Line 2, column 2: Conflicting types (got void, expected double)
+Line 6, column 9: Unknown symbol undef
+Line 6, column 9: Conflicting types (got undef, expected double)
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+main	double(void)
+
+===== Function main Symbol Table =====
+return	double
+a	short
+
+Program
+..FuncDefinition
+....Double
+....Id(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........Null
+......Return
+........IntLit(1) - int
+......Return
+........RealLit(1.2) - double
+......Return
+........ChrLit('a') - int
+......Return
+........Id(undef) - undef
+......Declaration
+........Short
+........Id(a)
+........IntLit(1) - int
+......Return
+........Id(a) - short

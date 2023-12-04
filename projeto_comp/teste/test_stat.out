@@ -1,0 +1,186 @@
+Line 23, column 12: Conflicting types (got int, expected void)
+Line 24, column 12: Conflicting types (got double, expected void)
+Line 25, column 12: Conflicting types (got short, expected void)
+Line 26, column 12: Conflicting types (got char, expected void)
+Line 27, column 12: Unknown symbol undeclared
+Line 27, column 12: Conflicting types (got undef, expected void)
+Line 31, column 9: Conflicting types (got double, expected int)
+Line 34, column 9: Conflicting types (got void, expected int)
+Line 35, column 13: Unknown symbol undeclared
+Line 41, column 12: Conflicting types (got void, expected double)
+Line 42, column 16: Unknown symbol undeclared
+Line 45, column 11: Conflicting types (got double, expected short)
+Line 48, column 11: Conflicting types (got void, expected short)
+Line 49, column 15: Unknown symbol undeclared
+Line 52, column 10: Conflicting types (got double, expected char)
+Line 55, column 10: Conflicting types (got void, expected char)
+Line 56, column 14: Unknown symbol undeclared
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+inteiro	int
+real	double
+pequeno	short
+caractere	char
+main	void(void)
+
+===== Function main Symbol Table =====
+return	void
+a	int
+b	int
+c	int
+d	int
+e	int
+f	int
+g	double
+h	double
+i	double
+j	double
+k	double
+l	double
+m	short
+n	short
+o	short
+p	short
+q	short
+r	short
+s	char
+t	char
+u	char
+v	char
+w	char
+x	char
+
+Program
+..Declaration
+....Int
+....Id(inteiro)
+..Declaration
+....Double
+....Id(real)
+..Declaration
+....Short
+....Id(pequeno)
+..Declaration
+....Char
+....Id(caractere)
+..FuncDefinition
+....Void
+....Id(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........Id(inteiro) - int
+......Return
+........Id(real) - double
+......Return
+........Id(pequeno) - short
+......Return
+........Id(caractere) - char
+......Return
+........Id(undeclared) - undef
+......Return
+........Call - void
+..........Id(main) - void(void)
+......Declaration
+........Int
+........Id(a)
+........Id(inteiro) - int
+......Declaration
+........Int
+........Id(b)
+........Id(real) - double
+......Declaration
+........Int
+........Id(c)
+........Id(pequeno) - short
+......Declaration
+........Int
+........Id(d)
+........Id(caractere) - char
+......Declaration
+........Int
+........Id(e)
+........Call - void
+..........Id(main) - void(void)
+......Declaration
+........Int
+........Id(f)
+........Id(undeclared) - undef
+......Declaration
+........Double
+........Id(g)
+........Id(inteiro) - int
+......Declaration
+........Double
+........Id(h)
+........Id(real) - double
+......Declaration
+........Double
+........Id(i)
+........Id(pequeno) - short
+......Declaration
+........Double
+........Id(j)
+........Id(caractere) - char
+......Declaration
+........Double
+........Id(k)
+........Call - void
+..........Id(main) - void(void)
+......Declaration
+........Double
+........Id(l)
+........Id(undeclared) - undef
+......Declaration
+........Short
+........Id(m)
+........Id(inteiro) - int
+......Declaration
+........Short
+........Id(n)
+........Id(real) - double
+......Declaration
+........Short
+........Id(o)
+........Id(pequeno) - short
+......Declaration
+........Short
+........Id(p)
+........Id(caractere) - char
+......Declaration
+........Short
+........Id(q)
+........Call - void
+..........Id(main) - void(void)
+......Declaration
+........Short
+........Id(r)
+........Id(undeclared) - undef
+......Declaration
+........Char
+........Id(s)
+........Id(inteiro) - int
+......Declaration
+........Char
+........Id(t)
+........Id(real) - double
+......Declaration
+........Char
+........Id(u)
+........Id(pequeno) - short
+......Declaration
+........Char
+........Id(v)
+........Id(caractere) - char
+......Declaration
+........Char
+........Id(w)
+........Call - void
+..........Id(main) - void(void)
+......Declaration
+........Char
+........Id(x)
+........Id(undeclared) - undef

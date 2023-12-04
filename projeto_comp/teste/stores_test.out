@@ -1,0 +1,322 @@
+Line 10, column 13: Operator = cannot be applied to types int, double
+Line 11, column 13: Operator = cannot be applied to types int, void
+Line 12, column 15: Unknown symbol undef
+Line 12, column 13: Operator = cannot be applied to types int, undef
+Line 18, column 15: Operator = cannot be applied to types short, double
+Line 19, column 15: Operator = cannot be applied to types short, void
+Line 20, column 17: Unknown symbol undef
+Line 20, column 15: Operator = cannot be applied to types short, undef
+Line 25, column 14: Operator = cannot be applied to types char, double
+Line 26, column 14: Operator = cannot be applied to types char, void
+Line 27, column 16: Unknown symbol undef
+Line 27, column 14: Operator = cannot be applied to types char, undef
+Line 33, column 10: Operator = cannot be applied to types double, void
+Line 34, column 12: Unknown symbol undef
+Line 34, column 10: Operator = cannot be applied to types double, undef
+Line 36, column 5: Unknown symbol under
+Line 36, column 11: Operator = cannot be applied to types undef, int
+Line 37, column 5: Unknown symbol under
+Line 37, column 11: Operator = cannot be applied to types undef, short
+Line 38, column 5: Unknown symbol under
+Line 38, column 11: Operator = cannot be applied to types undef, char
+Line 39, column 5: Unknown symbol under
+Line 39, column 11: Operator = cannot be applied to types undef, double
+Line 40, column 5: Unknown symbol under
+Line 40, column 11: Operator = cannot be applied to types undef, void
+Line 41, column 5: Unknown symbol under
+Line 41, column 13: Unknown symbol undef
+Line 41, column 11: Operator = cannot be applied to types undef, undef
+Line 46, column 9: Conflicting types (got double, expected int)
+Line 47, column 9: Conflicting types (got void, expected int)
+Line 48, column 13: Unknown symbol undef
+Line 53, column 11: Conflicting types (got double, expected short)
+Line 54, column 11: Conflicting types (got void, expected short)
+Line 55, column 15: Unknown symbol undef
+Line 60, column 10: Conflicting types (got double, expected char)
+Line 61, column 10: Conflicting types (got void, expected char)
+Line 62, column 14: Unknown symbol undef
+Line 68, column 12: Conflicting types (got void, expected double)
+Line 69, column 16: Unknown symbol undef
+Line 71, column 10: Invalid use of void type in declaration
+Line 72, column 10: Invalid use of void type in declaration
+Line 73, column 10: Invalid use of void type in declaration
+Line 74, column 10: Invalid use of void type in declaration
+Line 75, column 10: Invalid use of void type in declaration
+Line 76, column 15: Unknown symbol undef
+Line 76, column 10: Invalid use of void type in declaration
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+main	void(void)
+
+===== Function main Symbol Table =====
+return	void
+inteiro	int
+litle_int	short
+caracter	char
+real	double
+a	int
+b	int
+c	int
+d	int
+e	int
+f	int
+g	short
+h	short
+i	short
+j	short
+k	short
+l	short
+m	char
+n	char
+o	char
+p	char
+q	char
+r	char
+s	double
+t	double
+u	double
+v	double
+w	double
+x	double
+
+Program
+..FuncDefinition
+....Void
+....Identifier(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Identifier(inteiro)
+......Declaration
+........Short
+........Identifier(litle_int)
+......Declaration
+........Char
+........Identifier(caracter)
+......Declaration
+........Double
+........Identifier(real)
+......Store - int
+........Identifier(inteiro) - int
+........Identifier(inteiro) - int
+......Store - int
+........Identifier(inteiro) - int
+........Identifier(litle_int) - short
+......Store - int
+........Identifier(inteiro) - int
+........Identifier(caracter) - char
+......Store - int
+........Identifier(inteiro) - int
+........Identifier(real) - double
+......Store - int
+........Identifier(inteiro) - int
+........Call - void
+..........Identifier(main) - void(void)
+......Store - int
+........Identifier(inteiro) - int
+........Identifier(undef) - undef
+......Store - short
+........Identifier(litle_int) - short
+........Identifier(inteiro) - int
+......Store - short
+........Identifier(litle_int) - short
+........Identifier(litle_int) - short
+......Store - short
+........Identifier(litle_int) - short
+........Identifier(caracter) - char
+......Store - short
+........Identifier(litle_int) - short
+........Identifier(real) - double
+......Store - short
+........Identifier(litle_int) - short
+........Call - void
+..........Identifier(main) - void(void)
+......Store - short
+........Identifier(litle_int) - short
+........Identifier(undef) - undef
+......Store - char
+........Identifier(caracter) - char
+........Identifier(inteiro) - int
+......Store - char
+........Identifier(caracter) - char
+........Identifier(litle_int) - short
+......Store - char
+........Identifier(caracter) - char
+........Identifier(caracter) - char
+......Store - char
+........Identifier(caracter) - char
+........Identifier(real) - double
+......Store - char
+........Identifier(caracter) - char
+........Call - void
+..........Identifier(main) - void(void)
+......Store - char
+........Identifier(caracter) - char
+........Identifier(undef) - undef
+......Store - double
+........Identifier(real) - double
+........Identifier(inteiro) - int
+......Store - double
+........Identifier(real) - double
+........Identifier(litle_int) - short
+......Store - double
+........Identifier(real) - double
+........Identifier(caracter) - char
+......Store - double
+........Identifier(real) - double
+........Identifier(real) - double
+......Store - double
+........Identifier(real) - double
+........Call - void
+..........Identifier(main) - void(void)
+......Store - double
+........Identifier(real) - double
+........Identifier(undef) - undef
+......Store - undef
+........Identifier(under) - undef
+........Identifier(inteiro) - int
+......Store - undef
+........Identifier(under) - undef
+........Identifier(litle_int) - short
+......Store - undef
+........Identifier(under) - undef
+........Identifier(caracter) - char
+......Store - undef
+........Identifier(under) - undef
+........Identifier(real) - double
+......Store - undef
+........Identifier(under) - undef
+........Call - void
+..........Identifier(main) - void(void)
+......Store - undef
+........Identifier(under) - undef
+........Identifier(undef) - undef
+......Declaration
+........Int
+........Identifier(a)
+........Identifier(inteiro) - int
+......Declaration
+........Int
+........Identifier(b)
+........Identifier(litle_int) - short
+......Declaration
+........Int
+........Identifier(c)
+........Identifier(caracter) - char
+......Declaration
+........Int
+........Identifier(d)
+........Identifier(real) - double
+......Declaration
+........Int
+........Identifier(e)
+........Call - void
+..........Identifier(main) - void(void)
+......Declaration
+........Int
+........Identifier(f)
+........Identifier(undef) - undef
+......Declaration
+........Short
+........Identifier(g)
+........Identifier(inteiro) - int
+......Declaration
+........Short
+........Identifier(h)
+........Identifier(litle_int) - short
+......Declaration
+........Short
+........Identifier(i)
+........Identifier(caracter) - char
+......Declaration
+........Short
+........Identifier(j)
+........Identifier(real) - double
+......Declaration
+........Short
+........Identifier(k)
+........Call - void
+..........Identifier(main) - void(void)
+......Declaration
+........Short
+........Identifier(l)
+........Identifier(undef) - undef
+......Declaration
+........Char
+........Identifier(m)
+........Identifier(inteiro) - int
+......Declaration
+........Char
+........Identifier(n)
+........Identifier(litle_int) - short
+......Declaration
+........Char
+........Identifier(o)
+........Identifier(caracter) - char
+......Declaration
+........Char
+........Identifier(p)
+........Identifier(real) - double
+......Declaration
+........Char
+........Identifier(q)
+........Call - void
+..........Identifier(main) - void(void)
+......Declaration
+........Char
+........Identifier(r)
+........Identifier(undef) - undef
+......Declaration
+........Double
+........Identifier(s)
+........Identifier(inteiro) - int
+......Declaration
+........Double
+........Identifier(t)
+........Identifier(litle_int) - short
+......Declaration
+........Double
+........Identifier(u)
+........Identifier(caracter) - char
+......Declaration
+........Double
+........Identifier(v)
+........Identifier(real) - double
+......Declaration
+........Double
+........Identifier(w)
+........Call - void
+..........Identifier(main) - void(void)
+......Declaration
+........Double
+........Identifier(x)
+........Identifier(undef) - undef
+......Declaration
+........Void
+........Identifier(y)
+........Identifier(inteiro) - int
+......Declaration
+........Void
+........Identifier(z)
+........Identifier(litle_int) - short
+......Declaration
+........Void
+........Identifier(aa)
+........Identifier(caracter) - char
+......Declaration
+........Void
+........Identifier(bb)
+........Identifier(real) - double
+......Declaration
+........Void
+........Identifier(cc)
+........Call - void
+..........Identifier(main) - void(void)
+......Declaration
+........Void
+........Identifier(dd)
+........Identifier(undef) - undef

@@ -1,0 +1,9 @@
+int main(int, int ){}
+
+void teste(double a, int a);
+
+void teste(double a, int a) {
+	int a;
+	(1+1) = a;
+}
+
