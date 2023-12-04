@@ -176,10 +176,15 @@ int check_program(struct node *program) {
                     printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
                 }
                 else {
-                    if (countchildren(aux->node) == 3 && (map_cat_typ(getchild(aux->node, 0)->category) < getchild(aux->node, 2)->type)) {
-                        printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(getchild(aux->node, 2)->type), type_name(map_cat_typ(getchild(aux->node, 0)->category)));
-                        semantic_errors++;
-                        break;
+                    if (countchildren(aux->node) == 3) {
+                        if ((getchild(aux->node, 0)->category == Int || getchild(aux->node, 0)->category == Char || getchild(aux->node, 0)->category == Short) && (getchild(aux->node, 2)->type == void_type || getchild(aux->node, 2)->type == double_type)) {
+                            printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(getchild(aux->node, 2)->type), type_name(map_cat_typ(getchild(aux->node, 0)->category)));
+                            semantic_errors++;
+                        }
+                        else if (getchild(aux->node, 0)->category == Double && getchild(aux->node, 2)->type == void_type) {
+                            printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(getchild(aux->node, 2)->type), type_name(map_cat_typ(getchild(aux->node, 0)->category)));
+                            semantic_errors++;
+                        }
                     }
 
                     insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
@@ -209,11 +214,16 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                 printf("Line %d, column %d: Symbol %s already defined\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, getchild(node, 1)->token);
             }
             else {
-                if (countchildren(node) == 3 && (map_cat_typ(getchild(node, 0)->category) < getchild(node, 2)->type)) {
-                    printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, type_name(getchild(node, 2)->type), type_name(map_cat_typ(getchild(node, 0)->category)));
-                    semantic_errors++;
-                    break;
-                }
+                if (countchildren(node) == 3) {
+                        if ((getchild(node, 0)->category == Int || getchild(node, 0)->category == Char || getchild(node, 0)->category == Short) && (getchild(node, 2)->type == void_type || getchild(node, 2)->type == double_type)) {
+                            printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, type_name(getchild(node, 2)->type), type_name(map_cat_typ(getchild(node, 0)->category)));
+                            semantic_errors++;
+                        }
+                        else if (getchild(node, 0)->category == Double && getchild(node, 2)->type == void_type) {
+                            printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column, type_name(getchild(node, 2)->type), type_name(map_cat_typ(getchild(node, 0)->category)));
+                            semantic_errors++;
+                        }
+                    }
                 insert_symbol(scope, getchild(node, 1)->token, map_cat_typ(getchild(node, 0)->category), node);
             }
             break;
@@ -301,19 +311,20 @@ int check_expression(struct node *node, struct symbol_list *scope){
             check_expression(getchild(node, 1), scope);
             if (getchild(node, 0)->category != Identifier) {
                 printf("Line %d, column %d: Lvalue required\n", node->token_line, node->token_column);
-                node->type = undefined_type;
-                break;
             }
-
-            if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type || getchild(node, 0)->type < getchild(node, 1)->type) {
+            else if ((getchild(node, 0)->type == integer_type || getchild(node, 0)->type == short_type || getchild(node, 0)->type == char_type) && (getchild(node, 1)->type == double_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type)) {
                 printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
-                node->type = undefined_type;
                 semantic_errors++;
-                break;
-            } else {
-                node->type = getchild(node, 0)->type;
             }
-
+            else if (getchild(node, 0)->type == double_type && (getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type)){
+                printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
+                semantic_errors++;
+            }
+            else if (getchild(node, 1)->type == void_type || getchild(node, 0)->type == undefined_type){
+                printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
+                semantic_errors++;
+            }
+            node->type = getchild(node, 0)->type;
             break;
     
         case Comma:
