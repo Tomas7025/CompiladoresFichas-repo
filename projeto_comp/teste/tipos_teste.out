@@ -1,3 +1,4 @@
+Line 4, column 8: Conflicting types (got double, expected short)
 Line 18, column 2: Unknown symbol undefined
 Line 18, column 14: Unknown symbol undefined
 Line 18, column 12: Operator + cannot be applied to types undef, undef
@@ -323,11 +324,11 @@ Program
 ......Declaration
 ........Short
 ........Identifier(curto)
-........IntLit(3) - int
+........RealLit(1.0) - double
 ......Declaration
 ........Char
 ........Identifier(caracter)
-........ChrLit('4') - int
+........ChrLit('a') - int
 ......Add - int
 ........Identifier(inteiro) - int
 ........Identifier(inteiro) - int

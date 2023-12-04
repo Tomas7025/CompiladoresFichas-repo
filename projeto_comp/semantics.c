@@ -96,6 +96,9 @@ int check_program(struct node *program) {
         switch (aux->node->category) {
             case FuncDeclaration:
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
+                    if (!valid_void(aux->node)) 
+                        break;
+                    
                     if (found->node->category == Declaration) {
                         printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
                         semantic_errors++;
@@ -167,7 +170,7 @@ int check_program(struct node *program) {
                     check_expression(getchild(aux->node, 2), global_scope);
 
                 if (getchild(aux->node, 0)->category == Void) {
-                    printf("Line %d, column %d: Invalid use of void type in declaration\n", aux->node->token_line, aux->node->token_column);
+                    printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column);
                     break;
                 }
                 
@@ -177,7 +180,9 @@ int check_program(struct node *program) {
                 }
                 else {
                     if (countchildren(aux->node) == 3) {
-                        if ((getchild(aux->node, 0)->category == Int || getchild(aux->node, 0)->category == Char || getchild(aux->node, 0)->category == Short) && (getchild(aux->node, 2)->type == void_type || getchild(aux->node, 2)->type == double_type)) {
+                        if ((getchild(aux->node, 0)->category == Int || getchild(aux->node, 0)->category == Char ||
+                            getchild(aux->node, 0)->category == Short) && (getchild(aux->node, 2)->type == void_type || getchild(aux->node, 2)->type == double_type)) {
+
                             printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(getchild(aux->node, 2)->type), type_name(map_cat_typ(getchild(aux->node, 0)->category)));
                             semantic_errors++;
                         }
@@ -454,7 +459,8 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Eq:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type) {
+            if (getchild(node, 0)->type == void_type || getchild(node, 1)->type == void_type ||
+             ((getchild(node, 1)->type != getchild(node, 0)->type) && (getchild(node, 0)->type == undefined_type || getchild(node, 1)->type == undefined_type))) {
                 printf("Line %d, column %d: Operator == cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
                 semantic_errors++;
             }
@@ -524,9 +530,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             check_expression(getchild(node, 0), scope);
             if (getchild(node, 0)->type == undefined_type || getchild(node, 0)->type == void_type) {
                 printf("Line %d, column %d: Operator - cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
-                node->type = undefined_type;
                 semantic_errors++;
-                break;
             }
             node->type = getchild(node, 0)->type;
             
@@ -568,29 +572,6 @@ int check_expression(struct node *node, struct symbol_list *scope){
 
                 }
 
-
-                //TODO: corrigir node->children
-
-                // !!! 
-                // int arg_c = countchildren(node)-1;
-                // int param_c = countchildren(getchild(found->node, 2));
-
-                // Verifica se o numero de argumentos é igual ao numero de parametros
-                // if (arg_c != param_c) {
-                //     printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
-                //     node->children->next->node->type = found->type;
-                //     node->type = found->type;
-                //     semantic_errors++;
-
-                //     break;
-                // }
-                
-                // //TODO: checkar numero de parametros
-                // while ((aux = aux->next) != NULL && (aux2 = aux2->next) != NULL) {
-                //     if (aux->node->type != aux2->type) {
-                //         //! ERRO
-                //     }
-                // }
                 node->children->next->node->type = found->type;
                 node->type = found->type;
             }
