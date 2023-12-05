@@ -570,20 +570,16 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 param_cursor = getchild(found->node, 2)->children;
 
                 while ((arg_cursor = arg_cursor->next) != NULL && (param_cursor = param_cursor->next) != NULL) {
-                    if (arg_cursor->node->type != getchild(param_cursor->node, 0)->type) {
+                    if (arg_cursor->node->type != map_cat_typ(getchild(param_cursor->node, 0)->category)) {
                         printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", arg_cursor->node->token_line, arg_cursor->node->token_column, type_name(arg_cursor->node->type), type_name(map_cat_typ(getchild(param_cursor->node, 0)->category)));
                         semantic_errors++;
                     }
                 }
-                
-                // while ((param_cursor = param_cursor->next) != NULL) {
-                //     if (getchild(param_cursor->node, 0)->type != void_type)
-                //         param_c++;
-                // }
 
-                // if (arg_c != param_c) {
-                //     //printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
-                // }    
+                if (arg_cursor != NULL || param_cursor != NULL) {
+                    printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token, (countchildren(node)-1), countchildren(getchild(found->node, 2)));
+                    semantic_errors++;
+                }
 
                 node->children->next->node->type = found->type;
                 node->type = found->type;
