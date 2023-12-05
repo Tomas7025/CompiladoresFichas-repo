@@ -305,10 +305,10 @@ int check_expression(struct node *node, struct symbol_list *scope){
     struct symbol_list *found;
     struct node_list *aux;
 
-    struct node_list *arg_cursor;
-    struct node_list *param_cursor;
+    // struct node_list *arg_cursor;
+    // struct node_list *param_cursor;
 
-    int arg_c = 0, param_c = 0;
+    int arg_c = 0;  //, param_c = 0
     
     switch (node->category) {
         case Store: // for some reason o store se for undef = undef ele so da erro no check expression
@@ -567,8 +567,8 @@ int check_expression(struct node *node, struct symbol_list *scope){
                     }
                 }
 
-                arg_cursor = node->children->next;
-                param_cursor = getchild(found->node, 2)->children;
+                // arg_cursor = node->children->next;
+                // param_cursor = getchild(found->node, 2)->children;
 
                 // while ((arg_cursor = arg_cursor->next) != NULL) {
                 //     if (arg_cursor->node->type != void_type)
@@ -701,13 +701,6 @@ int valid_void(struct node *new) {
 }
 
 int valid_signature(struct node* original, struct node *new) {
-    // conf_f (conflit flag):
-    //      -1 -> nao ha erros
-	//      0 -> conf type
-
-    int orig_c, new_c;
-    int conf_flag = -1;
-    int both_decs = (original->category == FuncDeclaration && new->category == FuncDeclaration) ? 1 : 0;
     struct node_list *orig_cursor = getchild(original, 2)->children->next;
     struct node_list *new_cursor = getchild(new, 2)->children->next;
 
@@ -716,8 +709,6 @@ int valid_signature(struct node* original, struct node *new) {
         return 0;
 
     for (; orig_cursor != NULL && new_cursor != NULL; orig_cursor = orig_cursor->next, new_cursor = new_cursor->next) {
-        orig_c = countchildren(orig_cursor->node);
-        new_c = countchildren(new_cursor->node);
         if (getchild(orig_cursor->node, 0)->category != getchild(new_cursor->node, 0)->category) {
             printf("Line %d, column %d: Conflicting types (got ", getchild(new, 1)->token_line, getchild(new, 1)->token_column);
             print_signature(new);
