@@ -174,6 +174,8 @@ int main(int argc, char *argv[]) {
             check_program(program);
             show_symbol_table();
             show(program, 0, 1);
+
+            printf("\n\nDEBUG\n\n");
         }
     }
     

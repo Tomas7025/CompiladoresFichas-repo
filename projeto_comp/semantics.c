@@ -576,7 +576,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 if (getchild(getchild(found->node, 2), 1) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void) {
                     arg_c = countchildren(node) - 1;
                     if (arg_c > 0) {
-                        printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", node->token_line, node->token_column, getchild(node, 0)->token, arg_c);
+                        printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token, arg_c);
                         semantic_errors++;
                     }
                     node->children->next->node->type = found->type;
@@ -585,14 +585,17 @@ int check_expression(struct node *node, struct symbol_list *scope){
 
                 }
 
-                arg_cursor = node->children->next;
-                param_cursor = getchild(found->node, 2)->children;
+                arg_cursor = node->children->next->next;
+                param_cursor = getchild(found->node, 2)->children->next;
 
-                while ((arg_cursor = arg_cursor->next) != NULL && (param_cursor = param_cursor->next) != NULL) {
+                while (arg_cursor!= NULL && param_cursor!= NULL) {
                     if (arg_cursor->node->type != map_cat_typ(getchild(param_cursor->node, 0)->category)) {
                         printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", arg_cursor->node->token_line, arg_cursor->node->token_column, type_name(arg_cursor->node->type), type_name(map_cat_typ(getchild(param_cursor->node, 0)->category)));
                         semantic_errors++;
                     }
+
+                    arg_cursor = arg_cursor->next;
+                    param_cursor = param_cursor->next;
                 }
 
                 if (arg_cursor != NULL || param_cursor != NULL) {
