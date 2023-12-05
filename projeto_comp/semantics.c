@@ -235,8 +235,8 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case If:
             // DEBUG: printf("if %d %d\n", node->token_line, node->token_column);
             check_expression(getchild(node, 0), scope);
-            if (getchild(node, 0)->type != integer_type) {
-                printf("Line %d, column %d: Conflicting types (got %s, expected integer)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type));
+            if (getchild(node, 0)->type == undefined_type || getchild(node, 0)->type == double_type || getchild(node, 0)->type == void_type) {
+                printf("Line %d, column %d: Conflicting types (got %s, expected int)\n", (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_line : getchild(node, 0)->token_line, (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_column : getchild(node, 0)->token_column, type_name(getchild(node, 0)->type));
                 semantic_errors++;
             }
             if (getchild(node, 1) != NULL && getchild(node, 1)->category != Null) {
@@ -255,8 +255,8 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case While:
             // DEBUG: printf("while %d %d\n", node->token_line, node->token_column);
             check_expression(getchild(node, 0), scope);
-            if (getchild(node, 0)->type != integer_type) {
-                printf("Line %d, column %d: Conflicting types (got %s, expected integer)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type));
+            if (getchild(node, 0)->type == undefined_type || getchild(node, 0)->type == double_type || getchild(node, 0)->type == void_type) {
+                printf("Line %d, column %d: Conflicting types (got %s, expected int)\n", (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_line : getchild(node, 0)->token_line, (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_column : getchild(node, 0)->token_column, type_name(getchild(node, 0)->type));
                 semantic_errors++;
             }
             if (getchild(node, 1) != NULL && getchild(node, 1)->category != Null) {
