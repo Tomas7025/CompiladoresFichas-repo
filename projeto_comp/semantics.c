@@ -176,7 +176,15 @@ int check_program(struct node *program) {
                 
                 if ((found = search_symbol(global_scope, getchild(aux->node, 1)->token)) != NULL) {
                     //! ERRO
-                    printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
+                    if (found->node->category != Declaration) {
+                        printf("Line %d, column %d: Symbol %s already defined\n", aux->node->token_line, aux->node->token_column, getchild(aux->node, 1)->token);
+                    }
+                    else {
+                        if (getchild(aux->node, 0)->category != getchild(found->node, 0)->category){
+                            printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(map_cat_typ(getchild(aux->node, 0)->category)), type_name(map_cat_typ(getchild(found->node, 0)->category)));
+                            semantic_errors++;
+                        }
+                    }
                 }
                 else {
                     if (countchildren(aux->node) == 3) {
@@ -573,6 +581,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             found = search_symbol(global_scope, getchild(node, 0)->token);
 
             if(found != NULL) {
+
                 if (getchild(getchild(found->node, 2), 1) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void) {
                     arg_c = countchildren(node) - 1;
                     if (arg_c > 0) {
@@ -607,10 +616,20 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 node->type = found->type;
             }
             else {
-                node->children->next->node->type = undefined_type;
-                node->type = undefined_type;
-                //! ERRO
-                printf("Line %d, column %d: Unknown symbol %s\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token);
+
+                // É uma declaracao
+                if ((found = search_symbol(scope, getchild(node, 0)->token)) != NULL && found->node->category == Declaration) {
+                    node->children->next->node->type = found->type;
+                    node->type = found->type;
+                }
+
+                else {
+                    node->children->next->node->type = undefined_type;
+                    node->type = undefined_type;
+                    //! ERRO
+                    printf("Line %d, column %d: Unknown symbol %s\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token);
+                }
+
                 if ((arg_c = countchildren(node) - 1) > 0)
                     printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token, arg_c);
             }

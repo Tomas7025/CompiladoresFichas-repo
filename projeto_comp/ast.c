@@ -58,9 +58,15 @@ void show(struct node *node, int depth, int anotations){
     for(int i = 0; i < depth + 1; i++){
       printf("..");
     }
+
     printf("%s(%s) - ", category_m[child->next->node->category], child->next->node->token);
-    print_signature(found->node);
-    printf("\n");
+
+    if (node->type == undefined_type)
+      printf("undef\n");
+    else {
+      print_signature(found->node);
+      printf("\n");
+    }
     child = child->next;
   }
 
