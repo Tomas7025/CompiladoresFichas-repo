@@ -552,30 +552,38 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Call:
             aux = node->children->next;
+            int arg_c;
             while ((aux = aux->next) != NULL) {
                 check_expression(aux->node, scope);
             }
 
             found = search_symbol(global_scope, getchild(node, 0)->token);
-            
+
             if(found != NULL) {
+                if ((getchild(getchild(found->node, 2), 1)) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void) {
+                    arg_c = countchildren(node) - 1;
+                    if (arg_c > 0) {
+                        printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", node->token_line, node->token_column, getchild(node, 0)->token, arg_c);
+                        semantic_errors++;
+                    }
+                }
+                
                 arg_cursor = node->children->next;
                 param_cursor = getchild(found->node, 2)->children;
 
-                while ((arg_cursor = arg_cursor->next) != NULL) {
-                    if (arg_cursor->node->type != void_type)
-                        arg_c++;
-                }
+                // while ((arg_cursor = arg_cursor->next) != NULL) {
+                //     if (arg_cursor->node->type != void_type)
+                //         arg_c++;
+                // }
                 
-                while ((param_cursor = param_cursor->next) != NULL) {
-                    if (getchild(param_cursor->node, 0)->type != void_type)
-                        param_c++;
-                }
+                // while ((param_cursor = param_cursor->next) != NULL) {
+                //     if (getchild(param_cursor->node, 0)->type != void_type)
+                //         param_c++;
+                // }
 
-                if (arg_c != param_c) {
-                    //printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
-
-                }
+                // if (arg_c != param_c) {
+                //     //printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
+                // }
 
                 node->children->next->node->type = found->type;
                 node->type = found->type;
@@ -584,6 +592,9 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 node->children->next->node->type = undefined_type;
                 node->type = undefined_type;
                 //! ERRO
+                printf("Line %d, column %d: Unknown symbol %s\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token);
+                if ((arg_c = countchildren(node) - 1) > 0)
+                    printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token, arg_c);
             }
 
             break;

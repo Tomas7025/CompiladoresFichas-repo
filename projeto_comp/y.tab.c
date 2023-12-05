@@ -2311,7 +2311,7 @@ yyreduce:
                                                          temp->next = (yyvsp[-1].node)->children->next;
                                                          (yyvsp[-1].node)->children->next = temp;
 
-                                                         LOCATE((yyval.node), (yylsp[-3]).first_line, (yylsp[-3]).first_column);
+                                                         LOCATE(getchild((yyval.node), 0), (yylsp[-3]).first_line, (yylsp[-3]).first_column);
                                                        }
 #line 2317 "y.tab.c"
     break;
@@ -2322,7 +2322,7 @@ yyreduce:
                                               (yyval.node) = newnode(Call, NULL); 
                                               addchild((yyval.node), newnode(Identifier, (yyvsp[-2].token)));
 
-                                              LOCATE((yyval.node), (yylsp[-2]).first_line, (yylsp[-2]).first_column);
+                                              LOCATE(getchild((yyval.node), 0), (yylsp[-2]).first_line, (yylsp[-2]).first_column);
                                             }
 #line 2328 "y.tab.c"
     break;

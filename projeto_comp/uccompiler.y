@@ -466,13 +466,13 @@ expression: expression ASSIGN expression    { if (errors > 0) { break; }
                                                          temp->next = $3->children->next;
                                                          $3->children->next = temp;
 
-                                                         LOCATE($$, @1.first_line, @1.first_column);
+                                                         LOCATE(getchild($$, 0), @1.first_line, @1.first_column);
                                                        }
     | IDENTIFIER LPAR RPAR                  { if (errors > 0) { break; }
                                               $$ = newnode(Call, NULL); 
                                               addchild($$, newnode(Identifier, $1));
 
-                                              LOCATE($$, @1.first_line, @1.first_column);
+                                              LOCATE(getchild($$, 0), @1.first_line, @1.first_column);
                                             }
 
     | IDENTIFIER                            { if (errors > 0) { break; }
