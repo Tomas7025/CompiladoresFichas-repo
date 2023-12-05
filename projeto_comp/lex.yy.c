@@ -2102,7 +2102,7 @@ int main(int argc, char *argv[]) {
             show_symbol_table();
             show(program, 0, 1);
 
-            printf("\n\nDEBUG\n\n");
+            // printf("\n\nDEBUG\n\n");
         }
     }
     
