@@ -587,8 +587,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             found = search_symbol(global_scope, getchild(node, 0)->token);
 
             if(found != NULL) {
-
-                if ((found->node->category) || (getchild(getchild(found->node, 2), 1) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void)) {
+                if ((found->node->category == Declaration) || (getchild(getchild(found->node, 2), 1) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void)) {
                     arg_c = countchildren(node) - 1;
                     if (arg_c > 0) {
                         printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, getchild(node, 0)->token, arg_c);
@@ -605,7 +604,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
 
                 while (arg_cursor!= NULL && param_cursor!= NULL) {
                     if (arg_cursor->node->type != map_cat_typ(getchild(param_cursor->node, 0)->category)) {
-                        printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_line : getchild(node, 0)->token_line, (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_column : getchild(node, 0)->token_column, type_name(arg_cursor->node->type), type_name(map_cat_typ(getchild(param_cursor->node, 0)->category)));
+                        printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", (arg_cursor->node->category == Call) ?  getchild(arg_cursor->node, 0)->token_line : arg_cursor->node->token_line, (arg_cursor->node->category == Call) ?  getchild(arg_cursor->node, 0)->token_column : arg_cursor->node->token_column, type_name(arg_cursor->node->type), type_name(map_cat_typ(getchild(param_cursor->node, 0)->category)));
                         semantic_errors++;
                     }
 
