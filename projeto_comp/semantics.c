@@ -235,6 +235,10 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case If:
             // DEBUG: printf("if %d %d\n", node->token_line, node->token_column);
             check_expression(getchild(node, 0), scope);
+            if (getchild(node, 0)->type != integer_type) {
+                printf("Line %d, column %d: Conflicting types (got %s, expected integer)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type));
+                semantic_errors++;
+            }
             if (getchild(node, 1) != NULL && getchild(node, 1)->category != Null) {
                 if (getchild(node, 1)->category == StatList) 
                     check_function(getchild(node, 1), scope, 1);
@@ -251,6 +255,10 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case While:
             // DEBUG: printf("while %d %d\n", node->token_line, node->token_column);
             check_expression(getchild(node, 0), scope);
+            if (getchild(node, 0)->type != integer_type) {
+                printf("Line %d, column %d: Conflicting types (got %s, expected integer)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type));
+                semantic_errors++;
+            }
             if (getchild(node, 1) != NULL && getchild(node, 1)->category != Null) {
                 if (getchild(node, 1)->category == StatList)
                     check_function(getchild(node, 1), scope, 1);
@@ -262,10 +270,17 @@ int check_statement(struct node *node, struct symbol_list *scope) {
             // DEBUG: printf("return %d %d\n", node->token_line, node->token_column);
             if (getchild(node, 0)->category != Null){
                 check_expression(getchild(node, 0), scope);
-                if (getchild(node, 0)->type > scope->type || (getchild(node, 0)->type == void_type && scope->type != void_type)) {
-                    printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column, type_name(getchild(node, 0)->type), type_name(scope->type));
+                if (scope->type == void_type && getchild(node, 0)->type != void_type) {
+                    printf("Line %d, column %d: Conflicting types (got %s, expected void)\n", (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_line : getchild(node, 0)->token_line, (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_column : getchild(node, 0)->token_column  , type_name(getchild(node, 0)->type));
+                    semantic_errors++;
+                } else if ( (scope->type == char_type || scope->type == short_type || scope->type == integer_type) && (getchild(node, 0)->type == double_type || getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type)) {
+                    printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_line : getchild(node, 0)->token_line, (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_column : getchild(node, 0)->token_column    , type_name(getchild(node, 0)->type), type_name(scope->type));
+                    semantic_errors++;
+                } else if (scope->type == double_type && (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type)) {
+                    printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_line : getchild(node, 0)->token_line, (getchild(node, 0)->category == Call) ?  getchild(getchild(node, 0), 0)->token_column : getchild(node, 0)->token_column    , type_name(getchild(node, 0)->type), type_name(scope->type));
                     semantic_errors++;
                 }
+                
             } else {
                 if (scope->type != void_type) {
                     printf("Line %d, column %d: Conflicting types (got void, expected %s)\n", node->token_line, node->token_column, type_name(scope->type));
@@ -563,10 +578,11 @@ int check_expression(struct node *node, struct symbol_list *scope){
                     if (arg_c > 0) {
                         printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", node->token_line, node->token_column, getchild(node, 0)->token, arg_c);
                         semantic_errors++;
-                        node->children->next->node->type = found->type;
-                        node->type = found->type;
-                        break;
                     }
+                    node->children->next->node->type = found->type;
+                    node->type = found->type;
+                break;
+
                 }
 
                 arg_cursor = node->children->next;
