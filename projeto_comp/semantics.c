@@ -552,7 +552,6 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Call:
             aux = node->children->next;
-            int arg_c;
             while ((aux = aux->next) != NULL) {
                 check_expression(aux->node, scope);
             }
@@ -567,7 +566,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
                         semantic_errors++;
                     }
                 }
-                
+
                 arg_cursor = node->children->next;
                 param_cursor = getchild(found->node, 2)->children;
 
@@ -583,7 +582,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
 
                 // if (arg_c != param_c) {
                 //     //printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required %d)\n", node->token_line, node->token_column, found->identifier, arg_c, param_c);
-                // }
+                // }    
 
                 node->children->next->node->type = found->type;
                 node->type = found->type;
@@ -719,23 +718,15 @@ int valid_signature(struct node* original, struct node *new) {
     for (; orig_cursor != NULL && new_cursor != NULL; orig_cursor = orig_cursor->next, new_cursor = new_cursor->next) {
         orig_c = countchildren(orig_cursor->node);
         new_c = countchildren(new_cursor->node);
-        if (both_decs && (orig_c != new_c || (new_c == 2 && (strcmp(getchild(orig_cursor->node, 1)->token, getchild(new_cursor->node, 1)->token) != 0)))) {
-            printf("Line %d, column %d: Symbol %s already defined\n", getchild(new, 1)->token_line, getchild(new, 1)->token_column, getchild(new, 1)->token);
+        if (getchild(orig_cursor->node, 0)->category != getchild(new_cursor->node, 0)->category) {
+            printf("Line %d, column %d: Conflicting types (got ", getchild(new, 1)->token_line, getchild(new, 1)->token_column);
+            print_signature(new);
+            printf(", expected ");
+            print_signature(original);
+            printf(")\n");
             semantic_errors++;
             return 0;
         }
-        if (getchild(orig_cursor->node, 0)->category != getchild(new_cursor->node, 0)->category) 
-            conf_flag = 0;
-    }
-
-    if (conf_flag == 0 || orig_cursor != NULL || new_cursor != NULL || getchild(original, 0)->category != getchild(new, 0)->category) {
-        printf("Line %d, column %d: Conflicting types (got ", getchild(new, 1)->token_line, getchild(new, 1)->token_column);
-        print_signature(new);
-        printf(", expected ");
-        print_signature(original);
-        printf(")\n");
-        semantic_errors++;
-        return 0;
     }
 
     return 1;
