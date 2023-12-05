@@ -305,8 +305,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
     struct symbol_list *found;
     struct node_list *aux;
 
-    // struct node_list *arg_cursor;
-    // struct node_list *param_cursor;
+    struct node_list *arg_cursor, *param_cursor;
 
     int arg_c = 0;  //, param_c = 0
     
@@ -567,13 +566,15 @@ int check_expression(struct node *node, struct symbol_list *scope){
                     }
                 }
 
-                // arg_cursor = node->children->next;
-                // param_cursor = getchild(found->node, 2)->children;
+                arg_cursor = node->children->next;
+                param_cursor = getchild(found->node, 2)->children;
 
-                // while ((arg_cursor = arg_cursor->next) != NULL) {
-                //     if (arg_cursor->node->type != void_type)
-                //         arg_c++;
-                // }
+                while ((arg_cursor = arg_cursor->next) != NULL && (param_cursor = param_cursor->next) != NULL) {
+                    if (arg_cursor->node->type != getchild(param_cursor->node, 0)->type) {
+                        printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", arg_cursor->node->token_line, arg_cursor->node->token_column, type_name(arg_cursor->node->type), type_name(map_cat_typ(getchild(param_cursor->node, 0)->category)));
+                        semantic_errors++;
+                    }
+                }
                 
                 // while ((param_cursor = param_cursor->next) != NULL) {
                 //     if (getchild(param_cursor->node, 0)->type != void_type)
