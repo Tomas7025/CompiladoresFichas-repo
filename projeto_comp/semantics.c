@@ -558,11 +558,14 @@ int check_expression(struct node *node, struct symbol_list *scope){
             found = search_symbol(global_scope, getchild(node, 0)->token);
 
             if(found != NULL) {
-                if ((getchild(getchild(found->node, 2), 1)) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void) {
+                if (getchild(getchild(found->node, 2), 1) == NULL && (getchild(getchild(getchild(found->node, 2), 0), 0))->category == Void) {
                     arg_c = countchildren(node) - 1;
                     if (arg_c > 0) {
                         printf("Line %d, column %d: Wrong number of arguments to function %s (got %d, required 0)\n", node->token_line, node->token_column, getchild(node, 0)->token, arg_c);
                         semantic_errors++;
+                        node->children->next->node->type = found->type;
+                        node->type = found->type;
+                        break;
                     }
                 }
 
