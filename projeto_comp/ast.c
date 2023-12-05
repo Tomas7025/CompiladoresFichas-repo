@@ -63,6 +63,9 @@ void show(struct node *node, int depth, int anotations){
 
     if (node->type == undefined_type)
       printf("undef\n");
+    else if (found->node->category == Declaration) {
+      printf("%s\n", type_name(found->node->type));
+    }
     else {
       print_signature(found->node);
       printf("\n");
