@@ -128,20 +128,19 @@ int check_program(struct node *program) {
                         insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
 
                         if(countchildren(getchild(aux->node, 2)) > 1) {
-                        ext_cursor = getchild(aux->node, 2)->children->next;
+                            ext_cursor = getchild(aux->node, 2)->children->next;
 
-                        for(; ext_cursor->next != NULL; ext_cursor = ext_cursor->next) {
-                            for (int_cursor = ext_cursor->next; int_cursor != NULL; int_cursor = int_cursor->next) {
-                                if (strcmp(getchild(ext_cursor->node, 1)->token, getchild(int_cursor->node, 1)->token) == 0) {
-                                    printf("Line %d, column %d: Symbol %s already defined\n", getchild(int_cursor->node, 1)->token_line, getchild(int_cursor->node, 1)->token_column, getchild(int_cursor->node, 1)->token);
-                                    semantic_errors++;
+                            for(; ext_cursor->next != NULL; ext_cursor = ext_cursor->next) {
+                                for (int_cursor = ext_cursor->next; int_cursor != NULL; int_cursor = int_cursor->next) {
+                                    if (strcmp(getchild(ext_cursor->node, 1)->token, getchild(int_cursor->node, 1)->token) == 0) {
+                                        printf("Line %d, column %d: Symbol %s already defined\n", getchild(int_cursor->node, 1)->token_line, getchild(int_cursor->node, 1)->token_column, getchild(int_cursor->node, 1)->token);
+                                        semantic_errors++;
+                                    }
                                 }
                             }
                         }
                     }
-                    }
                 }
-
 
 
                 break;
@@ -170,7 +169,6 @@ int check_program(struct node *program) {
                         check_function(aux->node, found->scope, 0);
                     } else {
                         //! ERRO
-                        // ??? Pergunta 9
                         // == 0 <=> houve erro
                         if (!valid_void(aux->node))
                             break;
@@ -765,6 +763,12 @@ int valid_void(struct node *new) {
     struct node_list *new_cursor;
 
     new_cursor = getchild(new, 2)->children;
+
+    if (new_cursor->next->next == NULL && getchild(new_cursor->next->node, 0)->category == Void && getchild(new_cursor->next->node, 1) != NULL) {
+        printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(new_cursor->next->node, 1)->token_line, getchild(new_cursor->next->node, 1)->token_column);
+        semantic_errors++;
+        return 0;
+    }
 
     while ((new_cursor = new_cursor->next)) {
         if (getchild(new_cursor->node, 0)->category == Void && (new_cursor->next != NULL || new_cursor != getchild(new, 2)->children->next)) {
