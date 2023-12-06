@@ -185,7 +185,8 @@ int check_program(struct node *program) {
                         semantic_errors++;
                     }
                     else {
-                        if (getchild(aux->node, 0)->category != getchild(found->node, 0)->category){
+                        // if (getchild(aux->node, 0)->category != getchild(found->node, 0)->category){
+                        if ((getchild(found->node, 0)->category == Double) && (getchild(aux->node, 0)->category != Double)){
                             printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column, type_name(map_cat_typ(getchild(aux->node, 0)->category)), type_name(map_cat_typ(getchild(found->node, 0)->category)));
                             semantic_errors++;
                         }
@@ -603,7 +604,8 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 param_cursor = getchild(found->node, 2)->children->next;
 
                 while (arg_cursor!= NULL && param_cursor!= NULL) {
-                    if (arg_cursor->node->type != map_cat_typ(getchild(param_cursor->node, 0)->category)) {
+                    // if (arg_cursor->node->type != map_cat_typ(getchild(param_cursor->node, 0)->category)) {
+                    if (arg_cursor->node->type == void_type || arg_cursor->node->type == undefined_type || (arg_cursor->node->type == double_type && map_cat_typ(getchild(param_cursor->node, 0)->category) != double_type)) {
                         printf("Line %d, column %d: Conflicting types (got %s, expected %s)\n", (arg_cursor->node->category == Call) ?  getchild(arg_cursor->node, 0)->token_line : arg_cursor->node->token_line, (arg_cursor->node->category == Call) ?  getchild(arg_cursor->node, 0)->token_column : arg_cursor->node->token_column, type_name(arg_cursor->node->type), type_name(map_cat_typ(getchild(param_cursor->node, 0)->category)));
                         semantic_errors++;
                     }
