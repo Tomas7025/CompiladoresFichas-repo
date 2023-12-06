@@ -88,9 +88,11 @@ int check_program(struct node *program) {
 
     insert_symbol(global_scope, "getchar", integer_type, put);
 
-
     struct symbol_list *found;
     struct node_list *aux = program->children;
+
+    struct node_list *ext_cursor, *int_cursor;
+
 
     while ((aux = aux->next) != NULL) {
         switch (aux->node->category) {
@@ -105,13 +107,42 @@ int check_program(struct node *program) {
                         break;
                     }
 
-                    valid_signature(found->node, aux->node);
+
+                    if(valid_signature(found->node, aux->node) && countchildren(getchild(aux->node, 2)) > 1) {
+                        ext_cursor = getchild(aux->node, 2)->children->next;
+
+                        for(; ext_cursor->next != NULL; ext_cursor = ext_cursor->next) {
+                            for (int_cursor = ext_cursor->next; int_cursor != NULL; int_cursor = int_cursor->next) {
+                                if (strcmp(getchild(ext_cursor->node, 1)->token, getchild(int_cursor->node, 1)->token) == 0) {
+                                    printf("Line %d, column %d: Symbol %s already defined\n", getchild(int_cursor->node, 1)->token_line, getchild(int_cursor->node, 1)->token_column, getchild(int_cursor->node, 1)->token);
+                                    semantic_errors++;
+                                }
+                            }
+                        }
+                    }
+
                     break;
                 }
                 else {
-                    if (valid_void(aux->node))
+                    if (valid_void(aux->node)) {
                         insert_symbol(global_scope, getchild(aux->node, 1)->token, map_cat_typ(getchild(aux->node, 0)->category), aux->node);
+
+                        if(countchildren(getchild(aux->node, 2)) > 1) {
+                        ext_cursor = getchild(aux->node, 2)->children->next;
+
+                        for(; ext_cursor->next != NULL; ext_cursor = ext_cursor->next) {
+                            for (int_cursor = ext_cursor->next; int_cursor != NULL; int_cursor = int_cursor->next) {
+                                if (strcmp(getchild(ext_cursor->node, 1)->token, getchild(int_cursor->node, 1)->token) == 0) {
+                                    printf("Line %d, column %d: Symbol %s already defined\n", getchild(int_cursor->node, 1)->token_line, getchild(int_cursor->node, 1)->token_column, getchild(int_cursor->node, 1)->token);
+                                    semantic_errors++;
+                                }
+                            }
+                        }
+                    }
+                    }
                 }
+
+
 
                 break;
             case FuncDefinition:
@@ -130,7 +161,8 @@ int check_program(struct node *program) {
                         if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
                             struct node_list *aux2 = getchild(aux->node, 2)->children;
                             while ((aux2 = aux2->next) != NULL){
-                                insert_symbol(found->scope, getchild(aux2->node, 1)->token, map_cat_typ(getchild(aux2->node, 0)->category), aux2->node);
+                                if(insert_symbol(found->scope, getchild(aux2->node, 1)->token, map_cat_typ(getchild(aux2->node, 0)->category), aux2->node) == NULL)
+                                    printf("Line %d, column %d: Symbol %s already defined\n", getchild(aux2->node, 1)->token_line, getchild(aux2->node, 1)->token_column, getchild(aux2->node, 1)->token);
                             }
                         }
 
@@ -160,8 +192,8 @@ int check_program(struct node *program) {
                     if(getchild(getchild(getchild(aux->node, 2),0),0)->category != Void){
                         struct node_list *aux2 = getchild(aux->node, 2)->children;
                         while ((aux2 = aux2->next) != NULL) {
-                            insert_symbol(found->scope, getchild(aux2->node, 1)->token, map_cat_typ(getchild(aux2->node, 0)->category), aux2->node);
-                        }
+                            if(insert_symbol(found->scope, getchild(aux2->node, 1)->token, map_cat_typ(getchild(aux2->node, 0)->category), aux2->node) == NULL)
+                                printf("Line %d, column %d: Symbol %s already defined\n", getchild(aux2->node, 1)->token_line, getchild(aux2->node, 1)->token_column, getchild(aux2->node, 1)->token);                        }
                     }
 
                     // check_func passar o scope da funcDeclaration
@@ -752,6 +784,16 @@ int valid_signature(struct node* original, struct node *new) {
     // valid_void 0 <=> error, invalid void
     if (!valid_void(new))
         return 0;
+
+    if (getchild(original, 0)->category != getchild(new, 0)->category) {
+        printf("Line %d, column %d: Conflicting types (got ", getchild(new, 1)->token_line, getchild(new, 1)->token_column);
+        print_signature(new);
+        printf(", expected ");
+        print_signature(original);
+        printf(")\n");
+        semantic_errors++;
+        return 0;
+    }
 
     for (; orig_cursor != NULL && new_cursor != NULL; orig_cursor = orig_cursor->next, new_cursor = new_cursor->next) {
         if (getchild(orig_cursor->node, 0)->category != getchild(new_cursor->node, 0)->category) {
