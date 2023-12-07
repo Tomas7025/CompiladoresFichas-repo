@@ -132,7 +132,7 @@ int check_program(struct node *program) {
 
                             for(; ext_cursor->next != NULL; ext_cursor = ext_cursor->next) {
                                 for (int_cursor = ext_cursor->next; int_cursor != NULL; int_cursor = int_cursor->next) {
-                                    if (strcmp(getchild(ext_cursor->node, 1)->token, getchild(int_cursor->node, 1)->token) == 0) {
+                                    if (!(countchildren(ext_cursor->node) == 1 || countchildren(int_cursor->node) == 1 ) && strcmp(getchild(ext_cursor->node, 1)->token, getchild(int_cursor->node, 1)->token) == 0) {
                                         printf("Line %d, column %d: Symbol %s already defined\n", getchild(int_cursor->node, 1)->token_line, getchild(int_cursor->node, 1)->token_column, getchild(int_cursor->node, 1)->token);
                                         semantic_errors++;
                                     }
@@ -243,7 +243,7 @@ int check_program(struct node *program) {
                 break;
         }
     }
-    
+
     return semantic_errors;
 }
 
@@ -254,7 +254,7 @@ int check_statement(struct node *node, struct symbol_list *scope) {
             if (countchildren(node) == 3)
                 check_expression(getchild(node, 2), scope);
             if (getchild(node, 0)->category == Void) {
-                printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
+                printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(node, 1)->token_line, getchild(node, 1)->token_column);
                 semantic_errors++;
                 break;
             }
@@ -765,7 +765,7 @@ int valid_void(struct node *new) {
     new_cursor = getchild(new, 2)->children;
 
     if (new_cursor->next->next == NULL && getchild(new_cursor->next->node, 0)->category == Void && getchild(new_cursor->next->node, 1) != NULL) {
-        printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(new_cursor->next->node, 1)->token_line, getchild(new_cursor->next->node, 1)->token_column);
+        printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(new_cursor->next->node, 0)->token_line, getchild(new_cursor->next->node, 0)->token_column);
         semantic_errors++;
         return 0;
     }
@@ -809,6 +809,16 @@ int valid_signature(struct node* original, struct node *new) {
             semantic_errors++;
             return 0;
         }
+    }
+
+    if (orig_cursor != NULL || new_cursor != NULL) {
+        printf("Line %d, column %d: Conflicting types (got ", getchild(new, 1)->token_line, getchild(new, 1)->token_column);
+        print_signature(new);
+        printf(", expected ");
+        print_signature(original);
+        printf(")\n");
+        semantic_errors++;
+        return 0;
     }
 
     return 1;
