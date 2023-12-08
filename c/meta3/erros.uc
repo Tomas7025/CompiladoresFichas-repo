@@ -319,9 +319,9 @@ int ch0=20,calc;
         short a;
     char c;
 
-    function(1) + function(1);
+    function() + function();
 
-    10 * (5 < function(1));
+    10 * (5 < function());
 
     5.5 % nao_existe();
     
