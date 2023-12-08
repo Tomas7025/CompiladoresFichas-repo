@@ -23,3 +23,11 @@ L1end:
   %11 = load i32, i32* %1
   ret i32 %11
 }
+
+define i32 @main() {
+  %1 = call i32 @_read(i32 0)
+  %2 = call i32 @_factorial(i32 %1)
+  call i32 @_write(i32 %2)
+  
+  ret i32 1
+}
