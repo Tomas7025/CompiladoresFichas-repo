@@ -6,6 +6,7 @@
 #include "codegen.h"
 
 int temporary;   // sequence of temporary registers in a function
+int label_ind = 2;
 
 extern struct symbol_list *symbol_table;
 
@@ -61,6 +62,10 @@ int codegen_expression(struct node *expression) {
             codegen_call(expression);
             break;
 
+        case If:
+            codegen_if(expression);
+            break;
+
         default:
             break;
     }
@@ -75,21 +80,6 @@ void codegen_parameters(struct node *parameters) {
             printf(", ");
         printf("i32 %%%s", getchild(parameter, 1)->token);
     }
-}
-
-int codegen_call(struct node *call) {
-    struct node *arguments = getchild(call, 1);
-    struct node *argument;
-    int curr = 0;
-
-    printf("  %%%d = call i32 @%s(", temporary, getchild(call, 0)->token);
-    while((argument = getchild(arguments, curr++)) != NULL) {
-        if(curr > 1)
-            printf(", ");
-        printf("i32 %%%s", argument->token);
-    }
-    printf(")\n");
-    return temporary++;
 }
 
 void codegen_function(struct node *function) {
@@ -120,4 +110,42 @@ void codegen_program(struct node *program) {
                "  %%1 = call i32 @_main(i32 0)\n"
                "  ret i32 %%1\n"
                "}\n");
+}
+
+int codegen_call(struct node *call) {
+    struct node *arguments = getchild(call, 1);
+    struct node *argument;
+    int curr = 0;
+
+    while((argument = getchild(arguments, curr++)) != NULL) {
+        codegen_expression(argument);
+    }
+    curr = 0;
+    printf("  %%%d = call i32 @%s(", temporary, getchild(call, 0)->token);
+    while((argument = getchild(arguments, curr++)) != NULL) {
+        if(curr > 1)
+            printf(", ");
+        printf("i32 %%%s", argument->token);
+    }
+
+    printf(")\n");
+    return temporary++;
+}
+
+int codegen_if(struct node *if_node) {
+    int cond = -1, if_exp = -1, else_exp = -1;
+
+    cond = codegen_expression(getchild(if_node, 0));
+    printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, cond);
+    printf("  br i1 %%%d, label %%L%dthen, label %%L%delse\n", cond+1, label_ind, label_ind);
+
+    printf("L%dthen:\n", label_ind);
+    if_exp = codegen_expression(getchild(if_node, 1));
+    printf("  ret i32 %%%d\n", if_exp);
+
+    printf("L%delse:\n", label_ind);
+    else_exp = codegen_expression(getchild(if_node, 2));
+    printf("  ret i32 %%%d\n", else_exp);
+
+    return else_exp;
 }
