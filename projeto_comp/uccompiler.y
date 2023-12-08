@@ -185,7 +185,7 @@ parameter_declaration: typespec IDENTIFIER                  { if (errors > 0) { 
                                                               addchild($$, $1);
                                                               addchild($$, newnode(Identifier, $2));
 
-                                                              LOCATE($$, @2.first_line, @2.first_column);
+                                                              LOCATE(getchild($$, 1), @2.first_line, @2.first_column);
                                                             }
     | typespec                                              { if (errors > 0) { break; }
                                                               $$ = newnode(ParamDeclaration, NULL); 

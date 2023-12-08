@@ -115,12 +115,9 @@ Line 316, column 7: Symbol c already defined
 Line 319, column 15: Symbol a already defined
 Line 320, column 10: Symbol c already defined
 Line 322, column 5: Unknown symbol function
-Line 322, column 5: Wrong number of arguments to function function (got 1, required 0)
-Line 322, column 19: Unknown symbol function
-Line 322, column 19: Wrong number of arguments to function function (got 1, required 0)
-Line 322, column 17: Operator + cannot be applied to types undef, undef
+Line 322, column 18: Unknown symbol function
+Line 322, column 16: Operator + cannot be applied to types undef, undef
 Line 324, column 15: Unknown symbol function
-Line 324, column 15: Wrong number of arguments to function function (got 1, required 0)
 Line 324, column 13: Operator < cannot be applied to types int, undef
 Line 326, column 11: Unknown symbol nao_existe
 Line 326, column 9: Operator % cannot be applied to types double, undef
@@ -1298,17 +1295,14 @@ Program
 ......Add - undef
 ........Call - undef
 ..........Identifier(function) - undef
-..........Natural(1) - int
 ........Call - undef
 ..........Identifier(function) - undef
-..........Natural(1) - int
 ......Mul - int
 ........Natural(10) - int
 ........Lt - int
 ..........Natural(5) - int
 ..........Call - undef
 ............Identifier(function) - undef
-............Natural(1) - int
 ......Mod - int
 ........Decimal(5.5) - double
 ........Call - undef
