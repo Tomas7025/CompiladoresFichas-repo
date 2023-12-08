@@ -50,7 +50,7 @@ void show(struct node *node, int depth, int anotations){
     printf("%s(%s)", category_m[node->category], node->token);
   }
   if (node->type != no_type && anotations) {
-    if (node->category == Identifier && (((found = search_symbol(global_scope, node->token)) != NULL) && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition))) {
+    if (node->category == Identifier && node->type != undefined_type && (((found = search_symbol(global_scope, node->token)) != NULL) && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition))) {
       printf(" - ");
       print_signature(found->node);
       printf("\n");

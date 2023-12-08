@@ -427,12 +427,15 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Store: // for some reason o store se for undef = undef ele so da erro no check expression
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
-                node->type = getchild(node, 0)->type;
-                break;
+            if ((valid = invalid_func_op(node, 0)) == 1){
+                printf("Line %d, column %d: Lvalue required\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
+            }
+            else if(valid == 2 || valid == 3) {
+                invalid_func_op(node, 1);
+                semantic_errors--;
             }
             
-            if (getchild(node, 0)->category != Identifier) {
+            else if (getchild(node, 0)->category != Identifier) {
                 printf("Line %d, column %d: Lvalue required\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
             }
             else if ((getchild(node, 0)->type == integer_type || getchild(node, 0)->type == short_type || getchild(node, 0)->type == char_type) && (getchild(node, 1)->type == double_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type)) {
@@ -453,7 +456,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Comma:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if ((valid = invalid_func_op(node)) == 1) {
+            if ((valid = invalid_func_op(node, 1)) == 1) {
                 node->type = getchild(node, 1)->type;
                 break;
             }
@@ -476,7 +479,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = undefined_type;
                 break;
             }
@@ -494,7 +497,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = undefined_type;
                 break;
             }
@@ -511,7 +514,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = undefined_type;
                 break;
             }
@@ -528,7 +531,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = undefined_type;
                 break;
             }
@@ -545,7 +548,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef || double
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -559,7 +562,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Or:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -573,7 +576,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case And:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -587,7 +590,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case BitWiseAnd:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -601,7 +604,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case BitWiseOr:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -615,7 +618,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case BitWiseXor:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -629,7 +632,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Eq:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -644,7 +647,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Ne:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -659,7 +662,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Le:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -674,7 +677,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Ge:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -689,7 +692,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Lt:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -704,7 +707,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Gt:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node)){
+            if (invalid_func_op(node, 1)){
                 node->type = integer_type;
                 break;
             }
@@ -969,23 +972,17 @@ int valid_signature(struct node* original, struct node *new) {
 
     return 1;
 }
+
 // 0 -> é valida
 // 1 -> o da esquerda é invalido
 // 2 -> o da direita é invalido
 // 3 -> ambos sao invalidos
-int invalid_func_op(struct node *op_node) {
+int invalid_func_op(struct node *op_node, int verbose) {
     struct symbol_list *found, *found2;
-    char *op_map[] = {"||", "&&", "=", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%", "=", ",", "^", "|"};
+    char *op_map[] = {"||", "&&", "==", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%", "", "", "", "=", ",", "", "^", "|"};
     int ind, invalid = 0;
     // Eq, Ne, Lt, Gt, Le, Ge, Add, Sub, Mul, Div, Mod |. . .| Store, Comma |.| BitWiseXor, BitWiseOr
-
-    if (op_node->category >= Or && op_node->category <= Mod) 
-        ind = op_node->category - Or;
-    else if (op_node->category == Store || op_node->category == Comma)
-        ind = op_node->category - Or - 3;
-    else
-        ind = op_node->category - Or - 4;
-    
+    ind = op_node->category - Or;
 
     if (getchild(op_node, 0)->category == Identifier || getchild(op_node, 1)->category == Identifier) {
 
@@ -999,23 +996,30 @@ int invalid_func_op(struct node *op_node) {
         else
             found2 = NULL;
         if ((found != NULL && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition)) || (found2 != NULL && (found2->node->category == FuncDeclaration || found2->node->category == FuncDefinition))) {
-            printf("Line %d, column %d: Operator %s cannot be applied to types ", op_node->token_line, op_node->token_column, op_map[ind]);
+            if (verbose)
+                printf("Line %d, column %d: Operator %s cannot be applied to types ", op_node->token_line, op_node->token_column, op_map[ind]);
             if (found != NULL && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition)) {
-                print_signature(found->node);
-                printf(", ");
+                if (verbose) {
+                    print_signature(found->node);
+                    printf(", ");
+                }
                 invalid = 1;
             }
             else {
-                printf("%s, ", type_name(getchild(op_node, 0)->type));
+                if (verbose)
+                    printf("%s, ", type_name(getchild(op_node, 0)->type));
             }
             if (found2 != NULL && (found2->node->category == FuncDeclaration || found2->node->category == FuncDefinition)) {
-                print_signature(found2->node);
+                if (verbose)
+                    print_signature(found2->node);
                 invalid = (invalid == 0) ? 2 : 3; 
             }
             else {
-                printf("%s", type_name(getchild(op_node, 1)->type));
+                if (verbose)
+                    printf("%s", type_name(getchild(op_node, 1)->type));
             }
-            printf("\n");
+            if (verbose)
+                printf("\n");
         }
     }
     return invalid;
