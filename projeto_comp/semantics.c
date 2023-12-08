@@ -711,6 +711,10 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Plus:
             check_expression(getchild(node, 0), scope);
+            if (!valid_func_op_unit(node)) {
+                node->type = getchild(node, 0)->type;
+                break;
+            }
             if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type) {
                 printf("Line %d, column %d: Operator + cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
                 semantic_errors++;
@@ -720,8 +724,10 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Minus:
             check_expression(getchild(node, 0), scope);
-            // if (!valid_func_op_unit(node))
-            //     break;
+            if (!valid_func_op_unit(node)) {
+                node->type = getchild(node, 0)->type;
+                break;
+            }
             if (getchild(node, 0)->type == undefined_type || getchild(node, 0)->type == void_type) {
                 printf("Line %d, column %d: Operator - cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
                 semantic_errors++;
@@ -732,8 +738,10 @@ int check_expression(struct node *node, struct symbol_list *scope){
         
         case Not:
             check_expression(getchild(node, 0), scope);
-            if (!valid_func_op_unit(node))
+            if (!valid_func_op_unit(node)) {
+                node->type = integer_type;
                 break;
+            }
             if (getchild(node, 0)->type == void_type || getchild(node, 0)->type == undefined_type || getchild(node, 0)->type == double_type) {
                 printf("Line %d, column %d: Operator ! cannot be applied to type %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type));
                 semantic_errors++;
