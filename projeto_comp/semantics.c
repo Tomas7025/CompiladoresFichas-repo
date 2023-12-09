@@ -204,6 +204,7 @@ int check_program(struct node *program) {
 
                 if (getchild(aux->node, 0)->category == Void) {
                     printf("Line %d, column %d: Invalid use of void type in declaration\n", getchild(aux->node, 1)->token_line, getchild(aux->node, 1)->token_column);
+                    semantic_errors++;
                     break;
                 }
                 
@@ -1034,12 +1035,7 @@ int valid_func_op_unit(struct node *op_node) {
         found = search_symbol(global_scope, getchild(op_node, 0)->token);
         if (found != NULL && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition)) {
             printf("Line %d, column %d: Operator %s cannot be applied to type ", op_node->token_line, op_node->token_column, op);
-            if (found != NULL && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition)) {
-                print_signature(found->node);
-            }
-            else {
-                printf("%s", type_name(getchild(op_node, 0)->type));
-            }
+            print_signature(found->node);
             printf("\n");
             return 0;
         }

@@ -18,6 +18,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
     #include "y.tab.h"
     #include "ast.h"
     #include "semantics.h"
+    #include "codegen.h"
     
     int feedback = 0;
 
@@ -36,7 +37,8 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
             } \
         } \
     } 
- 
+
+    extern struct symbol_list *global_scope;
     #define UPPER_CASE(str) \
         { \
             for(int i = 0; str[i] != 0; i++) { \
@@ -105,6 +107,7 @@ reserved            break|\+\+|--|\[|\]|auto|case|const|continue|default|do|enum
     void yyerror(char *);
 
     int errors = 0;
+    extern int semantic_errors;
 
     int yacc_tkn[] = { BITWISEAND, BITWISEOR, BITWISEXOR, AND, ASSIGN, MUL, COMMA, DIV, EQ, GE, GT, LBRACE, LE, LPAR, LT, MINUS, MOD, NE, NOT, OR, PLUS, RBRACE, RPAR, SEMI, DOUBLE, IF, ELSE, CHAR, VOID, RETURN, WHILE, SHORT, INT };
     #define PASS_TOKEN() yylval.token = strdup(yytext);
@@ -156,32 +159,35 @@ int main(int argc, char *argv[]) {
     gc->node = NULL;
     gc->next = NULL;
 
+    yyparse();
+
     if (argc >= 2 && strcmp(argv[1], "-l") == 0) {
         feedback = 1;
     }
-    
-    yyparse();
-
-    if (argc >= 2 && strcmp(argv[1], "-t") == 0) {
+    else if (argc >= 2 && strcmp(argv[1], "-t") == 0) {
         if (errors == 0){
             check_program(program);
             show_symbol_table();
             show(program, 0, 0);
         }
     }
-    if (argc >= 2 && strcmp(argv[1], "-s") == 0) {
+    else if (argc >= 2 && strcmp(argv[1], "-s") == 0) {
         if (errors == 0){
             check_program(program);
             show_symbol_table();
             show(program, 0, 1);
-
-            // printf("\n\nDEBUG\n\n");
         }
     }
-    
+    else {
+        if (errors == 0) {
+            check_program(program);
+            if (semantic_errors == 0)
+                codegen_program(program);
+        }
+    }
 
     // yylex();    /* run the lexical analysis automaton */
-    
+
     clear();
     return 0;
 }
