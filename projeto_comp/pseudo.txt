@@ -1,0 +1,99 @@
+# construcao de funcao de inicializacao de variaveis globais
+for node in global_scope
+    if Declaration
+        anota o node com o nome da var (= identifier)
+
+        # verificar tipos
+        if (#childs == 3)
+            t = codegen_exp()
+            store t em @var
+        else
+            store 0 em @var         # @var = global <type> 0
+
+
+codegen_prog
+    for node in prog
+        switch:
+            case funcDec:
+                declare <type> @_identifier ( [ <type>, for param ] )
+                break;
+            
+            case funcDef:
+                 define <ResultType> @<FunctionName> 
+                    codegen_param()
+                    codegen_func que chamaria varios     --->    codegen_statmnt(funcBody)
+
+
+            case Dec:
+                break;
+
+
+codegen_statmnt
+    case Declaration:
+        codegen_dec
+    
+    case If
+        codegen_if
+    
+    case While
+        codegen_while
+
+    case Return
+        codegen_return
+
+    case StatList   
+        codegen_func
+
+    default
+        codegen_exp
+        
+
+
+
+codegen_dec
+    if (#childs == 3)
+            t = codegen_exp (3o filho)
+            %temp = alloca <type>
+            store <type> %t, <type>* %temp
+
+        else
+            %temp = alloca <type>
+
+
+codegen_if
+    codegen_exp(condicao)
+    **comparacao**
+
+    labelthen:
+        if (valido)
+            codegen_statmnt
+    
+    labelelse:
+        if (valido)
+            codegen_statmnt
+    
+
+    labelFi:
+
+
+codegen_while:
+    loop_label:
+        codegen_exp(condicao)
+        comparacao
+
+        if !condicao Jump exit_label
+
+        codegen_statmnt
+
+
+        jump loop_label
+    exit_label:
+
+
+codegen_return
+    if 1o filho != Null
+        t = codegen_exp(1o filho)
+        ret <type> t
+    else
+        ret void
+

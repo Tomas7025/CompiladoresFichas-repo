@@ -6,7 +6,7 @@
 #include "codegen.h"
 
 int temporary;   // sequence of temporary registers in a function
-int label_ind = 2;
+int label_ind = 3;
 
 extern struct symbol_list *symbol_table;
 
@@ -59,11 +59,11 @@ int codegen_expression(struct node *expression) {
             break;
 
         case Call:
-            codegen_call(expression);
+            tmp = codegen_call(expression);
             break;
 
         case If:
-            codegen_if(expression);
+            tmp = codegen_if(expression);
             break;
 
         default:
@@ -96,7 +96,9 @@ void codegen_function(struct node *function) {
 void codegen_program(struct node *program) {
     // pre-declared I/O functions
     printf("declare i32 @_read(i32)\n");
-    printf("declare i32 @_write(i32)\n\n");
+    printf("declare i32 @_write(i32)\n");
+    printf("declare i32 @_set(i32, i32)\n");
+    printf("declare i32 @_get(i32)\n\n");
 
     // generate code for each function
     struct node_list *function = program->children;
@@ -120,12 +122,13 @@ int codegen_call(struct node *call) {
     while((argument = getchild(arguments, curr++)) != NULL) {
         codegen_expression(argument);
     }
+
     curr = 0;
-    printf("  %%%d = call i32 @%s(", temporary, getchild(call, 0)->token);
+    printf("  %%%d = tail call i32 @_%s(", temporary, getchild(call, 0)->token);
     while((argument = getchild(arguments, curr++)) != NULL) {
         if(curr > 1)
             printf(", ");
-        printf("i32 %%%s", argument->token);
+        printf("i32 %%%d", temporary-countchildren(arguments)+curr-1);
     }
 
     printf(")\n");
@@ -147,5 +150,5 @@ int codegen_if(struct node *if_node) {
     else_exp = codegen_expression(getchild(if_node, 2));
     printf("  ret i32 %%%d\n", else_exp);
 
-    return else_exp;
+    return temporary;
 }

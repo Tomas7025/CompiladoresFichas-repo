@@ -1,8 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 ./build.sh
-./../../../../Petit/source/petit < i > o_prof 
-./petit < i > o
-diff o -ya o_prof
-
-
-
+./petit < i > o.ll
+./../../../../Petit/source/petit < i > o_p.ll
+diff o.ll -ya o_p.ll

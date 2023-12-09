@@ -26,4 +26,5 @@ echo "Compilando código final..."
 cc -o output output.s io.c || exit 1
 
 # Mensagem de conclusão
+
 echo "Compilação concluída com sucesso!"

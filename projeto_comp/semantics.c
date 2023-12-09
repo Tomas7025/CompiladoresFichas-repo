@@ -387,7 +387,7 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                 }
             }
             break;
-        case StatList:
+        case StatList:  
             check_function(node, scope, 1);
             break;
         default:
