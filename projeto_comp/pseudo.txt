@@ -54,10 +54,12 @@ codegen_dec
     if (#childs == 3)
             t = codegen_exp (3o filho)
             %temp = alloca <type>
-            store <type> %t, <type>* %temp
+            store <type> %t, <type>* %temp     
 
-        else
-            %temp = alloca <type>
+    else
+        %temp = alloca <type>
+
+    * anotar temp *
 
 
 codegen_if
@@ -71,7 +73,6 @@ codegen_if
     labelelse:
         if (valido)
             codegen_statmnt
-    
 
     labelFi:
 
@@ -97,3 +98,41 @@ codegen_return
     else
         ret void
 
+
+codegen_exp:
+    case Store
+        node = search local
+            if !local node = search global
+
+        t = codegen_exp(lado direito)
+
+        if node->type== double && t->ype != double
+            (double) t
+
+        store <type> %t, i32* %node->var
+        break
+
+    case Comma
+        codegen_exp(child1)
+        codegen_exp(child2)
+    
+
+    temp++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%X = sitofp i32 257 to float         ; yields float:257.0
+%Y = sitofp i8 -1 to double          ; yields double:-1.0

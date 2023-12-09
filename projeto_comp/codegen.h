@@ -6,7 +6,7 @@
 
 void codegen_program(struct node *program);
 
-int codegen_global_vars(struct symbol_list *globa_scope);
+int codegen_global_vars(struct symbol_list *global_scope);
 
 int codegen_function_definition(struct node *function_definition);
 int codegen_function_declaration(struct node *function_declaration);
@@ -23,4 +23,4 @@ int codegen_function_call(struct node *function_call);
 int codegen_assignment(struct node *assignment);
 
 
-#endif   
+#endif 
