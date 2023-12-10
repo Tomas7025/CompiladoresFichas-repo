@@ -37,14 +37,16 @@ int codegen_global_vars(struct symbol_list *global_scope) {
     }
     printf("\ndefine void @_global_vars_init() {\n");
     global_cur = global_scope;
-    //int temp;
+    int temp = -1;
     while ((global_cur = global_cur->next) != NULL) {
         if (global_cur->node->category == Declaration && countchildren(global_cur->node) ==3) {
-            // temp = codegen_expression(getchild(global_cur->node, 2)); // vai ser necessario fazer cast em principio não é necessario
-            // if ((map_cat_typ(getchild(global_cur->node, 0)->category) == double_type) && (getchild(global_cur->node, 2)->type != double_type))
-            //      cast    sitofp i32 257 to float
-            //      printf("%%%d = sitofp i32 %%%d to double", (temp = temporary++), temp-1);
-            // printf("\tstore %s %%%d, %s* %s", type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), temp, type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), global_cur->node->llvm_name);
+            temp = codegen_expression(getchild(global_cur->node, 2));
+            if ((map_cat_typ(getchild(global_cur->node, 0)->category) == double_type) && (getchild(global_cur->node, 2)->type != double_type)){
+                printf("  %%%d = sitofp i32 %%%d to double\n", temporary, temp);
+                temp = temporary;
+                temporary++;
+            }
+            printf("  store %s %%%d, %s* %s\n", type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), temp, type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), global_cur->node->llvm_name);
         }
     }
     printf("}\n\n");
@@ -118,7 +120,9 @@ int codegen_function_definition(struct node *function) {
     printf("define %s @_%s(", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), getchild(function, 1)->token);
     codegen_parameters(getchild(function, 2), 1);
     printf(") {\n");
+    
     // codegen_function(getchild(function, 3));
+
     if (map_cat_typ(getchild(function, 0)->category) != void_type)
         printf("  ret %s %%%d\n", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), temporary++);
     else
@@ -127,3 +131,98 @@ int codegen_function_definition(struct node *function) {
 
     return 0;  
 }
+
+int codegen_function(struct node* function_body) {
+    struct node_list* cursor = function_body->children;
+
+    while ((cursor = cursor->next) != NULL) {
+        codegen_statement(cursor->node);
+    }
+    return 0;
+}
+
+int codegen_statement(struct node* statement) {
+    switch (statement->category) {
+            case StatList:
+                // codegen_function(statement);
+                break;
+            case If:
+                // codegen_if(statement);
+                break;
+            case While:
+                // codegen_while(statement);
+                break;
+            case Return:
+                // codegen_return(statement);
+                break;
+            default:
+                codegen_expression(statement);
+                break;
+    }
+    return 0;
+}
+/*  -> 0 - no cast
+    -> > 0 cast right side
+	-> < 0 cast left side
+*/
+int cast2double(struct node* expression, int op1, int op2) {
+    int count = 0;
+    if (getchild(expression, 0)->type == double_type || getchild(expression, 1)->type == double_type) {
+        if (getchild(expression, 0)->type != double_type){
+            printf("  %%%d = sitofp i32 %%%d to double\n", temporary++, op1);
+            count--;
+        }
+
+        if (getchild(expression, 1)->type != double_type){
+            printf("  %%%d = sitofp i32 %%%d to double\n", temporary++, op2);
+            count++;
+        }
+    }
+    return count;
+}
+
+int codegen_expression(struct node *expression) {
+    int op1 = -1, op2 = -1, aux;
+
+    switch (expression->category) {
+        case Natural:
+        case ChrLit:
+        case Short:
+            printf("  %%%d = add i32 %s, 0\n", temporary, expression->token);
+            return temporary++;
+    
+        case Decimal:
+            printf("  %%%d = add double %s, 0.0\n", temporary, expression->token);
+            return temporary++;
+        
+        case Add:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)
+				printf("  %%%d = add double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+            else
+				printf("  %%%d = add %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+
+            return temporary++;
+
+        case Sub:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+            aux = cast2double(expression, op1, op2);
+            
+			if (aux)
+				printf("  %%%d = sub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = sub %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+			
+			return temporary++;
+
+        default:
+            return temporary;
+    }
+    
+    return -1;
+}
+

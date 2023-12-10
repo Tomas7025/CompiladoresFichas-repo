@@ -2112,10 +2112,9 @@ int main(int argc, char *argv[]) {
                 codegen_program(program);
         }
     }
-    
 
     // yylex();    /* run the lexical analysis automaton */
-    
+
     clear();
     return 0;
 }

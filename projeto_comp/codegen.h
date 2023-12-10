@@ -23,5 +23,7 @@ int codegen_expression(struct node *expression);
 int codegen_function_call(struct node *function_call);
 int codegen_assignment(struct node *assignment);
 
+int cast2double(struct node* expression, int op1, int op2);
+
 
 #endif 
