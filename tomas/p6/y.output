@@ -1,0 +1,753 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: IDENTIFIER '(' parameters ')' '=' expression
+    2        | program IDENTIFIER '(' parameters ')' '=' expression
+
+    3 parameters: parameter
+    4           | parameters ',' parameter
+
+    5 parameter: INTEGER IDENTIFIER
+    6          | DOUBLE IDENTIFIER
+
+    7 arguments: expression
+    8          | arguments ',' expression
+
+    9 expression: IDENTIFIER
+   10           | NATURAL
+   11           | DECIMAL
+   12           | IDENTIFIER '(' arguments ')'
+   13           | IF expression THEN expression ELSE expression
+   14           | expression '+' expression
+   15           | expression '-' expression
+   16           | expression '*' expression
+   17           | expression '/' expression
+   18           | '(' expression ')'
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 1 2 12 18
+    ')' (41) 1 2 12 18
+    '*' (42) 16
+    '+' (43) 14
+    ',' (44) 4 8
+    '-' (45) 15
+    '/' (47) 17
+    '=' (61) 1 2
+    error (256)
+    INTEGER (258) 5
+    DOUBLE (259) 6
+    IF (260) 13
+    THEN (261) 13
+    ELSE (262) 13
+    IDENTIFIER <lexeme> (263) 1 2 5 6 9 12
+    NATURAL <lexeme> (264) 10
+    DECIMAL <lexeme> (265) 11
+    LOW (266)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (20)
+        on left: 0
+    program <node> (21)
+        on left: 1 2
+        on right: 0 2
+    parameters <node> (22)
+        on left: 3 4
+        on right: 1 2 4
+    parameter <node> (23)
+        on left: 5 6
+        on right: 3 4
+    arguments <node> (24)
+        on left: 7 8
+        on right: 8 12
+    expression <node> (25)
+        on left: 9 10 11 12 13 14 15 16 17 18
+        on right: 1 2 7 8 13 14 15 16 17 18
+
+
+State 0
+
+    0 $accept: • program $end
+    1 program: • IDENTIFIER '(' parameters ')' '=' expression
+    2        | • program IDENTIFIER '(' parameters ')' '=' expression
+
+    IDENTIFIER  shift, and go to state 1
+
+    program  go to state 2
+
+
+State 1
+
+    1 program: IDENTIFIER • '(' parameters ')' '=' expression
+
+    '('  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: program • $end
+    2 program: program • IDENTIFIER '(' parameters ')' '=' expression
+
+    $end        shift, and go to state 4
+    IDENTIFIER  shift, and go to state 5
+
+
+State 3
+
+    1 program: IDENTIFIER '(' • parameters ')' '=' expression
+    3 parameters: • parameter
+    4           | • parameters ',' parameter
+    5 parameter: • INTEGER IDENTIFIER
+    6          | • DOUBLE IDENTIFIER
+
+    INTEGER  shift, and go to state 6
+    DOUBLE   shift, and go to state 7
+
+    parameters  go to state 8
+    parameter   go to state 9
+
+
+State 4
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 5
+
+    2 program: program IDENTIFIER • '(' parameters ')' '=' expression
+
+    '('  shift, and go to state 10
+
+
+State 6
+
+    5 parameter: INTEGER • IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 11
+
+
+State 7
+
+    6 parameter: DOUBLE • IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 12
+
+
+State 8
+
+    1 program: IDENTIFIER '(' parameters • ')' '=' expression
+    4 parameters: parameters • ',' parameter
+
+    ')'  shift, and go to state 13
+    ','  shift, and go to state 14
+
+
+State 9
+
+    3 parameters: parameter •
+
+    $default  reduce using rule 3 (parameters)
+
+
+State 10
+
+    2 program: program IDENTIFIER '(' • parameters ')' '=' expression
+    3 parameters: • parameter
+    4           | • parameters ',' parameter
+    5 parameter: • INTEGER IDENTIFIER
+    6          | • DOUBLE IDENTIFIER
+
+    INTEGER  shift, and go to state 6
+    DOUBLE   shift, and go to state 7
+
+    parameters  go to state 15
+    parameter   go to state 9
+
+
+State 11
+
+    5 parameter: INTEGER IDENTIFIER •
+
+    $default  reduce using rule 5 (parameter)
+
+
+State 12
+
+    6 parameter: DOUBLE IDENTIFIER •
+
+    $default  reduce using rule 6 (parameter)
+
+
+State 13
+
+    1 program: IDENTIFIER '(' parameters ')' • '=' expression
+
+    '='  shift, and go to state 16
+
+
+State 14
+
+    4 parameters: parameters ',' • parameter
+    5 parameter: • INTEGER IDENTIFIER
+    6          | • DOUBLE IDENTIFIER
+
+    INTEGER  shift, and go to state 6
+    DOUBLE   shift, and go to state 7
+
+    parameter  go to state 17
+
+
+State 15
+
+    2 program: program IDENTIFIER '(' parameters • ')' '=' expression
+    4 parameters: parameters • ',' parameter
+
+    ')'  shift, and go to state 18
+    ','  shift, and go to state 14
+
+
+State 16
+
+    1 program: IDENTIFIER '(' parameters ')' '=' • expression
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 24
+
+
+State 17
+
+    4 parameters: parameters ',' parameter •
+
+    $default  reduce using rule 4 (parameters)
+
+
+State 18
+
+    2 program: program IDENTIFIER '(' parameters ')' • '=' expression
+
+    '='  shift, and go to state 25
+
+
+State 19
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   13           | IF • expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 26
+
+
+State 20
+
+    9 expression: IDENTIFIER •  [$end, THEN, ELSE, IDENTIFIER, '+', '-', '*', '/', ')', ',']
+   12           | IDENTIFIER • '(' arguments ')'
+
+    '('  shift, and go to state 27
+
+    $default  reduce using rule 9 (expression)
+
+
+State 21
+
+   10 expression: NATURAL •
+
+    $default  reduce using rule 10 (expression)
+
+
+State 22
+
+   11 expression: DECIMAL •
+
+    $default  reduce using rule 11 (expression)
+
+
+State 23
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+   18           | '(' • expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 28
+
+
+State 24
+
+    1 program: IDENTIFIER '(' parameters ')' '=' expression •  [$end, IDENTIFIER]
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '+'  shift, and go to state 29
+    '-'  shift, and go to state 30
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 1 (program)
+
+
+State 25
+
+    2 program: program IDENTIFIER '(' parameters ')' '=' • expression
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 33
+
+
+State 26
+
+   13 expression: IF expression • THEN expression ELSE expression
+   14           | expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    THEN  shift, and go to state 34
+    '+'   shift, and go to state 29
+    '-'   shift, and go to state 30
+    '*'   shift, and go to state 31
+    '/'   shift, and go to state 32
+
+
+State 27
+
+    7 arguments: • expression
+    8          | • arguments ',' expression
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   12           | IDENTIFIER '(' • arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    arguments   go to state 35
+    expression  go to state 36
+
+
+State 28
+
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+   18           | '(' expression • ')'
+
+    '+'  shift, and go to state 29
+    '-'  shift, and go to state 30
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+    ')'  shift, and go to state 37
+
+
+State 29
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   14           | expression '+' • expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 38
+
+
+State 30
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   15           | expression '-' • expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 39
+
+
+State 31
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   16           | expression '*' • expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 40
+
+
+State 32
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   17           | expression '/' • expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 41
+
+
+State 33
+
+    2 program: program IDENTIFIER '(' parameters ')' '=' expression •  [$end, IDENTIFIER]
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '+'  shift, and go to state 29
+    '-'  shift, and go to state 30
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 2 (program)
+
+
+State 34
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   13           | IF expression THEN • expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 42
+
+
+State 35
+
+    8 arguments: arguments • ',' expression
+   12 expression: IDENTIFIER '(' arguments • ')'
+
+    ')'  shift, and go to state 43
+    ','  shift, and go to state 44
+
+
+State 36
+
+    7 arguments: expression •  [')', ',']
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '+'  shift, and go to state 29
+    '-'  shift, and go to state 30
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 7 (arguments)
+
+
+State 37
+
+   18 expression: '(' expression ')' •
+
+    $default  reduce using rule 18 (expression)
+
+
+State 38
+
+   14 expression: expression • '+' expression
+   14           | expression '+' expression •  [$end, THEN, ELSE, IDENTIFIER, '+', '-', ')', ',']
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 14 (expression)
+
+    Conflict between rule 14 and token '+' resolved as reduce (%left '+').
+    Conflict between rule 14 and token '-' resolved as reduce (%left '-').
+    Conflict between rule 14 and token '*' resolved as shift ('+' < '*').
+    Conflict between rule 14 and token '/' resolved as shift ('+' < '/').
+
+
+State 39
+
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   15           | expression '-' expression •  [$end, THEN, ELSE, IDENTIFIER, '+', '-', ')', ',']
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 15 (expression)
+
+    Conflict between rule 15 and token '+' resolved as reduce (%left '+').
+    Conflict between rule 15 and token '-' resolved as reduce (%left '-').
+    Conflict between rule 15 and token '*' resolved as shift ('-' < '*').
+    Conflict between rule 15 and token '/' resolved as shift ('-' < '/').
+
+
+State 40
+
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   16           | expression '*' expression •  [$end, THEN, ELSE, IDENTIFIER, '+', '-', '*', '/', ')', ',']
+   17           | expression • '/' expression
+
+    $default  reduce using rule 16 (expression)
+
+    Conflict between rule 16 and token '+' resolved as reduce ('+' < '*').
+    Conflict between rule 16 and token '-' resolved as reduce ('-' < '*').
+    Conflict between rule 16 and token '*' resolved as reduce (%left '*').
+    Conflict between rule 16 and token '/' resolved as reduce (%left '/').
+
+
+State 41
+
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+   17           | expression '/' expression •  [$end, THEN, ELSE, IDENTIFIER, '+', '-', '*', '/', ')', ',']
+
+    $default  reduce using rule 17 (expression)
+
+    Conflict between rule 17 and token '+' resolved as reduce ('+' < '/').
+    Conflict between rule 17 and token '-' resolved as reduce ('-' < '/').
+    Conflict between rule 17 and token '*' resolved as reduce (%left '*').
+    Conflict between rule 17 and token '/' resolved as reduce (%left '/').
+
+
+State 42
+
+   13 expression: IF expression THEN expression • ELSE expression
+   14           | expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    ELSE  shift, and go to state 45
+    '+'   shift, and go to state 29
+    '-'   shift, and go to state 30
+    '*'   shift, and go to state 31
+    '/'   shift, and go to state 32
+
+
+State 43
+
+   12 expression: IDENTIFIER '(' arguments ')' •
+
+    $default  reduce using rule 12 (expression)
+
+
+State 44
+
+    8 arguments: arguments ',' • expression
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 46
+
+
+State 45
+
+    9 expression: • IDENTIFIER
+   10           | • NATURAL
+   11           | • DECIMAL
+   12           | • IDENTIFIER '(' arguments ')'
+   13           | • IF expression THEN expression ELSE expression
+   13           | IF expression THEN expression ELSE • expression
+   14           | • expression '+' expression
+   15           | • expression '-' expression
+   16           | • expression '*' expression
+   17           | • expression '/' expression
+   18           | • '(' expression ')'
+
+    IF          shift, and go to state 19
+    IDENTIFIER  shift, and go to state 20
+    NATURAL     shift, and go to state 21
+    DECIMAL     shift, and go to state 22
+    '('         shift, and go to state 23
+
+    expression  go to state 47
+
+
+State 46
+
+    8 arguments: arguments ',' expression •  [')', ',']
+   14 expression: expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '+'  shift, and go to state 29
+    '-'  shift, and go to state 30
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 8 (arguments)
+
+
+State 47
+
+   13 expression: IF expression THEN expression ELSE expression •  [$end, THEN, ELSE, IDENTIFIER, ')', ',']
+   14           | expression • '+' expression
+   15           | expression • '-' expression
+   16           | expression • '*' expression
+   17           | expression • '/' expression
+
+    '+'  shift, and go to state 29
+    '-'  shift, and go to state 30
+    '*'  shift, and go to state 31
+    '/'  shift, and go to state 32
+
+    $default  reduce using rule 13 (expression)
+
+    Conflict between rule 13 and token '+' resolved as shift (LOW < '+').
+    Conflict between rule 13 and token '-' resolved as shift (LOW < '-').
+    Conflict between rule 13 and token '*' resolved as shift (LOW < '*').
+    Conflict between rule 13 and token '/' resolved as shift (LOW < '/').
