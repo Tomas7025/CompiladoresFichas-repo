@@ -49,7 +49,7 @@ int codegen_global_vars(struct symbol_list *global_scope) {
             printf("  store %s %%%d, %s* %s\n", type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), temp, type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), global_cur->node->llvm_name);
         }
     }
-    printf("}\n\n");
+    printf("  ret void\n}\n\n");
     return 0;
 }
 
@@ -97,15 +97,22 @@ void codegen_program(struct node *program) {
 }
 
 int codegen_parameters(struct node* param_list, int is_def){
+    enum type param_type;
     struct node_list* cursor = param_list->children;
     while ((cursor = cursor->next) != NULL) {
-        printf("%s", type_to_llvm(map_cat_typ(getchild(cursor->node, 0)->category)));
-        if (cursor->next)
-            printf(", ");
+        param_type = map_cat_typ(getchild(cursor->node, 0)->category);
+        if (param_type != void_type) {    
+            printf("%s", type_to_llvm(param_type));
+            if(is_def && cursor->node->token)
+                printf(" %s", cursor->node->token);
+            if (cursor->next)
+                printf(", ");
+        }
     }
 
     return 0;
 }
+
 
 
 int codegen_function_declaration(struct node *function_declaration) {
@@ -183,6 +190,7 @@ int cast2double(struct node* expression, int op1, int op2) {
 
 int codegen_expression(struct node *expression) {
     int op1 = -1, op2 = -1, aux;
+    enum type op1_type, op2_type;
 
     switch (expression->category) {
         case Natural:
@@ -192,7 +200,7 @@ int codegen_expression(struct node *expression) {
             return temporary++;
     
         case Decimal:
-            printf("  %%%d = add double %s, 0.0\n", temporary, expression->token);
+            printf("  %%%d = fadd double %s, 0.0\n", temporary, expression->token);
             return temporary++;
         
         case Add:
@@ -201,7 +209,7 @@ int codegen_expression(struct node *expression) {
             aux = cast2double(expression, op1, op2);
 
 			if (aux)
-				printf("  %%%d = add double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+				printf("  %%%d = fadd double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
             else
 				printf("  %%%d = add %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
 
@@ -211,11 +219,13 @@ int codegen_expression(struct node *expression) {
             op1 = codegen_expression(getchild(expression, 0));
             op2 = codegen_expression(getchild(expression, 1));
             aux = cast2double(expression, op1, op2);
-            
+            op1_type = getchild(expression, 0)->type;
+            op2_type = getchild(expression, 1)->type;
+
 			if (aux)
-				printf("  %%%d = sub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				printf("  %%%d = fsub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
             else
-				printf("  %%%d = sub %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+				printf("  %%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fsub" : "sub"), type_to_llvm(op1_type), op1, op2);
 			
 			return temporary++;
 
