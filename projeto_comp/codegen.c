@@ -50,6 +50,7 @@ int codegen_global_vars(struct symbol_list *global_scope) {
         }
     }
     printf("  ret void\n}\n\n");
+    // printf('declare i32 @printf(i8*, ...)\n@.doubleprint = private unnamed_addr constant [4 x i8] c"%f\0A\00"\n@.intprint = private unnamed_addr constant [4 x i8] c"%d\0A\00"\n\n');
     return 0;
 }
 
@@ -191,6 +192,7 @@ int cast2double(struct node* expression, int op1, int op2) {
 int codegen_expression(struct node *expression) {
     int op1 = -1, op2 = -1, aux;
     enum type op1_type, op2_type;
+    struct node* op1_node, *op2_node;
 
     switch (expression->category) {
         case Natural:
@@ -229,6 +231,105 @@ int codegen_expression(struct node *expression) {
 			
 			return temporary++;
 
+        case Mul:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)
+				printf("  %%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+            else
+				printf("  %%%d = mul %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+
+            return temporary++;
+
+        case Div:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+            aux = cast2double(expression, op1, op2);
+            op1_type = getchild(expression, 0)->type;
+            op2_type = getchild(expression, 1)->type;
+
+			if (aux)
+				printf("  %%%d = fdiv double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fdiv" : "sdiv"), type_to_llvm(op1_type), op1, op2);
+			
+			return temporary++;
+        
+        case Mod:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+            aux = cast2double(expression, op1, op2);
+            op1_type = getchild(expression, 0)->type;
+            op2_type = getchild(expression, 1)->type;
+
+			if (aux)
+				printf("  %%%d = frem double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "frem" : "srem"), type_to_llvm(op1_type), op1, op2);
+
+			return temporary++;
+        
+        case Or:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+
+            printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+            printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+            
+            printf("  %%%d = or i1 %%%d, %%%d\n", temporary++, temporary-2, temporary-1);
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+            return temporary++;
+
+        case And:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+
+            printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+            printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+            
+            printf("  %%%d = and i1 %%%d, %%%d\n", temporary++, temporary-2, temporary-1);
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+            return temporary++;
+
+        case BitWiseAnd:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+
+            printf("  %%%d = and i32 %%%d, %%%d\n", temporary, op1, op2);
+
+			return temporary++;
+
+        case BitWiseOr:
+            op1 = codegen_expression(getchild(expression, 0));
+            op2 = codegen_expression(getchild(expression, 1));
+
+            printf("  %%%d = or i32 %%%d, %%%d\n", temporary, op1, op2);
+
+			return temporary++;
+            
+        case Plus:
+            op1 = codegen_expression(getchild(expression, 0));
+
+            return op1;
+
+        case Minus:
+            op1_node = getchild(expression, 0);
+
+            op1 = codegen_expression(op1_node);
+
+			printf("  %%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fsub" : "sub"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
+
+            return temporary++;
+        
+        case Not:
+			op1 = codegen_expression(getchild(expression, 0));
+            printf("  %%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+			return temporary++;
+        
         default:
             return temporary;
     }
@@ -236,3 +337,6 @@ int codegen_expression(struct node *expression) {
     return -1;
 }
 
+// void print() {
+//     print("call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), double %%4)", )
+// }

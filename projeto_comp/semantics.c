@@ -527,7 +527,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 node->type = (getchild(node, 0)->type > getchild(node, 1)->type) ? getchild(node, 0)->type : getchild(node, 1)->type;
             }
             break;
-        
+
         case Div:
             //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
@@ -559,7 +559,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             }
             node->type = integer_type;
             break;
-    
+
         case Or:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
@@ -573,7 +573,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
             }
             node->type = integer_type;
             break;
-    
+
         case And:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
