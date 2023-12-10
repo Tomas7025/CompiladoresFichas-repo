@@ -387,7 +387,7 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                 }
             }
             break;
-        case StatList:
+        case StatList:  
             check_function(node, scope, 1);
             break;
         default:
@@ -427,17 +427,16 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Store: // for some reason o store se for undef = undef ele so da erro no check expression
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if ((valid = invalid_func_op(node, 0)) == 1){
+
+            if (getchild(node, 0)->category != Identifier || (valid = invalid_func_op(node, 0)) == 1 || valid == 3 ) {
                 printf("Line %d, column %d: Lvalue required\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
             }
-            else if(valid == 2 || valid == 3) {
+
+            else if(valid == 2) {
                 invalid_func_op(node, 1);
                 semantic_errors--;
             }
-            
-            else if (getchild(node, 0)->category != Identifier) {
-                printf("Line %d, column %d: Lvalue required\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
-            }
+
             else if ((getchild(node, 0)->type == integer_type || getchild(node, 0)->type == short_type || getchild(node, 0)->type == char_type) && (getchild(node, 1)->type == double_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type)) {
                 printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type));
                 semantic_errors++;
@@ -456,6 +455,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         case Comma:
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
+
             if ((valid = invalid_func_op(node, 1)) == 1) {
                 node->type = getchild(node, 1)->type;
                 break;
@@ -465,7 +465,6 @@ int check_expression(struct node *node, struct symbol_list *scope){
                 node->type = undefined_type;
                 break;
             }
-
 
             if (getchild(node, 0)->type == undefined_type || getchild(node, 1)->type == undefined_type){
                 printf("Line %d, column %d: Operator , cannot be applied to types %s, %s\n", node->token_line, node->token_column, type_name(getchild(node, 0)->type), type_name(getchild(node, 1)->type)); 
@@ -479,7 +478,8 @@ int check_expression(struct node *node, struct symbol_list *scope){
             //TODO: Checkar se é void || undef
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
-            if (invalid_func_op(node, 1)){
+
+            if (invalid_func_op(node, 1)) {
                 node->type = undefined_type;
                 break;
             }
@@ -979,9 +979,9 @@ int valid_signature(struct node* original, struct node *new) {
 // 3 -> ambos sao invalidos
 int invalid_func_op(struct node *op_node, int verbose) {
     struct symbol_list *found, *found2;
-    char *op_map[] = {"||", "&&", "==", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%", "", "", "", "=", ",", "", "^", "|"};
+    char *op_map[] = {"||", "&&", "==", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%", "", "", "", "=", ",", "", "&", "^", "|"};
     int ind, invalid = 0;
-    // Eq, Ne, Lt, Gt, Le, Ge, Add, Sub, Mul, Div, Mod |. . .| Store, Comma |.| BitWiseXor, BitWiseOr
+    // Eq, Ne, Lt, Gt, Le, Ge, Add, Sub, Mul, Div, Mod |. . .| Store, Comma |.|, BitWiseAnd, BitWiseXor, BitWiseOr
     ind = op_node->category - Or;
 
     if (getchild(op_node, 0)->category == Identifier || getchild(op_node, 1)->category == Identifier) {

@@ -13,6 +13,7 @@ struct node {
     struct node_list *children;
     enum type type;
     int token_line, token_column;
+    char *llvm_name;
 };
 
 struct node_list {
