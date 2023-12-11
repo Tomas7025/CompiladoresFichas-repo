@@ -9,6 +9,16 @@ int temporary = 1;   // sequence of temporary registers in a function
 
 extern struct symbol_list *global_scope;
 
+int number_len(int number) {
+    if (number == 0) return 1;
+    int cont = 0;
+    while(number != 0){
+        cont++;
+        number /= 10;
+    }
+    return cont;
+}
+
 char* type_to_llvm(enum type tipo){
     switch(tipo){ // MADE BY AMILCARS E JOHNS
         case char_type: 
@@ -40,7 +50,7 @@ int codegen_global_vars(struct symbol_list *global_scope) {
     int temp = -1;
     while ((global_cur = global_cur->next) != NULL) {
         if (global_cur->node->category == Declaration && countchildren(global_cur->node) ==3) {
-            temp = codegen_expression(getchild(global_cur->node, 2));
+            temp = codegen_expression(getchild(global_cur->node, 2), global_scope);
             if ((map_cat_typ(getchild(global_cur->node, 0)->category) == double_type) && (getchild(global_cur->node, 2)->type != double_type)){
                 printf("  %%%d = sitofp i32 %%%d to double\n", temporary, temp);
                 temp = temporary;
@@ -129,7 +139,8 @@ int codegen_function_definition(struct node *function) {
     codegen_parameters(getchild(function, 2), 1);
     printf(") {\n");
     
-    // codegen_function(getchild(function, 3));
+    struct symbol_list* scope = search_symbol(global_scope, getchild(function, 1)->token);
+    // codegen_function(getchild(function, 3), scope); 
 
     if (map_cat_typ(getchild(function, 0)->category) != void_type)
         printf("  ret %s %%%d\n", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), temporary++);
@@ -140,31 +151,43 @@ int codegen_function_definition(struct node *function) {
     return 0;  
 }
 
-int codegen_function(struct node* function_body) {
+int codegen_function(struct node* function_body, struct symbol_list* scope) {
     struct node_list* cursor = function_body->children;
 
     while ((cursor = cursor->next) != NULL) {
-        codegen_statement(cursor->node);
+        codegen_statement(cursor->node, scope); 
     }
     return 0;
 }
 
-int codegen_statement(struct node* statement) {
+int codegen_statement(struct node* statement, struct symbol_list* scope) {
+    struct node* temp;
     switch (statement->category) {
             case StatList:
-                // codegen_function(statement);
+                // codegen_function(statement, scope); 
                 break;
             case If:
-                // codegen_if(statement);
+                // codegen_if(statement, scope); 
                 break;
             case While:
-                // codegen_while(statement);
+                // codegen_while(statement, scope); 
                 break;
             case Return:
-                // codegen_return(statement);
+                // codegen_return(statement, scope); 
+                break;
+            case Declaration:
+                temp = getchild(statement, 0);
+                printf("  %%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
+                statement->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
+                sprintf(statement->llvm_name, "%%%d", temporary-1);
+                
+                if (countchildren(statement) == 3) {
+                    codegen_expression(getchild(statement, 2), scope);
+                    printf("  store %s %%%d, %s* %s", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
+                }
                 break;
             default:
-                codegen_expression(statement);
+                codegen_expression(statement, scope); 
                 break;
     }
     return 0;
@@ -189,10 +212,11 @@ int cast2double(struct node* expression, int op1, int op2) {
     return count;
 }
 
-int codegen_expression(struct node *expression) {
+int codegen_expression(struct node *expression, struct symbol_list* scope) {
     int op1 = -1, op2 = -1, aux;
     enum type op1_type, op2_type;
     struct node* op1_node, *op2_node;
+    struct symbol_list *found;
 
     switch (expression->category) {
         case Natural:
@@ -206,8 +230,8 @@ int codegen_expression(struct node *expression) {
             return temporary++;
         
         case Add:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
             aux = cast2double(expression, op1, op2);
 
 			if (aux)
@@ -218,8 +242,8 @@ int codegen_expression(struct node *expression) {
             return temporary++;
 
         case Sub:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
             aux = cast2double(expression, op1, op2);
             op1_type = getchild(expression, 0)->type;
             op2_type = getchild(expression, 1)->type;
@@ -232,8 +256,8 @@ int codegen_expression(struct node *expression) {
 			return temporary++;
 
         case Mul:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
             aux = cast2double(expression, op1, op2);
 
 			if (aux)
@@ -244,8 +268,8 @@ int codegen_expression(struct node *expression) {
             return temporary++;
 
         case Div:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
             aux = cast2double(expression, op1, op2);
             op1_type = getchild(expression, 0)->type;
             op2_type = getchild(expression, 1)->type;
@@ -258,8 +282,8 @@ int codegen_expression(struct node *expression) {
 			return temporary++;
         
         case Mod:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
             aux = cast2double(expression, op1, op2);
             op1_type = getchild(expression, 0)->type;
             op2_type = getchild(expression, 1)->type;
@@ -272,63 +296,190 @@ int codegen_expression(struct node *expression) {
 			return temporary++;
         
         case Or:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
             printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
             
-            printf("  %%%d = or i1 %%%d, %%%d\n", temporary++, temporary-2, temporary-1);
+            printf("  %%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+            temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
             return temporary++;
 
         case And:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
             printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
             
-            printf("  %%%d = and i1 %%%d, %%%d\n", temporary++, temporary-2, temporary-1);
+            printf("  %%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+            temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
             return temporary++;
 
         case BitWiseAnd:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = and i32 %%%d, %%%d\n", temporary, op1, op2);
 
 			return temporary++;
 
         case BitWiseOr:
-            op1 = codegen_expression(getchild(expression, 0));
-            op2 = codegen_expression(getchild(expression, 1));
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = or i32 %%%d, %%%d\n", temporary, op1, op2);
 
 			return temporary++;
-            
+        
+        case BitWiseXor:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+
+            printf("  %%%d = xor i32 %%%d, %%%d\n", temporary, op1, op2);
+
+			return temporary++;
+
+        case Eq:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            op1_type = getchild(expression, 0)->type;
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)                                              // o que levou cast, o que nao levou 
+				printf("  %%%d = fcmp eq double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+            else
+				printf("  %%%d = %s eq %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(getchild(expression, 0)->type), temporary-1, (aux < 0) ? op2 : op1);
+
+            temporary++;
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+            return temporary++;
+        
+        case Ne:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            op1_type = getchild(expression, 0)->type;
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)                                              // o que levou cast, o que nao levou 
+				printf("  %%%d = fcmp ne double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+            else
+				printf("  %%%d = %s ne %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(getchild(expression, 0)->type), temporary-1, (aux < 0) ? op2 : op1);
+
+            temporary++;
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+            return temporary++;
+        
+        case Le:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            op1_type = getchild(expression, 0)->type;
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)                                              // o que levou cast, o que nao levou 
+				printf("  %%%d = fcmp sle double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = %s sle %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+
+            temporary++;
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+            return temporary++;
+        
+        case Ge:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            op1_type = getchild(expression, 0)->type;
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)                                              // o que levou cast, o que nao levou 
+				printf("  %%%d = fcmp sge double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = %s sge %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+
+            temporary++;
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+            return temporary++;
+
+        case Lt:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            op1_type = getchild(expression, 0)->type;
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)                                              // o que levou cast, o que nao levou 
+				printf("  %%%d = fcmp slt double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = %s slt %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+
+            temporary++;
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+            return temporary++;
+        
+        case Gt:
+            op1 = codegen_expression(getchild(expression, 0), scope);
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            op1_type = getchild(expression, 0)->type;
+            aux = cast2double(expression, op1, op2);
+
+			if (aux)                                              // o que levou cast, o que nao levou 
+				printf("  %%%d = fcmp sgt double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+            else
+				printf("  %%%d = %s sgt %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+
+            temporary++;
+            printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+
+            return temporary++;
+
+
         case Plus:
-            op1 = codegen_expression(getchild(expression, 0));
+            op1 = codegen_expression(getchild(expression, 0), scope);
 
             return op1;
 
         case Minus:
             op1_node = getchild(expression, 0);
 
-            op1 = codegen_expression(op1_node);
+            op1 = codegen_expression(op1_node, scope);
 
-			printf("  %%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fsub" : "sub"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
+			printf("  %%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
 
             return temporary++;
         
         case Not:
-			op1 = codegen_expression(getchild(expression, 0));
+			op1 = codegen_expression(getchild(expression, 0), scope);
             printf("  %%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+        
 			return temporary++;
+        
+        case Identifier:
+            if(search_symbol(scope, expression->token))
+                printf("  %%%d = load %s, %s* %s", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), expression->llvm_name);
+            else 
+                printf("  %%%d = load %s, %s* %s", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+            return temporary++;
+        
+        case Store:
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            if((found = search_symbol(scope, expression->token))) // store i32 %10, i32* %1
+                printf("  store %s %%%d, %s* %s", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), found->node->llvm_name);
+            else 
+                printf("  store %s %%%d, %s* %s", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+            return temporary-1;
+        
+        case Comma:
+            op1 = codegen_expression(getchild(expression, 0), scope); // 1+1, a = 1;
+            op2 = codegen_expression(getchild(expression, 1), scope);
+            return temporary-1;
         
         default:
             return temporary;
