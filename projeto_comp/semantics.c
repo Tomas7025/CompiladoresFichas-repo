@@ -313,6 +313,18 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                     printf("Line %d, column %d: Conflicting types (got ", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
                     print_signature(found->node);
                     printf(", expected int)\n");
+
+                    if (getchild(node, 1)->category == StatList) 
+                        check_function(getchild(node, 1), scope, 1);
+                    else
+                        check_statement(getchild(node, 1), scope);
+
+                    if (getchild(node, 2) != NULL && getchild(node, 2)->category != Null) {
+                        if (getchild(node, 2)->category == StatList)
+                            check_function(getchild(node, 2), scope, 1);
+                        else 
+                            check_statement(getchild(node, 2), scope);
+                    }
                     semantic_errors++;
                     break;
                 }
@@ -342,6 +354,12 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                     printf("Line %d, column %d: Conflicting types (got ", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
                     print_signature(found->node);
                     printf(", expected int)\n");
+
+                    if (getchild(node, 1)->category == StatList) 
+                        check_function(getchild(node, 1), scope, 1);
+                    else
+                        check_statement(getchild(node, 1), scope);
+
                     semantic_errors++;
                     break;
                 }
@@ -365,7 +383,7 @@ int check_statement(struct node *node, struct symbol_list *scope) {
                     if (found->node->category == FuncDeclaration || found->node->category == FuncDefinition) {
                         printf("Line %d, column %d: Conflicting types (got ", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
                         print_signature(found->node);
-                        printf(", expected int)\n");
+                        printf(", expected %s)\n", type_name(scope->type));
                         semantic_errors++;
                         break;
                     }
@@ -429,13 +447,13 @@ int check_expression(struct node *node, struct symbol_list *scope){
             check_expression(getchild(node, 0), scope);
             check_expression(getchild(node, 1), scope);
 
-            if (getchild(node, 0)->category != Identifier || (valid = invalid_func_op(node, 0)) == 1 || valid == 3 ) {
-                printf("Line %d, column %d: Lvalue required\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
+            if(invalid_func_op(node, 1)) {
+                node->type = undefined_type;
+                break;
             }
-
-            else if(valid == 2) {
-                invalid_func_op(node, 1);
-                semantic_errors--;
+            if (getchild(node, 0)->category != Identifier) {
+                printf("Line %d, column %d: Lvalue required\n", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
+                semantic_errors++;
             }
 
             else if ((getchild(node, 0)->type == integer_type || getchild(node, 0)->type == short_type || getchild(node, 0)->type == char_type) && (getchild(node, 1)->type == double_type || getchild(node, 1)->type == void_type || getchild(node, 1)->type == undefined_type)) {

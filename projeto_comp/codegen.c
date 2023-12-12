@@ -134,7 +134,6 @@ int codegen_function_declaration(struct node *function_declaration) {
 }
 
 int codegen_function_definition(struct node *function) {
-    temporary = 1;
     printf("define %s @_%s(", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), getchild(function, 1)->token);
     codegen_parameters(getchild(function, 2), 1);
     printf(") {\n");
@@ -163,32 +162,32 @@ int codegen_function(struct node* function_body, struct symbol_list* scope) {
 int codegen_statement(struct node* statement, struct symbol_list* scope) {
     struct node* temp;
     switch (statement->category) {
-            case StatList:
-                // codegen_function(statement, scope); 
-                break;
-            case If:
-                // codegen_if(statement, scope); 
-                break;
-            case While:
-                // codegen_while(statement, scope); 
-                break;
-            case Return:
-                // codegen_return(statement, scope); 
-                break;
-            case Declaration:
-                temp = getchild(statement, 0);
-                printf("  %%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
-                statement->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
-                sprintf(statement->llvm_name, "%%%d", temporary-1);
-                
-                if (countchildren(statement) == 3) {
-                    codegen_expression(getchild(statement, 2), scope);
-                    printf("  store %s %%%d, %s* %s", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
-                }
-                break;
-            default:
-                codegen_expression(statement, scope); 
-                break;
+        case StatList:
+            codegen_function(statement, scope); 
+            break;
+        case If:
+            // codegen_if(statement, scope); 
+            break;
+        case While:
+            // codegen_while(statement, scope); 
+            break;
+        case Return:
+            // codegen_return(statement, scope); 
+            break;
+        case Declaration:
+            temp = getchild(statement, 0);
+            printf("  %%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
+            statement->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
+            sprintf(statement->llvm_name, "%%%d", temporary-1);
+            
+            if (countchildren(statement) == 3) {
+                codegen_expression(getchild(statement, 2), scope);
+                printf("  store %s %%%d, %s* %s", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
+            }
+            break;
+        default:
+            codegen_expression(statement, scope); 
+            break;
     }
     return 0;
 }
