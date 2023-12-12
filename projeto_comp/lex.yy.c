@@ -593,7 +593,7 @@ char *yytext;
     #include "y.tab.h"
     #include "ast.h"
     #include "semantics.h"
-    // #include "codegen.h"
+    #include "codegen.h"
     
     int feedback = 0;
 
@@ -2105,13 +2105,13 @@ int main(int argc, char *argv[]) {
             show(program, 0, 1);
         }
     }
-    // else {
-    //     if (errors == 0) {
-    //         check_program(program);
-    //         if (semantic_errors == 0)
-    //             codegen_program(program);
-    //     }
-    // }
+    else {
+        if (errors == 0) {
+            check_program(program);
+            if (semantic_errors == 0)
+                codegen_program(program);
+        }
+    }
 
     // yylex();    /* run the lexical analysis automaton */
 
