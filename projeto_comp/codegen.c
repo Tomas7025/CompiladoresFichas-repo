@@ -222,12 +222,16 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
         case ChrLit:
         case Short:
             printf("  %%%d = add i32 %s, 0\n", temporary, expression->token);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
     
         case Decimal:
             printf("  %%%d = fadd double %s, 0.0\n", temporary, expression->token);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
-        
+
         case Add:
             op1 = codegen_expression(getchild(expression, 0), scope);
             op2 = codegen_expression(getchild(expression, 1), scope);
@@ -237,7 +241,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 				printf("  %%%d = fadd double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
             else
 				printf("  %%%d = add %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
 
         case Sub:
@@ -251,7 +256,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 				printf("  %%%d = fsub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
             else
 				printf("  %%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fsub" : "sub"), type_to_llvm(op1_type), op1, op2);
-			
+			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
 
         case Mul:
@@ -263,7 +269,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 				printf("  %%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
             else
 				printf("  %%%d = mul %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
 
         case Div:
@@ -277,7 +284,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 				printf("  %%%d = fdiv double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
             else
 				printf("  %%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fdiv" : "sdiv"), type_to_llvm(op1_type), op1, op2);
-			
+			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
         
         case Mod:
@@ -291,7 +299,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 				printf("  %%%d = frem double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
             else
 				printf("  %%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "frem" : "srem"), type_to_llvm(op1_type), op1, op2);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
         
         case Or:
@@ -304,6 +313,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
             printf("  %%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
 
         case And:
@@ -316,6 +327,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
             printf("  %%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
 
         case BitWiseAnd:
@@ -323,7 +336,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
             op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = and i32 %%%d, %%%d\n", temporary, op1, op2);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
 
         case BitWiseOr:
@@ -331,7 +345,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
             op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = or i32 %%%d, %%%d\n", temporary, op1, op2);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
         
         case BitWiseXor:
@@ -339,7 +354,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
             op2 = codegen_expression(getchild(expression, 1), scope);
 
             printf("  %%%d = xor i32 %%%d, %%%d\n", temporary, op1, op2);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
 
         case Eq:
@@ -355,7 +371,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
         
         case Ne:
@@ -371,7 +388,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
         
         case Le:
@@ -387,7 +405,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
         
         case Ge:
@@ -403,7 +422,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
 
         case Lt:
@@ -419,7 +439,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
         
         case Gt:
@@ -435,13 +456,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             temporary++;
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
 
 
         case Plus:
             op1 = codegen_expression(getchild(expression, 0), scope);
-
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op1)+2));
+            sprintf(expression->llvm_name, "%%%d", op1);
             return op1;
 
         case Minus:
@@ -449,15 +472,17 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 
             op1 = codegen_expression(op1_node, scope);
 
-			printf("  %%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
-
+			printf("  %%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fsub" : "sub"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
         
         case Not:
 			op1 = codegen_expression(getchild(expression, 0), scope);
             printf("  %%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
             printf("  %%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-        
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
         
         case Identifier:
@@ -465,6 +490,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
                 printf("  %%%d = load %s, %s* %s", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), expression->llvm_name);
             else 
                 printf("  %%%d = load %s, %s* %s", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+            sprintf(expression->llvm_name, "%%%d", temporary);
             return temporary++;
         
         case Store:
@@ -473,11 +500,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
                 printf("  store %s %%%d, %s* %s", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), found->node->llvm_name);
             else 
                 printf("  store %s %%%d, %s* %s", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
+            sprintf(expression->llvm_name, "%%%d", op2);
             return temporary-1;
         
         case Comma:
             op1 = codegen_expression(getchild(expression, 0), scope); // 1+1, a = 1;
             op2 = codegen_expression(getchild(expression, 1), scope);
+            expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
+            sprintf(expression->llvm_name, "%%%d", op2);
             return temporary-1;
         
         default:
