@@ -51,7 +51,7 @@ int codegen_global_vars(struct symbol_list *global_scope) {
 	int temp = -1;
 	while ((global_cur = global_cur->next) != NULL) {
 		if (global_cur->node->category == Declaration && countchildren(global_cur->node) ==3) {
-			temp = codegen_expression(getchild(global_cur->node, 2), global_scope);
+			temp = codegen_expression(getchild(global_cur->node, 2), global_scope, 1);
 			if ((map_cat_typ(getchild(global_cur->node, 0)->category) == double_type) && (getchild(global_cur->node, 2)->type != double_type)){
 				printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temp);
 				temp = temporary;
@@ -133,8 +133,6 @@ int codegen_parameters(struct node* param_list, int is_def) {
 	return 0;
 }
 
-
-
 int codegen_function_declaration(struct node *function_declaration) {
 	printf("declare %s @_%s(", type_to_llvm(map_cat_typ(getchild(function_declaration, 0)->category)), getchild(function_declaration, 1)->token);
 	codegen_parameters(getchild(function_declaration, 2), 0);
@@ -162,7 +160,7 @@ int codegen_function_definition(struct node *function) {
 
 
 	struct symbol_list* scope = search_symbol(global_scope, getchild(function, 1)->token)->scope;
-	codegen_function(getchild(function, 3), scope); 
+	codegen_function(getchild(function, 3), scope, 1); 
 
 	if (map_cat_typ(getchild(function, 0)->category) != void_type)
 		printf("	ret %s %s\n", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), (getchild(function, 0)->category == Double) ? "0.0" : "0");
@@ -175,94 +173,133 @@ int codegen_function_definition(struct node *function) {
 	return 0;  
 }
 
-int codegen_function(struct node* function_body, struct symbol_list* scope) {
+int codegen_function(struct node* function_body, struct symbol_list* scope, int print_flag) {
 	struct node_list* cursor = function_body->children;
 
 	while ((cursor = cursor->next) != NULL) {
-		codegen_statement(cursor->node, scope); 
+		codegen_statement(cursor->node, scope, print_flag); 
 	}
 	return 0;
 }
 
-int codegen_statement(struct node* statement, struct symbol_list* scope) {
+int codegen_statement(struct node* statement, struct symbol_list* scope, int print_flag) {
 	struct node* temp;
-	int label_num;
+	int label_num, checkpoint, else_label, end_label;
 	
 	switch (statement->category) {
 		case StatList:
-			codegen_function(statement, scope); 
+			codegen_function(statement, scope, print_flag); 
 			break; 
 
 		case If:
 			// codegen_if(statement, scope);
-			codegen_expression(getchild(statement, 0), scope);
-			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+			codegen_expression(getchild(statement, 0), scope, print_flag);
+			if (print_flag)
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
-			label_num = label_counter++;
-			printf("	br i1 %%%d, label %%L%dthen, label %%L%delse\n", temporary-1, label_num, label_num);
-			// temporary += 2;
 
-			// Then block:
-			printf("L%dthen:\n", label_num);
-			codegen_statement(getchild(statement, 1), scope);
-			printf("	br label %%L%dfi\n", label_num);
-			// temporary += 1;
+			// label_num = label_counter++;
+
+			if (print_flag)
+				printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
+			temporary++;
+
+			checkpoint = temporary;
+
+			else_label = codegen_statement(getchild(statement, 1), scope, 0);	// print off
+			temporary++;
+
+			end_label = codegen_statement(getchild(statement, 2), scope, 0); 	// print off
+			// Nao se incrementa pq vai-se voltar pro checkpoint e vai
+
+			temporary = checkpoint;
+
+			if (print_flag) printf("%%%d\n", else_label);
+
+			// Then block
+			if (print_flag) printf("%d:\n", checkpoint-1);
+			codegen_statement(getchild(statement, 1), scope, print_flag);
+			if (print_flag) printf("	br label %%%d\n", end_label);
+
+			// Else block
+			if (print_flag) printf("%d:\n", else_label);
+			temporary++;
+			codegen_statement(getchild(statement, 2), scope, print_flag);
+			if (print_flag) printf("	br label %%%d\n", end_label);
+
+			// End block
+			if (print_flag) printf("%d:\n", end_label);
+			temporary++;
+
+
+			// codegen_statement(getchild(statement, 1), scope);
+			// printf("	br label %%L%dfi\n", label_num);
+			// // temporary += 1;
 			
-			// Else block:
-			printf("L%delse:\n", label_num);
-			codegen_statement(getchild(statement, 2), scope);
-			printf("	br label %%L%dfi\n", label_num);
-			// temporary += 1;
+			// // Else block:
+			// printf("L%delse:\n", label_num);
+			// codegen_statement(getchild(statement, 2), scope);
+			// printf("	br label %%L%dfi\n", label_num);
+			// // temporary += 1;
 
-			printf("L%dfi:\n", label_num);
+			// printf("L%dfi:\n", label_num);
 			break;
 
 		case While:
 			// codegen_while(statement, scope);
 			label_num = label_counter++;
 
-			printf("	br label %%L%dwhile\n", label_num);
-			// temporary += 1;
-			printf("L%dwhile:\n", label_num);
-			codegen_expression(getchild(statement, 0), scope);
-			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+			if (print_flag) {
+				printf("	br label %%L%dwhile\n", label_num);
+				printf("L%dwhile:\n", label_num);
+			}
+			codegen_expression(getchild(statement, 0), scope, print_flag);
+			if (print_flag) printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
-			printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_num, label_num);
+			if (print_flag) printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_num, label_num);
 			// temporary += 2;
-			printf("L%dwhile_init:\n", label_num);
-			codegen_statement(getchild(statement, 1), scope);
-			printf("	br label %%L%dwhile\n", label_num);
-			// temporary += 1;
-			printf("L%dwhile_end:\n", label_num);
+			if (print_flag) printf("L%dwhile_init:\n", label_num);
+			codegen_statement(getchild(statement, 1), scope, print_flag);
+
+			if (print_flag) {
+				printf("	br label %%L%dwhile\n", label_num);
+				printf("L%dwhile_end:\n", label_num);
+			}
 			break;
 
 		case Return:
 			// codegen_return(statement, scope);
 			if (getchild(statement, 0)->type != void_type) {
-				codegen_expression(getchild(statement, 0), scope);
-				printf("	ret %s %s\n", type_to_llvm(getchild(statement, 0)->type), getchild(statement, 0)->llvm_name);
+				codegen_expression(getchild(statement, 0), scope, print_flag);
+				
+				if (print_flag)
+					printf("	ret %s %s\n", type_to_llvm(getchild(statement, 0)->type), getchild(statement, 0)->llvm_name);
 			}
 			else
-				printf("	ret void\n");
+				if (print_flag) printf("	ret void\n");
 			break;
 
 		case Declaration:
 			temp = getchild(statement, 0);
-			printf("	%%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
+			
+			if (print_flag) 
+				printf("	%%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
 			statement->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
 			sprintf(statement->llvm_name, "%%%d", temporary-1);
 			
 			if (countchildren(statement) == 3) {
-				codegen_expression(getchild(statement, 2), scope);
-				printf("	store %s %%%d, %s* %s\n", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
+				codegen_expression(getchild(statement, 2), scope, print_flag);
+				
+				if (print_flag) 
+					printf("	store %s %%%d, %s* %s\n", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
 			}
 			break;
 
 		default:
-			codegen_expression(statement, scope); 
+			codegen_expression(statement, scope, print_flag); 
 			break;
 	}
-	return 0;
+	return temporary;
 }
 /*  -> 0 - no cast
 	-> > 0 cast right side
@@ -312,7 +349,7 @@ int chrlit2int(char *str) {
 }
 
 
-int codegen_expression(struct node *expression, struct symbol_list* scope) {
+int codegen_expression(struct node *expression, struct symbol_list* scope, int print_flag) {
 	int op1 = -1, op2 = -1, aux;
 	enum type op1_type;				//, op2_type;
 	struct node* op1_node;			//, *op2_node;
@@ -329,308 +366,363 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
     		// 	sscanf((expression->token + 2), "%3o", &op1);
 			// 	printf("	%%%d = add i32 %d, 0\n", temporary, op1);
 			// }
-			printf("	%%%d = add i32 %d, 0\n", temporary, chrlit2int(expression->token));
-
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag){
+				printf("	%%%d = add i32 %d, 0\n", temporary, chrlit2int(expression->token));
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 		case Natural:
 		case Short:
-			printf("	%%%d = add i32 %s, 0\n", temporary, expression->token);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag){
+				printf("	%%%d = add i32 %s, 0\n", temporary, expression->token);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case Decimal:
-			printf("	%%%d = fadd double %s, 0.0\n", temporary, expression->token);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag){
+				printf("	%%%d = fadd double %s, 0.0\n", temporary, expression->token);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case Add:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			aux = cast2double(expression, op1, op2);
-
-			if (aux)
-				printf("	%%%d = fadd double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
-			else
-				printf("	%%%d = add %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				if (aux)
+					printf("	%%%d = fadd double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+				else
+					printf("	%%%d = add %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case Sub:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			aux = cast2double(expression, op1, op2);
-			op1_type = getchild(expression, 0)->type;
-			// op2_type = getchild(expression, 1)->type;
-
-			if (aux)
-				printf("	%%%d = fsub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fsub" : "sub"), type_to_llvm(op1_type), op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				op1_type = getchild(expression, 0)->type;
+				// op2_type = getchild(expression, 1)->type;
+				
+				if (aux)
+					printf("	%%%d = fsub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fsub" : "sub"), type_to_llvm(op1_type), op1, op2);
+				
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case Mul:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			aux = cast2double(expression, op1, op2);
-
-			if (aux)
-				printf("	%%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
-			else
-				printf("	%%%d = mul %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				if (aux)
+					printf("	%%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+				else
+					printf("	%%%d = mul %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case Div:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			aux = cast2double(expression, op1, op2);
-			op1_type = getchild(expression, 0)->type;
-			// op2_type = getchild(expression, 1)->type;
-
-			if (aux)
-				printf("	%%%d = fdiv double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fdiv" : "sdiv"), type_to_llvm(op1_type), op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				op1_type = getchild(expression, 0)->type;
+				// op2_type = getchild(expression, 1)->type;
+	
+				if (aux)
+					printf("	%%%d = fdiv double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fdiv" : "sdiv"), type_to_llvm(op1_type), op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 		
 		case Mod:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			aux = cast2double(expression, op1, op2);
-			op1_type = getchild(expression, 0)->type;
-			// op2_type = getchild(expression, 1)->type;
+			if (print_flag){
+				op1_type = getchild(expression, 0)->type;
+				// op2_type = getchild(expression, 1)->type;
 
-			if (aux)
-				printf("	%%%d = frem double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "frem" : "srem"), type_to_llvm(op1_type), op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+				if (aux)
+					printf("	%%%d = frem double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "frem" : "srem"), type_to_llvm(op1_type), op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 		
 		case Or:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
-			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-			
-			printf("	%%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag){
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+
+				printf("	%%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary+=3;
 			return temporary++;
 
 		case And:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
-			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-			
-			printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+				
+				printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary+=3;
 			return temporary++;
 
 		case BitWiseAnd:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
-
-			printf("	%%%d = and i32 %%%d, %%%d\n", temporary, op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			
+			if (print_flag){
+				printf("	%%%d = and i32 %%%d, %%%d\n", temporary, op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case BitWiseOr:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			printf("	%%%d = or i32 %%%d, %%%d\n", temporary, op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				printf("	%%%d = or i32 %%%d, %%%d\n", temporary, op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 		
 		case BitWiseXor:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
-
-			printf("	%%%d = xor i32 %%%d, %%%d\n", temporary, op1, op2);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			
+			if (print_flag){
+				printf("	%%%d = xor i32 %%%d, %%%d\n", temporary, op1, op2);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 
 		case Eq:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
 			aux = cast2double(expression, op1, op2);
+			
+			if (print_flag) {
+				if (aux)                                              // o que levou cast, o que nao levou 
+					printf("	%%%d = fcmp eq double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+				else
+					printf("	%%%d = %s eq %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(getchild(expression, 0)->type), temporary-1, (aux < 0) ? op2 : op1);
+				
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary++;
 
-			if (aux)                                              // o que levou cast, o que nao levou 
-				printf("	%%%d = fcmp eq double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
-			else
-				printf("	%%%d = %s eq %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(getchild(expression, 0)->type), temporary-1, (aux < 0) ? op2 : op1);
-
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
 		
 		case Ne:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
 			aux = cast2double(expression, op1, op2);
 
-			if (aux)                                              // o que levou cast, o que nao levou 
-				printf("	%%%d = fcmp ne double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
-			else
-				printf("	%%%d = %s ne %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(getchild(expression, 0)->type), temporary-1, (aux < 0) ? op2 : op1);
-
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag){
+				if (aux)                                              // o que levou cast, o que nao levou 
+					printf("	%%%d = fcmp ne double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
+				else
+					printf("	%%%d = %s ne %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(getchild(expression, 0)->type), temporary-1, (aux < 0) ? op2 : op1);
+				
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary++;
 			return temporary++;
 		
 		case Le:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
 			aux = cast2double(expression, op1, op2);
 
-			if (aux)                                              // o que levou cast, o que nao levou 
-				printf("	%%%d = fcmp sle double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s sle %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+			if (print_flag) { 
+				if (aux)                                              // o que levou cast, o que nao levou 
+					printf("	%%%d = fcmp sle double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s sle %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
 
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary++;
+
 			return temporary++;
 		
 		case Ge:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
 			aux = cast2double(expression, op1, op2);
 
-			if (aux)                                              // o que levou cast, o que nao levou 
-				printf("	%%%d = fcmp sge double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s sge %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+			if (print_flag){
+				if (aux)                                              // o que levou cast, o que nao levou 
+					printf("	%%%d = fcmp sge double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s sge %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
 
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary++;
 			return temporary++;
 
 		case Lt:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
 			aux = cast2double(expression, op1, op2);
 
-			if (aux)                                              // o que levou cast, o que nao levou 
-				printf("	%%%d = fcmp slt double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s slt %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+			if (print_flag) {
+				if (aux)                                              // o que levou cast, o que nao levou 
+					printf("	%%%d = fcmp slt double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s slt %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
 
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} temporary++;
+
 			return temporary++;
 		
 		case Gt:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
 			aux = cast2double(expression, op1, op2);
+			if (print_flag){
+				if (aux)                                              // o que levou cast, o que nao levou 
+					printf("	%%%d = fcmp sgt double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
+				else
+					printf("	%%%d = %s sgt %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
+				
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary++;
 
-			if (aux)                                              // o que levou cast, o que nao levou 
-				printf("	%%%d = fcmp sgt double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
-			else
-				printf("	%%%d = %s sgt %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fcmp" : "icmp"), type_to_llvm(op1_type), op1, op2);
-
-			temporary++;
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
 			return temporary++;
 
 
 		case Plus:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op1)+2));
-			sprintf(expression->llvm_name, "%%%d", op1);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			if (print_flag){
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op1)+2));
+				sprintf(expression->llvm_name, "%%%d", op1);
+			}
 			return op1;
 
 		case Minus:
 			op1_node = getchild(expression, 0);
 
-			op1 = codegen_expression(op1_node, scope);
+			op1 = codegen_expression(op1_node, scope, print_flag);
 
-			printf("	%%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fsub" : "sub"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {
+				printf("	%%%d = %s %s %s, %%%d\n", temporary, (op1_node->type == double_type ? "fsub" : "sub"), type_to_llvm(op1_node->type), (op1_node->type == double_type ? "0.0" : "0"), op1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 		
 		case Not:
-			op1 = codegen_expression(getchild(expression, 0), scope);
-			printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
-			printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+
+			if (print_flag) {
+				printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			} else temporary++;
+			
 			return temporary++;
 
 		case Identifier:
-			if((found = search_symbol(scope, expression->token)))
-				printf("	%%%d = load %s, %s* %s\n", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), found->node->llvm_name);
-			else 
-				printf("	%%%d = load %s, %s* %s\n", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			sprintf(expression->llvm_name, "%%%d", temporary);
+			if (print_flag) {	
+				if((found = search_symbol(scope, expression->token)))
+					printf("	%%%d = load %s, %s* %s\n", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), found->node->llvm_name);
+				else 
+					printf("	%%%d = load %s, %s* %s\n", temporary, type_to_llvm(expression->type), type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary);
+			}
 			return temporary++;
 		
 		case Store:
-			op2 = codegen_expression(getchild(expression, 1), scope);
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			//cast to double
 			if (getchild(expression, 1)->type != double_type && getchild(expression, 0)->type == double_type) {
-				printf("	%%%d = sitofp i32 %%%d to double\n", temporary, op2);
+				if (print_flag)
+					printf("	%%%d = sitofp i32 %%%d to double\n", temporary, op2);
+
 				op2 = temporary;
 				temporary++;
 			}
-
-			if((found = search_symbol(scope, getchild(expression, 0)->token))) // store i32 %10, i32* %1
-				printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), found->node->llvm_name);
-			else 
-				printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
-			sprintf(expression->llvm_name, "%%%d", op2);
+			
+			if (print_flag) {
+				if((found = search_symbol(scope, getchild(expression, 0)->token))) // store i32 %10, i32* %1
+					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), found->node->llvm_name);
+				else 
+					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
+				sprintf(expression->llvm_name, "%%%d", op2);
+			}
 			return temporary-1;
 		
 		case Comma:
-			op1 = codegen_expression(getchild(expression, 0), scope); // 1+1, a = 1;
-			op2 = codegen_expression(getchild(expression, 1), scope);
-			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
-			sprintf(expression->llvm_name, "%%%d", op2);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag); // 1+1, a = 1;
+			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			if (print_flag) {
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
+				sprintf(expression->llvm_name, "%%%d", op2);
+			}
 			return temporary-1;
 		
 		case Call:
@@ -638,26 +730,31 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 			temp_node_list2 = getchild(search_symbol(global_scope, getchild(expression, 0)->token)->node, 2)->children->next;
 
 			for (;temp_node_list != NULL && temp_node_list2 != NULL ; temp_node_list = temp_node_list->next, temp_node_list2 = temp_node_list2->next ) {
-				codegen_expression(temp_node_list->node, scope);
+				codegen_expression(temp_node_list->node, scope, print_flag);
 				if (map_cat_typ(getchild(temp_node_list2->node, 0)->category) == double_type && temp_node_list->node->type != double_type) {
+					if (print_flag){
 					printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temporary-1);
 					free(temp_node_list->node->llvm_name);
 					temp_node_list->node->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 					sprintf(temp_node_list->node->llvm_name, "%%%d", temporary);
+					}
 					temporary++;
 				}
 			}
 			op1_node = search_symbol(global_scope, getchild(expression, 0)->token)->node;
 			temp_node_list = expression->children->next->next;
 			temp_node_list2 = getchild(search_symbol(global_scope, getchild(expression, 0)->token)->node, 2)->children->next;
-			printf("	%%%d = call %s @_%s(", temporary++, type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)),  getchild(op1_node, 1)->token);
+			if (print_flag) {
+				printf("	%%%d = call %s @_%s(", temporary++, type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)),  getchild(op1_node, 1)->token);
 
-			for (;temp_node_list != NULL && temp_node_list2 != NULL ; temp_node_list = temp_node_list->next, temp_node_list2 = temp_node_list2->next ) {
-				printf("%s %s", type_to_llvm(map_cat_typ(getchild(temp_node_list2->node, 0)->category)), temp_node_list->node->llvm_name);
-				if (temp_node_list->next != NULL)
-					printf(", ");
-			}
-			printf(")\n");
+				for (;temp_node_list != NULL && temp_node_list2 != NULL ; temp_node_list = temp_node_list->next, temp_node_list2 = temp_node_list2->next ) {
+					printf("%s %s", type_to_llvm(map_cat_typ(getchild(temp_node_list2->node, 0)->category)), temp_node_list->node->llvm_name);
+					if (temp_node_list->next != NULL)
+						printf(", ");
+				}
+				printf(")\n");
+			} else temporary++;
+
 			return temporary-1;
 			
 		default:
