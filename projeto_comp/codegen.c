@@ -70,6 +70,10 @@ void codegen_program(struct node *program) {
 	// pre-declared I/O functions
 	printf("declare i32 @_read(i32)\n");
 	printf("declare i32 @_write(i32)\n");
+	printf("declare i32 @_putchar(i32)\n");
+	printf("declare i32 @_getchar()\n");
+
+
 	// printf("declare i32 @_set(i32, i32)\n");
 	// printf("declare i32 @_get(i32)\n\n");
 
@@ -80,7 +84,9 @@ void codegen_program(struct node *program) {
 	while((function = function->next) != NULL) {
 		switch (function->node->category) {
 			case FuncDeclaration:
+				printf("\n\nDEBUG {\n");
 				codegen_function_declaration(function->node);
+				printf("}\n\n");
 				break;
 
 			case FuncDefinition:
@@ -184,7 +190,8 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 	switch (statement->category) {
 		case StatList:
 			codegen_function(statement, scope); 
-			break;  
+			break; 
+
 		case If:
 			// codegen_if(statement, scope);
 			codegen_expression(getchild(statement, 0), scope);
@@ -205,8 +212,10 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 
 			printf("L%dfi:\n", label_counter++);
 			break;
+
 		case While:
 			// codegen_while(statement, scope);
+			printf("	br label %%L%dwhile\n", label_counter);
 			printf("L%dwhile:\n", label_counter);
 			codegen_expression(getchild(statement, 0), scope);
 			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
@@ -218,6 +227,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 			printf("L%dwhile_end:\n", label_counter);
 			label_counter++;
 			break;
+
 		case Return:
 			// codegen_return(statement, scope);
 			if (getchild(statement, 0)->type != void_type) {
@@ -239,6 +249,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 				printf("	store %s %%%d, %s* %s\n", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
 			}
 			break;
+
 		default:
 			codegen_expression(statement, scope); 
 			break;
@@ -265,6 +276,34 @@ int cast2double(struct node* expression, int op1, int op2) {
 	return count;
 }
 
+int chrlit2int(char *str) {
+	int conversion;
+	if (*(str + 1) != '\\') 
+		return *(str + 1);
+
+	else {
+		switch (*(str + 2)) {
+			case 'n':
+				return 10;
+			case 't':
+				return 9;
+			case '\\':
+			case '\'':
+			case '\"':
+				return *(str + 2);
+
+			default:
+				sscanf((str + 2), "%3o", &conversion);
+				return conversion;
+		}
+		// 
+		// sscanf((str + 2), "%3o", &conversion);
+		// printf("	%%%d = add i32 %d, 0\n", temporary, op1);
+	}
+	return -1;
+}
+
+
 int codegen_expression(struct node *expression, struct symbol_list* scope) {
 	int op1 = -1, op2 = -1, aux;
 	enum type op1_type, op2_type;
@@ -274,14 +313,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 	
 	switch (expression->category) {
 		case ChrLit:
-			if (*(expression->token + 1) != '\\') 
-				printf("	%%%d = add i32 %d, 0\n", temporary, *(expression->token + 1));
+			// if (*(expression->token + 1) != '\\') 
+			// 	printf("	%%%d = add i32 %d, 0\n", temporary, *(expression->token + 1));
 
-			else {
-				// *(expression->token + 6) = '\0';
-    			sscanf((expression->token + 2), "%3o", &op1);
-				printf("	%%%d = add i32 %d, 0\n", temporary, op1);
-			}
+			// else {
+			// 	// *(expression->token + 6) = '\0';
+    		// 	sscanf((expression->token + 2), "%3o", &op1);
+			// 	printf("	%%%d = add i32 %d, 0\n", temporary, op1);
+			// }
+			printf("	%%%d = add i32 %d, 0\n", temporary, chrlit2int(expression->token));
 
 			expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 			sprintf(expression->llvm_name, "%%%d", temporary);

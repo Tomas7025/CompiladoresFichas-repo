@@ -80,7 +80,7 @@ int check_program(struct node *program) {
 
     put = newnode(FuncDeclaration, "getchar");
     addchild(put, newnode(Int, NULL));
-    addchild(put, newnode(Identifier, "putchar"));
+    addchild(put, newnode(Identifier, "getchar"));
     addchild(put, newnode(ParamList, NULL));
     addchild(getchild(put, 2), newnode(ParamDeclaration, NULL));
     addchild(getchild(getchild(put, 2), 0), newnode(Void, NULL));

@@ -14,3 +14,13 @@ int _write(int i) {
     printf("%d\n", i);
     return 0;
 }
+
+int _putchar(int i) {
+    putchar(i);
+    return 0;
+}
+
+int _getchar() {
+    getchar();
+    return 0;
+}
