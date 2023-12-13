@@ -191,7 +191,6 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
 
-			// printf("	%%%d i1 ", temporary-1);
 			printf("	br i1 %%%d, label %%L%dthen, label %%L%delse\n", temporary-1, label_counter, label_counter);
 
 			// Then block:
@@ -205,20 +204,19 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 			printf("	br label %%L%dfi\n", label_counter);
 
 			printf("L%dfi:\n", label_counter++);
-			// Fi block
-			/*
-			op1 = codegen exp
-			a = cmp ne 0 op1
-			THEN<>op1 a = 1
-			<statment>
-			go to fi<>op1    
-			ELSE<>op1 a != 1
-			<statment>
-			FI<>op1
-			*/
 			break;
 		case While:
-			// codegen_while(statement, scope); 
+			// codegen_while(statement, scope);
+			printf("L%dwhile:\n", label_counter);
+			codegen_expression(getchild(statement, 0), scope);
+			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+			temporary++;
+			printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_counter, label_counter);
+			printf("L%dwhile_init:\n", label_counter);
+			codegen_statement(getchild(statement, 1), scope);
+			printf("	br label %%L%dwhile\n", label_counter);
+			printf("L%dwhile_end:\n", label_counter);
+			label_counter++;
 			break;
 		case Return:
 			// codegen_return(statement, scope);
