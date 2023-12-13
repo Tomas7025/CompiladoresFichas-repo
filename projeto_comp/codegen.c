@@ -200,16 +200,19 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 			temporary++;
 			label_num = label_counter++;
 			printf("	br i1 %%%d, label %%L%dthen, label %%L%delse\n", temporary-1, label_num, label_num);
+			// temporary += 2;
 
 			// Then block:
 			printf("L%dthen:\n", label_num);
 			codegen_statement(getchild(statement, 1), scope);
 			printf("	br label %%L%dfi\n", label_num);
+			// temporary += 1;
 			
 			// Else block:
 			printf("L%delse:\n", label_num);
 			codegen_statement(getchild(statement, 2), scope);
 			printf("	br label %%L%dfi\n", label_num);
+			// temporary += 1;
 
 			printf("L%dfi:\n", label_num);
 			break;
@@ -219,14 +222,17 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 			label_num = label_counter++;
 
 			printf("	br label %%L%dwhile\n", label_num);
+			// temporary += 1;
 			printf("L%dwhile:\n", label_num);
 			codegen_expression(getchild(statement, 0), scope);
 			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
 			printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_num, label_num);
+			// temporary += 2;
 			printf("L%dwhile_init:\n", label_num);
 			codegen_statement(getchild(statement, 1), scope);
 			printf("	br label %%L%dwhile\n", label_num);
+			// temporary += 1;
 			printf("L%dwhile_end:\n", label_num);
 			break;
 
@@ -308,8 +314,8 @@ int chrlit2int(char *str) {
 
 int codegen_expression(struct node *expression, struct symbol_list* scope) {
 	int op1 = -1, op2 = -1, aux;
-	enum type op1_type, op2_type;
-	struct node* op1_node, *op2_node;
+	enum type op1_type;				//, op2_type;
+	struct node* op1_node;			//, *op2_node;
 	struct symbol_list *found;
 	struct node_list* temp_node_list, *temp_node_list2;
 	
@@ -359,7 +365,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 			op2 = codegen_expression(getchild(expression, 1), scope);
 			aux = cast2double(expression, op1, op2);
 			op1_type = getchild(expression, 0)->type;
-			op2_type = getchild(expression, 1)->type;
+			// op2_type = getchild(expression, 1)->type;
 
 			if (aux)
 				printf("	%%%d = fsub double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
@@ -387,7 +393,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 			op2 = codegen_expression(getchild(expression, 1), scope);
 			aux = cast2double(expression, op1, op2);
 			op1_type = getchild(expression, 0)->type;
-			op2_type = getchild(expression, 1)->type;
+			// op2_type = getchild(expression, 1)->type;
 
 			if (aux)
 				printf("	%%%d = fdiv double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );
@@ -402,7 +408,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope) {
 			op2 = codegen_expression(getchild(expression, 1), scope);
 			aux = cast2double(expression, op1, op2);
 			op1_type = getchild(expression, 0)->type;
-			op2_type = getchild(expression, 1)->type;
+			// op2_type = getchild(expression, 1)->type;
 
 			if (aux)
 				printf("	%%%d = frem double %%%d, %%%d\n", temporary, (aux > 0) ? op1 : temporary-1, (aux < 0) ? op2 : temporary-1 );

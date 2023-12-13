@@ -1,3 +1,67 @@
+codegen_expression(getchild(statement, 0), scope);
+printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+temporary++;
+
+printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
+temporary++;
+
+checkpoint = temp
+
+else_label = codegen_statement(getchild(statement, 1), scope, print=0);
+temp++;         // temp da label
+
+fi_label = codegen_statement(getchild(statement, 2), scope, print=0);
+
+temp = checkpoint
+
+
+printf("%%%d\n", else_label);
+
+
+
+// Then block:
+
+printf("%d:\n", checkpoint-1);
+codegen_statement(getchild(statement, 1), scope, print=1);
+
+printf("	br label %%%d\n", fi_label);
+
+
+
+// Else block:
+
+printf("%d:\n", else_label);
+codegen_statement(getchild(statement, 2), scope, print=1);
+printf("	br label %%%d\n", fi_label);
+
+
+printf("%d:\n", fi_label);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # construcao de funcao de inicializacao de variaveis globais
 for node in global_scope
     if Declaration
