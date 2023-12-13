@@ -186,6 +186,7 @@ int codegen_function(struct node* function_body, struct symbol_list* scope) {
 
 int codegen_statement(struct node* statement, struct symbol_list* scope) {
 	struct node* temp;
+	int label_num;
 	
 	switch (statement->category) {
 		case StatList:
@@ -197,35 +198,36 @@ int codegen_statement(struct node* statement, struct symbol_list* scope) {
 			codegen_expression(getchild(statement, 0), scope);
 			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
-
-			printf("	br i1 %%%d, label %%L%dthen, label %%L%delse\n", temporary-1, label_counter, label_counter);
+			label_num = label_counter++;
+			printf("	br i1 %%%d, label %%L%dthen, label %%L%delse\n", temporary-1, label_num, label_num);
 
 			// Then block:
-			printf("L%dthen:\n", label_counter);
+			printf("L%dthen:\n", label_num);
 			codegen_statement(getchild(statement, 1), scope);
-			printf("	br label %%L%dfi\n", label_counter);
+			printf("	br label %%L%dfi\n", label_num);
 			
 			// Else block:
-			printf("L%delse:\n", label_counter);
+			printf("L%delse:\n", label_num);
 			codegen_statement(getchild(statement, 2), scope);
-			printf("	br label %%L%dfi\n", label_counter);
+			printf("	br label %%L%dfi\n", label_num);
 
-			printf("L%dfi:\n", label_counter++);
+			printf("L%dfi:\n", label_num);
 			break;
 
 		case While:
 			// codegen_while(statement, scope);
-			printf("	br label %%L%dwhile\n", label_counter);
-			printf("L%dwhile:\n", label_counter);
+			label_num = label_counter++;
+
+			printf("	br label %%L%dwhile\n", label_num);
+			printf("L%dwhile:\n", label_num);
 			codegen_expression(getchild(statement, 0), scope);
 			printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
-			printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_counter, label_counter);
-			printf("L%dwhile_init:\n", label_counter);
+			printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_num, label_num);
+			printf("L%dwhile_init:\n", label_num);
 			codegen_statement(getchild(statement, 1), scope);
-			printf("	br label %%L%dwhile\n", label_counter);
-			printf("L%dwhile_end:\n", label_counter);
-			label_counter++;
+			printf("	br label %%L%dwhile\n", label_num);
+			printf("L%dwhile_end:\n", label_num);
 			break;
 
 		case Return:
