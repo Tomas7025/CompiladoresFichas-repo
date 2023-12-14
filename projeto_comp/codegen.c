@@ -339,7 +339,6 @@ int chrlit2int(char *str) {
 			case '\'':
 			case '\"':
 				return *(str + 2);
-
 			default:
 				sscanf((str + 2), "%3o", &conversion);
 				return conversion;
@@ -347,7 +346,6 @@ int chrlit2int(char *str) {
 	}
 	return -1;
 }
-
 
 int codegen_expression(struct node *expression, struct symbol_list* scope, int print_flag) {
 	int op1 = -1, op2 = -1, aux;
@@ -421,7 +419,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				if (aux)
 					printf("	%%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
 				else
-					printf("	%%%d = mul %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (getchild(expression, 0)->type == double_type ? "fmul" : "mul"), op1, op2);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
