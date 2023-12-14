@@ -247,6 +247,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 
 		case While:
 			// codegen_while(statement, scope);
+			/*
 			label_num = label_counter++;
 
 			if (print_flag) {
@@ -265,6 +266,52 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 				printf("	br label %%L%dwhile\n", label_num);
 				printf("L%dwhile_end:\n", label_num);
 			}
+
+			while(expr) {
+				statement;
+			}
+
+			L1while:
+			codegen_expression(expr);
+			%x = icmp ne i32 %0, 0
+			br i1 %x, label %L1while_init, label %L1while_end
+			%L1while_init
+
+			codegen_statement(statement);
+			
+			br L1while
+			%L1while_end:
+
+			*/
+
+			int start_label, while_init, while_final;
+			start_label = temporary++;
+			codegen_expression(getchild(statement, 0), scope, 0);
+			// %x = icmp ne i32 %0, 0
+			// WHILE_INIT
+			temporary++;
+			while_init = temporary;
+			temporary++;
+			codegen_statement(getchild(statement, 1), scope, 0);
+			while_final = temporary++;
+
+			if (print_flag) {
+				temporary = start_label;
+				printf("	br label %%%d\n", start_label);			
+				printf("%d:\n", start_label);
+				temporary++;
+				codegen_expression(getchild(statement, 0), scope, print_flag);
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+				temporary++;
+				printf("	br i1 %%%d, label %%%d, label %%%d\n", temporary-1, while_init, while_final);
+				printf("%d:\n", while_init);
+				temporary++;
+				codegen_statement(getchild(statement, 1), scope, print_flag);
+				printf("	br label %%%d\n", start_label);
+				printf("%d:\n", while_final);
+				temporary++;
+			}
+
 			break;
 
 		case Return:
@@ -628,7 +675,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
-			} temporary++;
+			} else temporary++;
 
 			return temporary++;
 		
