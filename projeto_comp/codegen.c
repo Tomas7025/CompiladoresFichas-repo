@@ -44,9 +44,10 @@ int codegen_global_vars(struct symbol_list *global_scope) {
 			global_cur->node->llvm_name = (char*)malloc(sizeof(char)*(strlen(getchild(global_cur->node, 1)->token)+2));
 			sprintf(global_cur->node->llvm_name, "@%s", getchild(global_cur->node, 1)->token);
 			printf("%s = global %s %s\n", global_cur->node->llvm_name, type_to_llvm(map_cat_typ(getchild(global_cur->node, 0)->category)), (getchild(global_cur->node, 0)->category == Double) ? "0.0" : "0");
+		
 		}
 	}
-	printf("\ndefine void @_global_vars_init() {\n");
+	printf("\ndefine void @global_vars_init() {\n");
 	global_cur = global_scope;
 	int temp = -1;
 	while ((global_cur = global_cur->next) != NULL) {
@@ -68,14 +69,14 @@ int codegen_global_vars(struct symbol_list *global_scope) {
 // code generation begins here, with the AST root node
 void codegen_program(struct node *program) {
 	// pre-declared I/O functions
-	printf("declare i32 @_read(i32)\n");
-	printf("declare i32 @_write(i32)\n");
-	printf("declare i32 @_putchar(i32)\n");
-	printf("declare i32 @_getchar()\n");
+	printf("declare i32 @read(i32)\n");
+	printf("declare i32 @write(i32)\n");
+	printf("declare i32 @putchar(i32)\n");
+	printf("declare i32 @getchar()\n");
 
 
-	// printf("declare i32 @_set(i32, i32)\n");
-	// printf("declare i32 @_get(i32)\n\n");
+	// printf("declare i32 @set(i32, i32)\n");
+	// printf("declare i32 @get(i32)\n\n");
 
 	codegen_global_vars(global_scope);
 	
@@ -106,7 +107,7 @@ void codegen_program(struct node *program) {
 	struct symbol_list *entry = search_symbol(global_scope, "main");
 	if(entry != NULL && entry->node->category == FuncDefinition)
 	printf("define i32 @main() {\n"
-			"	 call void @_global_vars_init()\n"
+			"	 call void @global_vars_init()\n"
 			"	 call i32 @_main()\n"
 			"	 ret i32 0\n"
 			"}\n"
@@ -134,7 +135,11 @@ int codegen_parameters(struct node* param_list, int is_def) {
 }
 
 int codegen_function_declaration(struct node *function_declaration) {
-	printf("declare %s @_%s(", type_to_llvm(map_cat_typ(getchild(function_declaration, 0)->category)), getchild(function_declaration, 1)->token);
+	if (strcmp(getchild(function_declaration, 1)->token, "main") != 0)
+		printf("declare %s @%s(", type_to_llvm(map_cat_typ(getchild(function_declaration, 0)->category)), getchild(function_declaration, 1)->token);
+	else {
+		printf("declare %s @%s(", type_to_llvm(map_cat_typ(getchild(function_declaration, 0)->category)), getchild(function_declaration, 1)->token);
+	}
 	codegen_parameters(getchild(function_declaration, 2), 0);
 	printf(")\n\n");
 	return 0;
@@ -143,7 +148,10 @@ int codegen_function_declaration(struct node *function_declaration) {
 int codegen_function_definition(struct node *function) {
 	struct node_list *args_cursor = getchild(function, 2)->children;
 	temporary = 1;
-	printf("define %s @_%s(", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), getchild(function, 1)->token);
+	if (strcmp(getchild(function, 1)->token, "main") != 0)
+		printf("define %s @%s(", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), getchild(function, 1)->token);
+	else
+		printf("define %s @_%s(", type_to_llvm(map_cat_typ(getchild(function, 0)->category)), getchild(function, 1)->token);
 	codegen_parameters(getchild(function, 2), 1);
 	printf(") {\n");
 	
@@ -183,7 +191,7 @@ int codegen_function(struct node* function_body, struct symbol_list* scope, int 
 
 int codegen_statement(struct node* statement, struct symbol_list* scope, int print_flag) {
 	struct node* temp;
-	int label_num, checkpoint, else_label, end_label;
+	int checkpoint, else_label, end_label;
 	int start_label, while_init, while_final;
 
 	
@@ -198,8 +206,6 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 			if (print_flag)
 				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
 			temporary++;
-
-			// label_num = label_counter++;
 
 			if (print_flag)
 				printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
@@ -698,7 +704,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				if((found = search_symbol(scope, getchild(expression, 0)->token))) // store i32 %10, i32* %1
 					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), found->node->llvm_name);
 				else 
-					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, expression->token)->node->llvm_name);
+					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, getchild(expression, 0)->token)->node->llvm_name);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
 				sprintf(expression->llvm_name, "%%%d", op2);
 			}
@@ -733,7 +739,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			temp_node_list = expression->children->next->next;
 			temp_node_list2 = getchild(search_symbol(global_scope, getchild(expression, 0)->token)->node, 2)->children->next;
 			if (print_flag) {
-				printf("	%%%d = call %s @_%s(", temporary++, type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)),  getchild(op1_node, 1)->token);
+				printf("	%%%d = call %s @%s(", temporary++, type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)),  getchild(op1_node, 1)->token);
 
 				for (;temp_node_list != NULL && temp_node_list2 != NULL ; temp_node_list = temp_node_list->next, temp_node_list2 = temp_node_list2->next ) {
 					printf("%s %s", type_to_llvm(map_cat_typ(getchild(temp_node_list2->node, 0)->category)), temp_node_list->node->llvm_name);
@@ -744,7 +750,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary-1);
-				
+
 			} else temporary++;
 
 			return temporary-1;
