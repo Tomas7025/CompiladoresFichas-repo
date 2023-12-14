@@ -353,6 +353,7 @@ int octal2int(char *str) {
 		sscanf((str + 1), "%o", &conversion);
 		return conversion;
 	}
+	
 	return -1;
 }
 
