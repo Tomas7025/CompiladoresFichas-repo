@@ -740,7 +740,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Plus:
             check_expression(getchild(node, 0), scope);
-            if (!valid_func_op_unit(node)) {
+            if (!valid_func_op_unit(node, scope)) {
                 node->type = getchild(node, 0)->type;
                 break;
             }
@@ -753,7 +753,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
     
         case Minus:
             check_expression(getchild(node, 0), scope);
-            if (!valid_func_op_unit(node)) {
+            if (!valid_func_op_unit(node, scope)) {
                 node->type = getchild(node, 0)->type;
                 break;
             }
@@ -767,7 +767,7 @@ int check_expression(struct node *node, struct symbol_list *scope){
         
         case Not:
             check_expression(getchild(node, 0), scope);
-            if (!valid_func_op_unit(node)) {
+            if (!valid_func_op_unit(node, scope)) {
                 node->type = integer_type;
                 break;
             }
@@ -1044,12 +1044,15 @@ int invalid_func_op(struct node *op_node, int verbose) {
     return invalid;
 }
 
-int valid_func_op_unit(struct node *op_node) {
+int valid_func_op_unit(struct node *op_node, struct symbol_list *scope) {
     struct symbol_list *found;
     char *op = (op_node->category == Not) ? "!" : ((op_node->category == Minus) ? "-" : "+");
 
 
     if (getchild(op_node, 0)->category == Identifier) {
+        if (scope != global_scope && search_symbol(scope, getchild(op_node, 0)->token) != NULL)
+            return 1;
+
         found = search_symbol(global_scope, getchild(op_node, 0)->token);
         if (found != NULL && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition)) {
             printf("Line %d, column %d: Operator %s cannot be applied to type ", op_node->token_line, op_node->token_column, op);
