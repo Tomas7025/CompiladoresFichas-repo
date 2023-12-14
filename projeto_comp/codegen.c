@@ -6,7 +6,7 @@
 #include "codegen.h"
 
 int temporary = 1;   // sequence of temporary registers in a function
-int label_counter = 1;  // sequence of labels in all functions
+// int label_counter = 1;  // sequence of labels in all functions
 
 extern struct symbol_list *global_scope;
 
@@ -167,7 +167,6 @@ int codegen_function_definition(struct node *function) {
 	else
 		printf("	ret void\n");
 
-
 	printf("}\n\n");
 
 	return 0;  
@@ -185,6 +184,8 @@ int codegen_function(struct node* function_body, struct symbol_list* scope, int 
 int codegen_statement(struct node* statement, struct symbol_list* scope, int print_flag) {
 	struct node* temp;
 	int label_num, checkpoint, else_label, end_label;
+	int start_label, while_init, while_final;
+
 	
 	switch (statement->category) {
 		case StatList:
@@ -284,12 +285,11 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 
 			*/
 
-			int start_label, while_init, while_final;
 			start_label = temporary++;
 			codegen_expression(getchild(statement, 0), scope, 0);
 			// %x = icmp ne i32 %0, 0
-			// WHILE_INIT
 			temporary++;
+			// WHILE_INIT
 			while_init = temporary;
 			temporary++;
 			codegen_statement(getchild(statement, 1), scope, 0);
@@ -324,6 +324,8 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 			}
 			else
 				if (print_flag) printf("	ret void\n");
+			
+			temporary++;	//!!!
 			break;
 
 		case Declaration:
@@ -405,14 +407,6 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 	
 	switch (expression->category) {
 		case ChrLit:
-			// if (*(expression->token + 1) != '\\') 
-			// 	printf("	%%%d = add i32 %d, 0\n", temporary, *(expression->token + 1));
-
-			// else {
-			// 	// *(expression->token + 6) = '\0';
-    		// 	sscanf((expression->token + 2), "%3o", &op1);
-			// 	printf("	%%%d = add i32 %d, 0\n", temporary, op1);
-			// }
 			if (print_flag){
 				printf("	%%%d = add i32 %d, 0\n", temporary, chrlit2int(expression->token));
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
