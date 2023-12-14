@@ -85,9 +85,7 @@ void codegen_program(struct node *program) {
 	while((function = function->next) != NULL) {
 		switch (function->node->category) {
 			case FuncDeclaration:
-				// printf("\n\nDEBUG {\n");
-				codegen_function_declaration(function->node);
-				// printf("}\n\n");
+				// codegen_function_declaration(function->node);
 				break;
 
 			case FuncDefinition:
@@ -102,7 +100,7 @@ void codegen_program(struct node *program) {
 				break;
 		}
 	}
-
+// r < ../../
 	// generate the entry point which calls main(integer) if it exists
 	struct symbol_list *entry = search_symbol(global_scope, "main");
 	if(entry != NULL && entry->node->category == FuncDefinition)
