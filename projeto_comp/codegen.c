@@ -347,6 +347,15 @@ int chrlit2int(char *str) {
 	return -1;
 }
 
+int octal2int(char *str) {
+	int conversion;
+	if (*(str) == '0') {
+		sscanf((str + 1), "%o", &conversion);
+		return conversion;
+	}
+	return -1;
+}
+
 int codegen_expression(struct node *expression, struct symbol_list* scope, int print_flag) {
 	int op1 = -1, op2 = -1, aux;
 	enum type op1_type;				//, op2_type;
@@ -365,7 +374,11 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 		case Natural:
 		case Short:
 			if (print_flag){
-				printf("	%%%d = add i32 %s, 0\n", temporary, expression->token);
+				if (*(expression->token) == '0')
+					printf("	%%%d = add i32 %d, 0\n", temporary, octal2int(expression->token));
+				else
+					printf("	%%%d = add i32 %s, 0\n", temporary, expression->token);
+				
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
@@ -373,7 +386,10 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 
 		case Decimal:
 			if (print_flag){
-				printf("	%%%d = fadd double %s, 0.0\n", temporary, expression->token);
+				if (*(expression->token) == '.')
+					printf("	%%%d = fadd double 0%s, 0.0\n", temporary, expression->token);
+				else
+					printf("	%%%d = fadd double %s, 0.0\n", temporary, expression->token);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
@@ -419,7 +435,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				if (aux)
 					printf("	%%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
 				else
-					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (getchild(expression, 0)->type == double_type ? "fmul" : "mul"), op1, op2);
+					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (getchild(expression, 0)->type == double_type ? "fmul" : "mul"), type_to_llvm(getchild(expression, 0)->type), op1, op2);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
