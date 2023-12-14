@@ -231,59 +231,9 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 			// End block
 			if (print_flag) printf("%d:\n", end_label);
 			temporary++;
-
-
-			// codegen_statement(getchild(statement, 1), scope);
-			// printf("	br label %%L%dfi\n", label_num);
-			// // temporary += 1;
-			
-			// // Else block:
-			// printf("L%delse:\n", label_num);
-			// codegen_statement(getchild(statement, 2), scope);
-			// printf("	br label %%L%dfi\n", label_num);
-			// // temporary += 1;
-
-			// printf("L%dfi:\n", label_num);
 			break;
 
 		case While:
-			// codegen_while(statement, scope);
-			/*
-			label_num = label_counter++;
-
-			if (print_flag) {
-				printf("	br label %%L%dwhile\n", label_num);
-				printf("L%dwhile:\n", label_num);
-			}
-			codegen_expression(getchild(statement, 0), scope, print_flag);
-			if (print_flag) printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
-			temporary++;
-			if (print_flag) printf("	br i1 %%%d, label %%L%dwhile_init, label %%L%dwhile_end\n", temporary-1, label_num, label_num);
-			// temporary += 2;
-			if (print_flag) printf("L%dwhile_init:\n", label_num);
-			codegen_statement(getchild(statement, 1), scope, print_flag);
-
-			if (print_flag) {
-				printf("	br label %%L%dwhile\n", label_num);
-				printf("L%dwhile_end:\n", label_num);
-			}
-
-			while(expr) {
-				statement;
-			}
-
-			L1while:
-			codegen_expression(expr);
-			%x = icmp ne i32 %0, 0
-			br i1 %x, label %L1while_init, label %L1while_end
-			%L1while_init
-
-			codegen_statement(statement);
-			
-			br L1while
-			%L1while_end:
-
-			*/
 
 			start_label = temporary++;
 			codegen_expression(getchild(statement, 0), scope, 0);
@@ -390,9 +340,6 @@ int chrlit2int(char *str) {
 				sscanf((str + 2), "%3o", &conversion);
 				return conversion;
 		}
-		// 
-		// sscanf((str + 2), "%3o", &conversion);
-		// printf("	%%%d = add i32 %d, 0\n", temporary, op1);
 	}
 	return -1;
 }
@@ -794,6 +741,10 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 						printf(", ");
 				}
 				printf(")\n");
+
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary-1);
+				
 			} else temporary++;
 
 			return temporary-1;
