@@ -1,0 +1,82 @@
+
+// calcula temp pos first expr
+op1 = codegen
+
+"
+ %%%d = icmp eq i32 %%%d, 0 ; temp++
+ br i1 %%%d, label %%%d, label
+ L1 temp++
+"
+checkpoint = temp
+
+op2 = codegen(printf=0)
+
+determinar ultima label
+
+
+"
+%temp\n
+"
+
+reset to chepoint
+
+codegen(op2)
+print("L2")
+temp++
+
+
+
+
+alloca is_true
+
+op1 = codegen
+
+if (op1 is false)
+    goto FALSELABEL
+
+op2 = codegen
+
+if (op2 is false)
+    goto FALSELABEL
+
+set verdadeiro
+goto FIM
+
+FALSELABEL
+set falso
+FIM
+
+printf(" %%%d = alloca i32\n", temporary++);
+
+op1 = codegen_expression();
+
+prinf("%%%d = icmp eq i32 %%%d, 0", temporary++, op1);
+prinf("br i1 %%%d, label %%%d, label")
+label1 = temporary;
+checkpoint = temporary++;
+
+op2 = codegen_expression(prinf=0);
+
+temporary++;
+label2 = temporary++;
+
+//prinf("%%%d = add i32 1, 0", temporary); printf(store)
+temporary++;
+
+
+
+
+
+if ((op1 == 0 && AND)) // || (op1 == 1 && OR)
+
+
+// ... op1
+
+label1:
+    // ... op2
+
+label2:
+    // sem executar op2
+
+
+// br i1 %3, label %L1then, label %L1else

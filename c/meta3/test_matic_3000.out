@@ -1,0 +1,302 @@
+Line 32, column 7: Operator + cannot be applied to types int(void), int
+Line 37, column 5: Conflicting types (got double, expected int)
+Line 44, column 12: Conflicting types (got double, expected int)
+Line 48, column 23: Unknown symbol s
+Line 48, column 21: Operator + cannot be applied to types int, undef
+Line 50, column 11: Operator , cannot be applied to types double, int(double)
+Line 50, column 17: Operator , cannot be applied to types undef, double
+Line 50, column 24: Unknown symbol s
+Line 50, column 22: Operator , cannot be applied to types double, undef
+Line 55, column 8: Invalid use of void type in declaration
+Line 62, column 7: Operator = cannot be applied to types int, void(void)
+Line 64, column 8: Operator = cannot be applied to types void(void), int
+Line 66, column 5: Operator ! cannot be applied to type void(void)
+Line 68, column 12: Conflicting types (got void(void), expected void)
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+a	int(void)
+b	int(void)
+f	void(double)
+f1	int(void)
+f2	int(int)
+a1	void(void)
+A1	void(void)
+D1	void(void)
+d1	int(void)
+ac	int(void)
+ap	int(void)
+az	int(void)
+bz	int(void)
+aa	int
+bb	int
+cc	double
+dd	double
+ee	char
+frac	int(double)
+kled	int(double)
+g1	void(void)
+f34	void(void)
+
+===== Function a Symbol Table =====
+return	int
+c	double
+d	char
+
+===== Function b Symbol Table =====
+return	int
+
+===== Function f Symbol Table =====
+return	void
+a	double	param
+
+===== Function f1 Symbol Table =====
+return	int
+
+===== Function f2 Symbol Table =====
+return	int
+b	int	param
+
+===== Function a1 Symbol Table =====
+return	void
+
+===== Function A1 Symbol Table =====
+return	void
+
+===== Function D1 Symbol Table =====
+return	void
+
+===== Function d1 Symbol Table =====
+return	int
+
+===== Function ap Symbol Table =====
+return	int
+
+===== Function bz Symbol Table =====
+return	int
+
+===== Function frac Symbol Table =====
+return	int
+s	double	param
+
+===== Function kled Symbol Table =====
+return	int
+a	double	param
+res	double
+bb	double
+
+===== Function f34 Symbol Table =====
+return	void
+a	int
+
+Program
+..FuncDeclaration
+....Int
+....Identifier(a)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Identifier(b)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDefinition
+....Int
+....Identifier(a)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Double
+........Identifier(c)
+......Declaration
+........Char
+........Identifier(d)
+......Comma - char
+........Identifier(c) - double
+........Identifier(d) - char
+......Comma - double
+........Identifier(d) - char
+........Identifier(c) - double
+..FuncDefinition
+....Void
+....Identifier(f)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(a)
+....FuncBody
+..FuncDefinition
+....Int
+....Identifier(f1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDefinition
+....Int
+....Identifier(f2)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(b)
+....FuncBody
+..FuncDefinition
+....Void
+....Identifier(a1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Return
+........Null
+..FuncDefinition
+....Void
+....Identifier(A1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDefinition
+....Void
+....Identifier(D1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDefinition
+....Int
+....Identifier(d1)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDeclaration
+....Int
+....Identifier(ac)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Identifier(ap)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDeclaration
+....Int
+....Identifier(az)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Identifier(bz)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Add - undef
+........Identifier(az) - int(void)
+........Natural(1) - int
+..Declaration
+....Int
+....Identifier(aa)
+....Decimal(2.0) - double
+..Declaration
+....Int
+....Identifier(bb)
+....Natural(2) - int
+..Declaration
+....Double
+....Identifier(cc)
+....Decimal(3.0) - double
+..Declaration
+....Double
+....Identifier(dd)
+....Natural(4) - int
+..Declaration
+....Char
+....Identifier(ee)
+....Natural(1) - int
+..FuncDefinition
+....Int
+....Identifier(frac)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(s)
+....FuncBody
+......Return
+........Identifier(s) - double
+..FuncDefinition
+....Int
+....Identifier(kled)
+....ParamList
+......ParamDeclaration
+........Double
+........Identifier(a)
+....FuncBody
+......Declaration
+........Double
+........Identifier(res)
+........Add - undef
+..........Identifier(aa) - int
+..........Identifier(s) - undef
+......Declaration
+........Double
+........Identifier(bb)
+........Add - double
+..........Add - double
+............Decimal(1.3) - double
+............Identifier(a) - double
+..........Identifier(res) - double
+......Comma - undef
+........Comma - double
+..........Comma - undef
+............Comma - double
+..............Identifier(aa) - int
+..............Identifier(bb) - double
+............Identifier(frac) - int(double)
+..........Identifier(res) - double
+........Identifier(s) - undef
+......Return
+........Natural(1) - int
+..FuncDeclaration
+....Void
+....Identifier(z)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(a)
+..FuncDeclaration
+....Void
+....Identifier(g1)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Void
+....Identifier(f34)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Identifier(a)
+......Store - int
+........Identifier(a) - int
+........Identifier(g1) - void(void)
+......Store - undef
+........Identifier(g1) - void(void)
+........Identifier(a) - int
+......Not - int
+........Identifier(g1) - void(void)
+......Return
+........Identifier(g1) - void(void)

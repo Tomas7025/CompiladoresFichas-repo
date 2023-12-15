@@ -6,7 +6,7 @@ double d, e;
 char f1(void) {
 	short s;
 	int i;
-	double d;
+	char d;
 	return c1;
 }
 

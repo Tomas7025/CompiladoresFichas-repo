@@ -19,7 +19,7 @@ sf	short(short)
 return	char
 s	short
 i	int
-d	double
+d	char
 
 ===== Function df Symbol Table =====
 return	double
@@ -76,7 +76,7 @@ Program
 ........Int
 ........Identifier(i)
 ......Declaration
-........Double
+........Char
 ........Identifier(d)
 ......Return
 ........Identifier(c1) - char

@@ -1,0 +1,16 @@
+// int main(void) {
+//     int a = 0141;
+//     putchar(a);
+//     putchar('\n');
+// }
+
+int main(void) {
+    double a = .5;
+    if (a == 0.5) {
+        putchar('T');
+    }
+    else {
+        putchar('F');
+    }
+    putchar('\n');
+}

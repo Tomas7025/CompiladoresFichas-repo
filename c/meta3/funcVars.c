@@ -1,4 +1,4 @@
-    int bye(int a, int b);
+int bye(int a, int b);
 int bye(int a, int b){
 
 }
@@ -9,11 +9,16 @@ int error1(int c, int c){
 
 }
 
-void error2(void, void);
 void error2(void) {}
+void error2(void, void);
 
 void error3(void) {}
 void error3(void, void);
+
+int error4(int a, int a, int r);
+int error5(int a, int a, int r){
+    
+}
 
 int ola(int a){
 
@@ -21,6 +26,8 @@ int ola(int a){
 
 int main(void){
     1, ola;
+    ola, 1;
+    ola, ola; 
     1, ola();
     1, ola(1);
     1, ola(1, 2);
@@ -30,25 +37,18 @@ int main(void){
     1 + ola;
 }
 
-void f(void){
-    return;
+void a(void a);
+
+void b(void a){
+
 }
+void c(void a, void b);
 
-void g(void){
-    return f();
+void d(void a, void b){
+
 }
+void e(int ola, void a);
 
-
-// Num of params
-int test(int a, int b);
-int test(int a, int b, int c);
-int test(int a);
-
-int test1(int a, int b);
-int test1(int a, int b, int c){
-}
-
-int test2(int a, int b);
-
-int test2(int a){
+void f(int adeus, void a){
+    j, f;
 }

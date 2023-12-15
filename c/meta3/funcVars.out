@@ -1,17 +1,23 @@
 Line 6, column 22: Symbol b already defined
 Line 8, column 23: Symbol c already defined
-Line 12, column 13: Invalid use of void type in declaration
+Line 13, column 13: Invalid use of void type in declaration
 Line 16, column 13: Invalid use of void type in declaration
-Line 23, column 6: Operator , cannot be applied to types int, int(int)
-Line 24, column 8: Wrong number of arguments to function ola (got 0, required 1)
-Line 26, column 8: Wrong number of arguments to function ola (got 2, required 1)
-Line 27, column 8: Operator , cannot be applied to types int(int), int
-Line 28, column 5: Wrong number of arguments to function ola (got 0, required 1)
-Line 30, column 7: Operator + cannot be applied to types int, int(int)
-Line 44, column 5: Conflicting types (got int(int,int,int), expected int(int,int))
-Line 45, column 5: Conflicting types (got int(int), expected int(int,int))
-Line 48, column 5: Conflicting types (got int(int,int,int), expected int(int,int))
-Line 53, column 5: Conflicting types (got int(int), expected int(int,int))
+Line 18, column 23: Symbol a already defined
+Line 19, column 23: Symbol a already defined
+Line 28, column 6: Operator , cannot be applied to types int, int(int)
+Line 29, column 8: Operator , cannot be applied to types int(int), int
+Line 30, column 8: Operator , cannot be applied to types int(int), int(int)
+Line 31, column 8: Wrong number of arguments to function ola (got 0, required 1)
+Line 33, column 8: Wrong number of arguments to function ola (got 2, required 1)
+Line 34, column 8: Operator , cannot be applied to types int(int), int
+Line 35, column 5: Wrong number of arguments to function ola (got 0, required 1)
+Line 37, column 7: Operator + cannot be applied to types int, int(int)
+Line 40, column 8: Invalid use of void type in declaration
+Line 42, column 8: Invalid use of void type in declaration
+Line 45, column 8: Invalid use of void type in declaration
+Line 47, column 8: Invalid use of void type in declaration
+Line 50, column 17: Invalid use of void type in declaration
+Line 52, column 19: Invalid use of void type in declaration
 ===== Global Symbol Table =====
 putchar	int(int)
 getchar	int(void)
@@ -20,13 +26,10 @@ error	int(int,int)
 error1	int(int,int)
 error2	void(void)
 error3	void(void)
+error4	int(int,int,int)
+error5	int(int,int,int)
 ola	int(int)
 main	int(void)
-f	void(void)
-g	void(void)
-test	int(int,int)
-test1	int(int,int)
-test2	int(int,int)
 
 ===== Function bye Symbol Table =====
 return	int
@@ -43,18 +46,17 @@ return	void
 ===== Function error3 Symbol Table =====
 return	void
 
+===== Function error5 Symbol Table =====
+return	int
+a	int	param
+r	int	param
+
 ===== Function ola Symbol Table =====
 return	int
 a	int	param
 
 ===== Function main Symbol Table =====
 return	int
-
-===== Function f Symbol Table =====
-return	void
-
-===== Function g Symbol Table =====
-return	void
 
 Program
 ..FuncDeclaration
@@ -99,6 +101,13 @@ Program
 ........Int
 ........Identifier(c)
 ....FuncBody
+..FuncDefinition
+....Void
+....Identifier(error2)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
 ..FuncDeclaration
 ....Void
 ....Identifier(error2)
@@ -107,13 +116,6 @@ Program
 ........Void
 ......ParamDeclaration
 ........Void
-..FuncDefinition
-....Void
-....Identifier(error2)
-....ParamList
-......ParamDeclaration
-........Void
-....FuncBody
 ..FuncDefinition
 ....Void
 ....Identifier(error3)
@@ -129,6 +131,33 @@ Program
 ........Void
 ......ParamDeclaration
 ........Void
+..FuncDeclaration
+....Int
+....Identifier(error4)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Int
+........Identifier(r)
+..FuncDefinition
+....Int
+....Identifier(error5)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Int
+........Identifier(a)
+......ParamDeclaration
+........Int
+........Identifier(r)
+....FuncBody
 ..FuncDefinition
 ....Int
 ....Identifier(ola)
@@ -146,6 +175,12 @@ Program
 ....FuncBody
 ......Comma - undef
 ........Natural(1) - int
+........Identifier(ola) - int(int)
+......Comma - int
+........Identifier(ola) - int(int)
+........Natural(1) - int
+......Comma - undef
+........Identifier(ola) - int(int)
 ........Identifier(ola) - int(int)
 ......Comma - int
 ........Natural(1) - int
@@ -177,94 +212,63 @@ Program
 ......Add - undef
 ........Natural(1) - int
 ........Identifier(ola) - int(int)
+..FuncDeclaration
+....Void
+....Identifier(a)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(a)
+..FuncDefinition
+....Void
+....Identifier(b)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(a)
+....FuncBody
+..FuncDeclaration
+....Void
+....Identifier(c)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(a)
+......ParamDeclaration
+........Void
+........Identifier(b)
+..FuncDefinition
+....Void
+....Identifier(d)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(a)
+......ParamDeclaration
+........Void
+........Identifier(b)
+....FuncBody
+..FuncDeclaration
+....Void
+....Identifier(e)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(ola)
+......ParamDeclaration
+........Void
+........Identifier(a)
 ..FuncDefinition
 ....Void
 ....Identifier(f)
 ....ParamList
 ......ParamDeclaration
-........Void
-....FuncBody
-......Return
-........Null
-..FuncDefinition
-....Void
-....Identifier(g)
-....ParamList
+........Int
+........Identifier(adeus)
 ......ParamDeclaration
 ........Void
-....FuncBody
-......Return
-........Call - void
-..........Identifier(f) - void(void)
-..FuncDeclaration
-....Int
-....Identifier(test)
-....ParamList
-......ParamDeclaration
-........Int
-........Identifier(a)
-......ParamDeclaration
-........Int
-........Identifier(b)
-..FuncDeclaration
-....Int
-....Identifier(test)
-....ParamList
-......ParamDeclaration
-........Int
-........Identifier(a)
-......ParamDeclaration
-........Int
-........Identifier(b)
-......ParamDeclaration
-........Int
-........Identifier(c)
-..FuncDeclaration
-....Int
-....Identifier(test)
-....ParamList
-......ParamDeclaration
-........Int
-........Identifier(a)
-..FuncDeclaration
-....Int
-....Identifier(test1)
-....ParamList
-......ParamDeclaration
-........Int
-........Identifier(a)
-......ParamDeclaration
-........Int
-........Identifier(b)
-..FuncDefinition
-....Int
-....Identifier(test1)
-....ParamList
-......ParamDeclaration
-........Int
-........Identifier(a)
-......ParamDeclaration
-........Int
-........Identifier(b)
-......ParamDeclaration
-........Int
-........Identifier(c)
-....FuncBody
-..FuncDeclaration
-....Int
-....Identifier(test2)
-....ParamList
-......ParamDeclaration
-........Int
-........Identifier(a)
-......ParamDeclaration
-........Int
-........Identifier(b)
-..FuncDefinition
-....Int
-....Identifier(test2)
-....ParamList
-......ParamDeclaration
-........Int
 ........Identifier(a)
 ....FuncBody
+......Comma
+........Identifier(j)
+........Identifier(f)
