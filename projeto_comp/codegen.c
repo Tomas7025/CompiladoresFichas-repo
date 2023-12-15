@@ -350,10 +350,10 @@ int chrlit2int(char *str) {
 int octal2int(char *str) {
 	int conversion;
 	if (*(str) == '0') {
-		sscanf((str + 1), "%o", &conversion);
+		sscanf(str, "%o", &conversion);
 		return conversion;
 	}
-	
+
 	return -1;
 }
 
@@ -374,19 +374,20 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 		case Natural:
 		case Short:
-			if (print_flag){
+			if (print_flag) {
 				if (*(expression->token) == '0')
 					printf("	%%%d = add i32 %d, 0\n", temporary, octal2int(expression->token));
+
 				else
 					printf("	%%%d = add i32 %s, 0\n", temporary, expression->token);
-				
+
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
 			return temporary++;
 
 		case Decimal:
-			if (print_flag){
+			if (print_flag) {
 				if (*(expression->token) == '.')
 					printf("	%%%d = fadd double 0%s, 0.0\n", temporary, expression->token);
 				else
@@ -493,20 +494,90 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 
 		case And:
+			/*
+			alloca %x
+			store x 1
+
+			icmp $1 != 0
+
+			br $1, true, false
+
+
+			true:
+			codegen
+			icmp $2 == 0
+			store x ^
+
+
+			false:
+
+			and $1, %x
+			*/
+			// !!!
+			int right_side, checkpoint;
+
+			printf("	%%%d = alloca i32\n", temporary);
+			right_side = temporary++;
+
+			printf("	store i32 1, i32* %%%d\n", temporary-1);
+			
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
+
+			printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
+			temporary++; // label true
+
+			checkpoint = temporary;
+
+			op2 = codegen_expression(getchild(expression, 1), scope, 0);
+			if (print_flag) printf("%%%d\n", op2+3);
+			printf("%d:\n", op1+2);			// true:
+
+			temporary = checkpoint;
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
+			if (print_flag) printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op2);
+			else temporary++;
+
+			if (print_flag) printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+			temporary++;
+			
+			if (print_flag) printf("	store i32 %%%d, i32* %%%d\n", temporary-1, right_side);
+			if (print_flag) printf("	br label %%%d\n", op2+3);
+
+			if (print_flag) printf("%d:\n", op2+3);
+			temporary++;
+
+			if (print_flag) printf("	%%%d = load i32, i32* %%%d\n", temporary++, right_side);
+			else temporary++;
+
+			if (print_flag) printf("	%%%d = and i32 %%%d, %%%d\n", temporary, op1, temporary-1);
+			temporary++;
+
 			if (print_flag) {
-				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
-				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-				
-				printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
-				temporary++;
-				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				// printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
-			} else temporary+=3;
-			return temporary++;
+			}
+
+			return temporary;
+
+			// op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+
+
+			// op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+
+			// if (print_flag) {
+			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+				
+			// 	printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+			// 	temporary++;
+			// 	printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+			// 	expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+			// 	sprintf(expression->llvm_name, "%%%d", temporary);
+			// } else temporary+=3;
+			// return temporary++;
 
 		case BitWiseAnd:
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
