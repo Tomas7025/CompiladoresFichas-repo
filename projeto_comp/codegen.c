@@ -280,7 +280,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 				}
 
 				if (print_flag)
-					printf("	ret %s %%%d\n", type_to_llvm(map_cat_typ(getchild(scope->node, 0)->category)), temporary-1);
+					printf("	ret %s %%%d\n", type_to_llvm(scope->type), temporary-1);
 			}
 			else
 				if (print_flag) printf("	ret void\n");
