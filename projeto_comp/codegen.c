@@ -497,6 +497,23 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 
 		case And:
+			// !!!
+			// op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			// op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+
+			// if (print_flag) {
+			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+				
+			// 	printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+			// 	temporary++;
+			// 	printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+			// 	expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+			// 	sprintf(expression->llvm_name, "%%%d", temporary);
+			// } else temporary+=3;
+			// return temporary++;
+			// !!!
+			
 			/*
 			alloca %x
 			store x 1
@@ -517,28 +534,29 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			and $1, %x
 			*/
 			
-
-			printf("	%%%d = alloca i32\n", temporary);
+			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			if (print_flag) printf("	%%%d = alloca i32\n", temporary);
 			right_side = temporary++;
 
-			printf("	store i32 1, i32* %%%d\n", temporary-1);
+			if (print_flag) printf("	store i32 1, i32* %%%d\n", temporary-1);
 			
-			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
+			if (print_flag) printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);
+			// if (print_flag) printf("\n; %s\n", getchild(expression, 0)->token);
 
-			printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
+			if (print_flag) printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
 			temporary++; // label true
 
 			checkpoint = temporary;
 
 			op2 = codegen_expression(getchild(expression, 1), scope, 0);
 			if (print_flag) printf("%%%d\n", op2+3);
-			printf("%d:\n", op1+2);			// true:
+			printf("%d:\n", op1+3);			// true:
 
+			// printf("\n; %s\n", getchild(expression, 1)->token);
 			temporary = checkpoint;
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			if (print_flag) printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op2);
+			if (print_flag) printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);
 			else temporary++;
 
 			if (print_flag) printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
@@ -562,24 +580,8 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
 
-			return temporary;
+			return temporary-1;
 
-			// op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-
-
-			// op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-
-			// if (print_flag) {
-			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
-			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-				
-			// 	printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
-			// 	temporary++;
-			// 	printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			// 	expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			// 	sprintf(expression->llvm_name, "%%%d", temporary);
-			// } else temporary+=3;
-			// return temporary++;
 
 		case BitWiseAnd:
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
