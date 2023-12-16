@@ -30,7 +30,7 @@ char* type_to_llvm(enum type tipo){
 			return "double";
 		case void_type: 
 			return "void";
-		default:    
+		default:
 			return "error";
 	}
 }
@@ -270,7 +270,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 
 		case Return:
 			// codegen_return(statement, scope);
-			if (getchild(statement, 0)->type != void_type) {
+			if (getchild(statement, 0)->type != void_type && getchild(statement, 0)->category != Null) {
 				codegen_expression(getchild(statement, 0), scope, print_flag);
 				
 				if (print_flag)
