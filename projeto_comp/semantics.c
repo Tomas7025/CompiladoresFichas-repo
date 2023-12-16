@@ -325,7 +325,8 @@ int check_statement(struct node *node, struct symbol_list *scope) {
             else {
                 if (countchildren(node) == 3) {
                     if (getchild(node, 2)->category == Identifier) {
-                        found = search_symbol(global_scope, getchild(node, 2)->token);
+                        if ((found = search_symbol(scope, getchild(node, 2)->token)) == NULL)   //!!! mudanca
+                            found = search_symbol(global_scope, getchild(node, 2)->token);
                         if (found->node->category == FuncDeclaration || found->node->category == FuncDefinition) {
                             printf("Line %d, column %d: Conflicting types (got ", getchild(node, 1)->token_line, getchild(node, 1)->token_column);
                             print_signature(found->node);

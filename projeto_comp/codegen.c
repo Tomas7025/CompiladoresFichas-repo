@@ -69,8 +69,8 @@ int codegen_global_vars(struct symbol_list *global_scope) {
 // code generation begins here, with the AST root node
 void codegen_program(struct node *program) {
 	// pre-declared I/O functions
-	printf("declare i32 @read(i32)\n");
-	printf("declare i32 @write(i32)\n");
+	// printf("declare i32 @read(i32)\n");
+	// printf("declare i32 @write(i32)\n");
 	printf("declare i32 @putchar(i32)\n");
 	printf("declare i32 @getchar()\n");
 
@@ -273,8 +273,14 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 			if (getchild(statement, 0)->type != void_type && getchild(statement, 0)->category != Null) {
 				codegen_expression(getchild(statement, 0), scope, print_flag);
 				
+				if (getchild(scope->node, 0)->category == Double && getchild(statement, 0)->type != double_type) {
+					if (print_flag)
+						printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temporary-1);
+					temporary++;
+				}
+
 				if (print_flag)
-					printf("	ret %s %%%d\n", type_to_llvm(getchild(statement, 0)->type), temporary-1);
+					printf("	ret %s %%%d\n", type_to_llvm(map_cat_typ(getchild(scope->node, 0)->category)), temporary-1);
 			}
 			else
 				if (print_flag) printf("	ret void\n");
@@ -285,14 +291,19 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 		case Declaration:
 			temp = getchild(statement, 0);
 			
-			if (print_flag) 
+			if (print_flag)
 				printf("	%%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
 			statement->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
 			sprintf(statement->llvm_name, "%%%d", temporary-1);
 			
 			if (countchildren(statement) == 3) {
 				codegen_expression(getchild(statement, 2), scope, print_flag);
-				
+				if (getchild(statement, 2)->type != double_type && map_cat_typ(getchild(statement, 0)->category) == double_type) {
+						if (print_flag)
+							printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temporary-1);
+						temporary++;
+					}
+
 				if (print_flag) 
 					printf("	store %s %%%d, %s* %s\n", (temp->category == Double ? "double" : "i32"), temporary-1, (temp->category == Double ? "double" : "i32"), statement->llvm_name);
 			}
@@ -308,16 +319,18 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 	-> > 0 cast right side
 	-> < 0 cast left side
 */
-int cast2double(struct node* expression, int op1, int op2) {
+int cast2double(struct node* expression, int op1, int op2, int print_flag) {
 	int count = 0;
 	if (getchild(expression, 0)->type == double_type || getchild(expression, 1)->type == double_type) {
-		if (getchild(expression, 0)->type != double_type){
-			printf("	%%%d = sitofp i32 %%%d to double\n", temporary++, op1);
+		if (getchild(expression, 0)->type != double_type) {
+			if (print_flag) printf("	%%%d = sitofp i32 %%%d to double\n", temporary, op1);
+			temporary++;
 			count--;
 		}
 
 		if (getchild(expression, 1)->type != double_type){
-			printf("	%%%d = sitofp i32 %%%d to double\n", temporary++, op2);
+			if (print_flag) printf("	%%%d = sitofp i32 %%%d to double\n", temporary, op2);
+			temporary++;
 			count++;
 		}
 	}
@@ -401,9 +414,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 
 		case Add:
-			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-			aux = cast2double(expression, op1, op2);
+			if (getchild(expression, 0)->category != Identifier) {
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			}
+			else {
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			}
+			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag) {
 				if (aux)
 					printf("	%%%d = fadd double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
@@ -415,9 +434,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 
 		case Sub:
-			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-			aux = cast2double(expression, op1, op2);
+			if (getchild(expression, 0)->category != Identifier) {
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			}
+			else {
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			}
+			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag) {
 				op1_type = getchild(expression, 0)->type;
 				// op2_type = getchild(expression, 1)->type;
@@ -433,9 +458,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 
 		case Mul:
-			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-			aux = cast2double(expression, op1, op2);
+			if (getchild(expression, 0)->category != Identifier) {
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			}
+			else {
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			}
+			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag) {
 				if (aux)
 					printf("	%%%d = fmul double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
@@ -447,9 +478,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 
 		case Div:
-			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-			aux = cast2double(expression, op1, op2);
+			if (getchild(expression, 0)->category != Identifier) {
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			}
+			else {
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			}
+			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag) {
 				op1_type = getchild(expression, 0)->type;
 				// op2_type = getchild(expression, 1)->type;
@@ -464,9 +501,15 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 		
 		case Mod:
-			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-			aux = cast2double(expression, op1, op2);
+			if (getchild(expression, 0)->category != Identifier) {
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+			}
+			else {
+				op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+				op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			}
+			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag){
 				op1_type = getchild(expression, 0)->type;
 				// op2_type = getchild(expression, 1)->type;
@@ -481,6 +524,23 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			return temporary++;
 		
 		case Or:
+			// TODO: Saber pq raio isto passa
+			// op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			// op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+
+			// if (print_flag){
+			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+
+			// 	printf("	%%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+			// 	temporary++;
+			// 	printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+			// 	expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+			// 	sprintf(expression->llvm_name, "%%%d", temporary);
+			// } else temporary+=3;
+			// return temporary++;
+			// TODO: Saber pq raio isto passa
+
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			if (print_flag) {
 				printf("	%%%d = alloca i32\n", temporary);
@@ -520,9 +580,13 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			if (print_flag) {
 				printf("	%%%d = load i32, i32* %%%d\n", temporary++, right_side);
 				printf("	%%%d = or i32 %%%d, %%%d\n", temporary, op1, temporary-1);
-			} else temporary++;
+				temporary++;				
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				temporary++;
+			} else temporary += 4;
 			
-			temporary++;
 
 			if (print_flag) {
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
@@ -531,22 +595,25 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 
 			return temporary-1;
 
-			// op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			// op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
-
-			// if (print_flag){
-			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
-			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-
-			// 	printf("	%%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
-			// 	temporary++;
-			// 	printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-			// 	expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-			// 	sprintf(expression->llvm_name, "%%%d", temporary);
-			// } else temporary+=3;
-			// return temporary++;
-
 		case And:
+		// TODO: Saber pq raio isto passa
+		// 	op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+		// 	op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
+
+		// 	if (print_flag) {
+		// 		printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
+		// 		printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
+				
+		// 		printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+		// 		temporary++;
+		// 		printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+		// 		expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+		// 		sprintf(expression->llvm_name, "%%%d", temporary);
+		// 	} else temporary+=3;
+		// 	return temporary++;
+		// TODO: Saber pq raio isto passa
+
+
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			if (print_flag) {printf("	%%%d = alloca i32\n", temporary);
 				right_side = temporary++;
@@ -585,9 +652,14 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			if (print_flag) {
 				printf("	%%%d = load i32, i32* %%%d\n", temporary++, right_side);
 				printf("	%%%d = and i32 %%%d, %%%d\n", temporary, op1, temporary-1);
-			} else temporary++;
+				temporary++;
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary, temporary-1);
+				temporary++;
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				temporary++;
+				// printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+			} else temporary += 4;
 
-			temporary++;
 
 			if (print_flag) {
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
@@ -634,7 +706,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
-			aux = cast2double(expression, op1, op2);
+			aux = cast2double(expression, op1, op2, print_flag);
 			
 			if (print_flag) {
 				if (aux)                                              // o que levou cast, o que nao levou 
@@ -649,7 +721,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				
 				temporary++;
 				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				expression->llvm_name = (char*) malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			} else temporary++;
 
@@ -659,7 +731,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
-			aux = cast2double(expression, op1, op2);
+			aux = cast2double(expression, op1, op2, print_flag);
 
 			if (print_flag){
 				if (aux)                                              // o que levou cast, o que nao levou 
@@ -681,7 +753,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
-			aux = cast2double(expression, op1, op2);
+			aux = cast2double(expression, op1, op2, print_flag);
 
 			if (print_flag) { 
 				if (aux)                                              // o que levou cast, o que nao levou 
@@ -704,7 +776,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
-			aux = cast2double(expression, op1, op2);
+			aux = cast2double(expression, op1, op2, print_flag);
 
 			if (print_flag){
 				if (aux)                                              // o que levou cast, o que nao levou 
@@ -726,7 +798,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
-			aux = cast2double(expression, op1, op2);
+			aux = cast2double(expression, op1, op2, print_flag);
 
 			if (print_flag) {
 				if (aux)                                              // o que levou cast, o que nao levou 
@@ -749,7 +821,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 			op1_type = getchild(expression, 0)->type;
-			aux = cast2double(expression, op1, op2);
+			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag){
 				// Houve cast
 				if (aux)                                              // o que levou cast, o que nao levou 
@@ -850,11 +922,11 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			for (;temp_node_list != NULL && temp_node_list2 != NULL ; temp_node_list = temp_node_list->next, temp_node_list2 = temp_node_list2->next ) {
 				codegen_expression(temp_node_list->node, scope, print_flag);
 				if (map_cat_typ(getchild(temp_node_list2->node, 0)->category) == double_type && temp_node_list->node->type != double_type) {
-					if (print_flag){
-					printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temporary-1);
-					free(temp_node_list->node->llvm_name);
-					temp_node_list->node->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-					sprintf(temp_node_list->node->llvm_name, "%%%d", temporary);
+					if (print_flag) {
+						printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temporary-1);
+						free(temp_node_list->node->llvm_name);
+						temp_node_list->node->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+						sprintf(temp_node_list->node->llvm_name, "%%%d", temporary);
 					}
 					temporary++;
 				}

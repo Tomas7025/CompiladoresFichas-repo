@@ -23,7 +23,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 int codegen_function_call(struct node *function_call, struct symbol_list* scope);
 int codegen_assignment(struct node *assignment, struct symbol_list* scope);
 
-int cast2double(struct node* expression, int op1, int op2);
+int cast2double(struct node* expression, int op1, int op2, int print_flag);
 int number_len(int number);
 
 #endif 

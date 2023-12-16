@@ -1780,7 +1780,7 @@ yyreduce:
   case 19: /* parameter_declaration: typespec IDENTIFIER  */
 #line 183 "uccompiler.y"
                                                             { if (errors > 0) { break; }
-                                                              (yyval.node) = newnode(ParamDeclaration, NULL); 
+                                                              (yyval.node) = newnode(ParamDeclaration, NULL);
                                                               addchild((yyval.node), (yyvsp[-1].node));
                                                               addchild((yyval.node), newnode(Identifier, (yyvsp[0].token)));
 

@@ -181,7 +181,7 @@ parameter_list: parameter_declaration                       { if (errors > 0) { 
                                                             }
     
 parameter_declaration: typespec IDENTIFIER                  { if (errors > 0) { break; }
-                                                              $$ = newnode(ParamDeclaration, NULL); 
+                                                              $$ = newnode(ParamDeclaration, NULL);
                                                               addchild($$, $1);
                                                               addchild($$, newnode(Identifier, $2));
 
