@@ -363,6 +363,9 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 	struct node* op1_node;			//, *op2_node;
 	struct symbol_list *found;
 	struct node_list* temp_node_list, *temp_node_list2;
+
+	// !!!
+	int right_side, checkpoint;
 	
 	switch (expression->category) {
 		case ChrLit:
@@ -513,8 +516,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 
 			and $1, %x
 			*/
-			// !!!
-			int right_side, checkpoint;
+			
 
 			printf("	%%%d = alloca i32\n", temporary);
 			right_side = temporary++;

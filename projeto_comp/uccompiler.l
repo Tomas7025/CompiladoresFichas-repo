@@ -168,14 +168,14 @@ int main(int argc, char *argv[]) {
         if (errors == 0){
             check_program(program);
             show_symbol_table();
-            show(program, 0, 0);
+            show(program, 0, 0, global_scope);
         }
     }
     else if (argc >= 2 && strcmp(argv[1], "-s") == 0) {
-        if (errors == 0){
+        if (errors == 0) {
             check_program(program);
             show_symbol_table();
-            show(program, 0, 1);
+            show(program, 0, 1, global_scope);
         }
     }
     else {

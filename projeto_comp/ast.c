@@ -36,57 +36,6 @@ void addchild(struct node *parent, struct node *child) {
 }
 
 
-void show(struct node *node, int depth, int anotations){
-  struct symbol_list *found;
-  struct node_list *child = node->children;
-
-  if (node == NULL) return;
-  for(int i = 0; i < depth; i++){
-    printf("..");
-  }
-  if(!node->token){
-    printf("%s", category_m[node->category]);
-  } else {    
-    printf("%s(%s)", category_m[node->category], node->token);
-  }
-  if (node->type != no_type && anotations) {
-    if (node->category == Identifier && node->type != undefined_type && (((found = search_symbol(global_scope, node->token)) != NULL) && (found->node->category == FuncDeclaration || found->node->category == FuncDefinition))) {
-      printf(" - ");
-      print_signature(found->node);
-      printf("\n");
-    }
-    else
-      printf(" - %s\n", type_name(node->type));
-
-  } 
-
-  else {
-    printf("\n");
-  }
-
-  // if (node->category == Call && anotations && (found = search_symbol(global_scope, child->next->node->token)) != NULL) {
-  //   for(int i = 0; i < depth + 1; i++){
-  //     printf("..");
-  //   }
-
-  //   printf("%s(%s) - ", category_m[child->next->node->category], child->next->node->token);
-
-  //   if (node->type == undefined_type)
-  //     printf("undef\n");
-  //   else if (found->node->category == Declaration) {
-  //     printf("%s\n", type_name(found->node->type));
-  //   }
-  //   else {
-  //     print_signature(found->node);
-  //     printf("\n");
-  //   }
-  //   child = child->next;
-  // }
-
-  while((child = child->next) != NULL){
-    show(child->node, depth + 1, anotations);
-  }
-}
 
 void clear() {
   struct node_list *cursor = gc;
