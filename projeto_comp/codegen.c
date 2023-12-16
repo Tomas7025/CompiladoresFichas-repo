@@ -274,7 +274,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 				codegen_expression(getchild(statement, 0), scope, print_flag);
 				
 				if (print_flag)
-					printf("	ret %s %s\n", type_to_llvm(getchild(statement, 0)->type), getchild(statement, 0)->llvm_name);
+					printf("	ret %s %%%d\n", type_to_llvm(getchild(statement, 0)->type), temporary-1);
 			}
 			else
 				if (print_flag) printf("	ret void\n");
@@ -482,102 +482,116 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 		
 		case Or:
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
+			if (print_flag) {
+				printf("	%%%d = alloca i32\n", temporary);
+				right_side = temporary++;
+				printf("	store i32 0, i32* %%%d\n", temporary-1);
+				printf("	%%%d = icmp eq i32 %%%d, 0\n", temporary++, op1);
+				printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
+			} else temporary += 2;
+
+			temporary++;
+
+			checkpoint = temporary;
+
+			op2 = codegen_expression(getchild(expression, 1), scope, 0);
+			if (print_flag) {
+				printf("%%%d\n", op2+3);
+				printf("%d:\n", op1+3);
+			}
+
+			temporary = checkpoint;
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			if (print_flag){
-				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
-				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-
-				printf("	%%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
-				temporary++;
+			if (print_flag) {
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);
 				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
-				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-				sprintf(expression->llvm_name, "%%%d", temporary);
-			} else temporary+=3;
-			return temporary++;
+			} else temporary++;
 
-		case And:
-			// !!!
+			temporary++;
+			
+			if (print_flag) {
+				printf("	store i32 %%%d, i32* %%%d\n", temporary-1, right_side);
+				printf("	br label %%%d\n", op2+3);
+				printf("%d:\n", op2+3);
+			}
+			temporary++;
+
+			if (print_flag) {
+				printf("	%%%d = load i32, i32* %%%d\n", temporary++, right_side);
+				printf("	%%%d = or i32 %%%d, %%%d\n", temporary, op1, temporary-1);
+			} else temporary++;
+			
+			temporary++;
+
+			if (print_flag) {
+				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
+				sprintf(expression->llvm_name, "%%%d", temporary-1);
+			}
+
+			return temporary-1;
+
 			// op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			// op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			// if (print_flag) {
+			// if (print_flag){
 			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);           // temporary-2
 			// 	printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);           // temporary-1
-				
-			// 	printf("	%%%d = and i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
+
+			// 	printf("	%%%d = or i1 %%%d, %%%d\n", temporary, temporary-2, temporary-1);
 			// 	temporary++;
 			// 	printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
 			// 	expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 			// 	sprintf(expression->llvm_name, "%%%d", temporary);
 			// } else temporary+=3;
 			// return temporary++;
-			// !!!
-			
-			/*
-			alloca %x
-			store x 1
 
-			icmp $1 != 0
-
-			br $1, true, false
-
-
-			true:
-			codegen
-			icmp $2 == 0
-			store x ^
-
-
-			false:
-
-			and $1, %x
-			*/
-			
+		case And:
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
-			if (print_flag) printf("	%%%d = alloca i32\n", temporary);
-			right_side = temporary++;
+			if (print_flag) {printf("	%%%d = alloca i32\n", temporary);
+				right_side = temporary++;
+				printf("	store i32 1, i32* %%%d\n", temporary-1);
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);
+				printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
+			} else temporary += 2;
 
-			if (print_flag) printf("	store i32 1, i32* %%%d\n", temporary-1);
-			
-			if (print_flag) printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op1);
-			// if (print_flag) printf("\n; %s\n", getchild(expression, 0)->token);
-
-			if (print_flag) printf("	br i1 %%%d, label %%%d, label ", temporary-1, temporary);
-			temporary++; // label true
+			temporary++;
 
 			checkpoint = temporary;
 
 			op2 = codegen_expression(getchild(expression, 1), scope, 0);
-			if (print_flag) printf("%%%d\n", op2+3);
-			printf("%d:\n", op1+3);			// true:
+			if (print_flag) {
+				printf("%%%d\n", op2+3);
+				printf("%d:\n", op1+3);
+			}
 
-			// printf("\n; %s\n", getchild(expression, 1)->token);
 			temporary = checkpoint;
 			op2 = codegen_expression(getchild(expression, 1), scope, print_flag);
 
-			if (print_flag) printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);
-			else temporary++;
+			if (print_flag) {
+				printf("	%%%d = icmp ne i32 %%%d, 0\n", temporary++, op2);
+				printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+			} else temporary++;
 
-			if (print_flag) printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
 			temporary++;
 			
-			if (print_flag) printf("	store i32 %%%d, i32* %%%d\n", temporary-1, right_side);
-			if (print_flag) printf("	br label %%%d\n", op2+3);
-
-			if (print_flag) printf("%d:\n", op2+3);
-			temporary++;
-
-			if (print_flag) printf("	%%%d = load i32, i32* %%%d\n", temporary++, right_side);
-			else temporary++;
-
-			if (print_flag) printf("	%%%d = and i32 %%%d, %%%d\n", temporary, op1, temporary-1);
+			if (print_flag) {
+				printf("	store i32 %%%d, i32* %%%d\n", temporary-1, right_side);
+				printf("	br label %%%d\n", op2+3);
+				printf("%d:\n", op2+3);
+			}
 			temporary++;
 
 			if (print_flag) {
-				// printf("	%%%d = zext i1 %%%d to i32\n", temporary, temporary-1);
+				printf("	%%%d = load i32, i32* %%%d\n", temporary++, right_side);
+				printf("	%%%d = and i32 %%%d, %%%d\n", temporary, op1, temporary-1);
+			} else temporary++;
+
+			temporary++;
+
+			if (print_flag) {
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
-				sprintf(expression->llvm_name, "%%%d", temporary);
+				sprintf(expression->llvm_name, "%%%d", temporary-1);
 			}
 
 			return temporary-1;
