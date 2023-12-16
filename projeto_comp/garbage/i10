@@ -1,0 +1,8 @@
+int f(void) {
+    return 1,'A';
+}
+
+int main(void) {
+    putchar(f());
+    putchar('\n');
+}

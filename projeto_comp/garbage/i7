@@ -1,0 +1,5 @@
+int x(double a) {}
+int main(void) {
+    double x;
+    x;
+}

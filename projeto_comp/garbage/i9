@@ -1,0 +1,24 @@
+// int main(void) {
+//     int a = 'A';
+//     0 && (a = a+1);
+//     putchar(a);
+//     putchar('\n');
+// }
+
+// int main(void) {
+//     if (0) {
+//         putchar('T');
+//     } 
+//     else {
+//         putchar('F');
+//     }
+//     putchar('\n');
+// }
+
+int main(void) {
+    1 && putchar('Y') && (0 || putchar('Y')) && ((0 && putchar('N')) || putchar('N')) && putchar('A');
+    
+    int a = 'A';
+
+    //hello there
+}
