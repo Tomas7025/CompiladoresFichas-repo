@@ -273,7 +273,7 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 			if (getchild(statement, 0)->type != void_type && getchild(statement, 0)->category != Null) {
 				codegen_expression(getchild(statement, 0), scope, print_flag);
 				
-				if (getchild(scope->node, 0)->category == Double && getchild(statement, 0)->type != double_type) {
+				if (scope->type == double_type && getchild(statement, 0)->type != double_type) {
 					if (print_flag)
 						printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temporary-1);
 					temporary++;
