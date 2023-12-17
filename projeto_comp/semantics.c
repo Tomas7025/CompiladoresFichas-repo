@@ -353,7 +353,7 @@ int check_statement(struct node *node, struct symbol_list *scope) {
         case If:
             // DEBUG: printf("if %d %d\n", node->token_line, node->token_column);
             check_expression(getchild(node, 0), scope);
-            if (getchild(node, 0)->category == Identifier && (found = search_symbol(global_scope, getchild(node, 0)->token)) != NULL) {
+            if (getchild(node, 0)->category == Identifier && (found = search_symbol(global_scope, getchild(node, 0)->token)) != NULL) { 
                 if (found->node->category == FuncDeclaration || found->node->category == FuncDefinition) {
                     printf("Line %d, column %d: Conflicting types (got ", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
                     print_signature(found->node);
@@ -422,9 +422,10 @@ int check_statement(struct node *node, struct symbol_list *scope) {
             break;
         case Return:
             // DEBUG: printf("return %d %d\n", node->token_line, node->token_column);
-            if (getchild(node, 0)->category != Null){
+            if (getchild(node, 0)->category != Null) {
                 check_expression(getchild(node, 0), scope);
-                if (getchild(node, 0)->category == Identifier && (found = search_symbol(global_scope, getchild(node, 0)->token)) != NULL) {
+                if (getchild(node, 0)->category == Identifier && (search_symbol(scope, getchild(node, 0)->token) == NULL) && (found = search_symbol(global_scope, getchild(node, 0)->token)) != NULL) {
+
                     if (found->node->category == FuncDeclaration || found->node->category == FuncDefinition) {
                         printf("Line %d, column %d: Conflicting types (got ", getchild(node, 0)->token_line, getchild(node, 0)->token_column);
                         print_signature(found->node);
