@@ -51,7 +51,7 @@ int codegen_global_vars(struct symbol_list *global_scope) {
 	global_cur = global_scope;
 	int temp = -1;
 	while ((global_cur = global_cur->next) != NULL) {
-		if (global_cur->node->category == Declaration && countchildren(global_cur->node) ==3) {
+		if (global_cur->node->category == Declaration && countchildren(global_cur->node) == 3) {
 			temp = codegen_expression(getchild(global_cur->node, 2), global_scope, 1);
 			if ((map_cat_typ(getchild(global_cur->node, 0)->category) == double_type) && (getchild(global_cur->node, 2)->type != double_type)){
 				printf("	%%%d = sitofp i32 %%%d to double\n", temporary, temp);
@@ -861,7 +861,7 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
 			return temporary++;
-		
+
 		case Not:
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 
