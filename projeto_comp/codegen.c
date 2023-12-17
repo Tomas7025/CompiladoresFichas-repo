@@ -159,7 +159,7 @@ int codegen_function_definition(struct node *function) {
 			printf("	%%%d = alloca %s\n", temporary++, (getchild(args_cursor->node, 0)->category == Double ? "double" : "i32"));
 			printf("	store %s %s, %s* %%%d\n", type_to_llvm(map_cat_typ(getchild(args_cursor->node, 0)->category)), args_cursor->node->llvm_name, type_to_llvm(map_cat_typ(getchild(args_cursor->node, 0)->category)), temporary-1);
 			free(args_cursor->node->llvm_name);
-			args_cursor->node->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
+			args_cursor->node->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+3));
 			sprintf(args_cursor->node->llvm_name, "%%%d", temporary-1);
 		}
 	}
@@ -295,6 +295,10 @@ int codegen_statement(struct node* statement, struct symbol_list* scope, int pri
 				printf("	%%%d = alloca %s\n", temporary++, (temp->category == Double ? "double" : "i32"));
 			statement->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary-1)+2));
 			sprintf(statement->llvm_name, "%%%d", temporary-1);
+
+			if (print_flag) {
+				printf("	store %s %s, %s* %s\n", (temp->category == Double ? "double" : "i32"), (temp->category == Double ? "0.0" : "0"), (temp->category == Double ? "double" : "i32"), statement->llvm_name);
+			}
 			
 			if (countchildren(statement) == 3) {
 				codegen_expression(getchild(statement, 2), scope, print_flag);
@@ -344,11 +348,11 @@ int chrlit2int(char *str) {
 
 	else {
 		switch (*(str + 2)) {
-			case 'n':
-				return 10;
+			case 'n':					
+				return 10;			// \n
 			case 't':
-				return 9;
-			case '\\':
+				return 9;			// \t
+			case '\\':				
 			case '\'':
 			case '\"':
 				return *(str + 2);
@@ -424,10 +428,11 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			}
 			aux = cast2double(expression, op1, op2, print_flag);
 			if (print_flag) {
+				op1_type = getchild(expression, 0)->type;
 				if (aux)
 					printf("	%%%d = fadd double %%%d, %%%d\n", temporary, temporary-1, (aux < 0) ? op2 : op1);
 				else
-					printf("	%%%d = add %s %%%d, %%%d\n", temporary, type_to_llvm(getchild(expression, 0)->type), op1, op2);
+					printf("	%%%d = %s %s %%%d, %%%d\n", temporary, (op1_type == double_type ? "fadd" : "add"), type_to_llvm(getchild(expression, 0)->type), op1, op2);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(temporary)+2));
 				sprintf(expression->llvm_name, "%%%d", temporary);
 			}
@@ -612,7 +617,6 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 		// 	} else temporary+=3;
 		// 	return temporary++;
 		// TODO: Saber pq raio isto passa
-
 
 			op1 = codegen_expression(getchild(expression, 0), scope, print_flag);
 			if (print_flag) {printf("	%%%d = alloca i32\n", temporary);
@@ -895,12 +899,14 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 				op2 = temporary;
 				temporary++;
 			}
-			
+
 			if (print_flag) {
 				if((found = search_symbol(scope, getchild(expression, 0)->token))) // store i32 %10, i32* %1
 					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), found->node->llvm_name);
 				else 
 					printf("	store %s %%%d, %s* %s\n", type_to_llvm(expression->type), op2, type_to_llvm(expression->type), search_symbol(global_scope, getchild(expression, 0)->token)->node->llvm_name);
+				
+				// free(expression->llvm_name);
 				expression->llvm_name = (char*)malloc(sizeof(char)*(number_len(op2)+2));
 				sprintf(expression->llvm_name, "%%%d", op2);
 			}
@@ -936,9 +942,9 @@ int codegen_expression(struct node *expression, struct symbol_list* scope, int p
 			temp_node_list2 = getchild(search_symbol(global_scope, getchild(expression, 0)->token)->node, 2)->children->next;
 			if (print_flag) {
 				if (getchild(op1_node, 0)->category != Void)
-					printf("	%%%d = call %s @%s(", temporary++, type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)),  getchild(op1_node, 1)->token);
+					printf("	%%%d = call %s @%s%s(", temporary++, type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)), (strcmp(getchild(op1_node, 1)->token, "main") == 0) ? "_" : "", getchild(op1_node, 1)->token);
 				else
-					printf("	call %s @%s(", type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)),  getchild(op1_node, 1)->token);
+					printf("	call %s @%s%s(", type_to_llvm(map_cat_typ(getchild(op1_node, 0)->category)), (strcmp(getchild(op1_node, 1)->token, "main") == 0) ? "_" : "", getchild(op1_node, 1)->token);
 
 				for (;temp_node_list != NULL && temp_node_list2 != NULL ; temp_node_list = temp_node_list->next, temp_node_list2 = temp_node_list2->next ) {
 					printf("%s %s", type_to_llvm(map_cat_typ(getchild(temp_node_list2->node, 0)->category)), temp_node_list->node->llvm_name);

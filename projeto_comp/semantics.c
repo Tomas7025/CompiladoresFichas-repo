@@ -11,7 +11,6 @@ struct symbol_list* global_scope;
 int check_function(struct node *node, struct symbol_list *scope, int flag);
 int check_expression(struct node *node, struct symbol_list *scope);
 
-
 char *category_mp[] = category_map;
 void show(struct node *node, int depth, int anotations, struct symbol_list *scope) {
   struct symbol_list *found;
