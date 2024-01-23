@@ -1,0 +1,70 @@
+Line 3, column 8: Invalid use of void type in declaration
+Line 6, column 4: Operator + cannot be applied to types void(int), double(void)
+Line 7, column 5: Operator = cannot be applied to types void(int), double
+Line 8, column 5: Unknown symbol _
+Line 8, column 4: Operator , cannot be applied to types double(void), undef
+Line 9, column 3: Operator ! cannot be applied to type double
+Line 10, column 6: Operator ^ cannot be applied to types double, void(int)
+Line 11, column 10: Conflicting types (got void(int), expected int)
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+f	void(int)
+g	double(void)
+main	int(void)
+
+===== Function f Symbol Table =====
+return	void
+f	int	param
+
+===== Function main Symbol Table =====
+return	int
+
+Program
+..FuncDefinition
+....Void
+....Identifier(f)
+....ParamList
+......ParamDeclaration
+........Int
+........Identifier(f)
+....FuncBody
+..FuncDeclaration
+....Double
+....Identifier(g)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Void
+....Identifier(h)
+....ParamList
+......ParamDeclaration
+........Void
+........Identifier(v)
+..FuncDefinition
+....Int
+....Identifier(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Add - undef
+........Identifier(f) - void(int)
+........Identifier(g) - double(void)
+......Store - undef
+........Identifier(f) - void(int)
+........Call - double
+..........Identifier(g) - double(void)
+......Comma - undef
+........Identifier(g) - double(void)
+........Identifier(_) - undef
+......Not - int
+........Call - double
+..........Identifier(g) - double(void)
+......BitWiseXor - int
+........Call - double
+..........Identifier(g) - double(void)
+........Identifier(f) - void(int)
+......Return
+........Identifier(f) - void(int)
