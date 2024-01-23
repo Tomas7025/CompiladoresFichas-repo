@@ -1,0 +1,4 @@
+
+
+f2(integer c, integer d) = if (read(0)) then (write(c*2)) else (write(d*2)) 
+main(integer l) = f2(1,2)
